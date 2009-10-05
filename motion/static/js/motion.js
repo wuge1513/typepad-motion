@@ -164,21 +164,18 @@ $(document).ready(function () {
         if (user && user.is_authenticated) {
             var checkbox = $(this)
             // toggle loading graphic
-            checkbox.next().show();
-            checkbox.hide();
+            checkbox.hide().next().show();
             // update crossposting options
             $.ajax({
                 type: "POST",
                 url: settings.crosspost_options_url,
                 data: {"option_value": checkbox.attr("value"), "checked": checkbox.attr("checked")},
                 success: function(data){
-                    checkbox.next().hide();
-                    checkbox.show();
+                    checkbox.show().next().hide();
                 },
                 error: function(xhr, txtStatus, errorThrown) {
                     alert('An error occurred: ' + xhr.status + ' -- ' + xhr.statusText);
-                    checkbox.next().hide();
-                    checkbox.show();
+                    checkbox.show().next().hide();
                 }
             });
         }
