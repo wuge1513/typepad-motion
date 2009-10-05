@@ -34,6 +34,7 @@ from django.template.loader import render_to_string
 from django.template import RequestContext
 import simplejson as json
 
+import motion.models
 import typepad
 from typepadapp import models
 import typepadapp.forms
@@ -126,6 +127,45 @@ def favorite(request):
     else:
         favorite = models.Favorite.get_by_user_asset(request.user.url_id, asset_id)
         favorite.delete()
+
+    return http.HttpResponse('OK')
+
+
+@ajax_required
+def crosspost_options(request):
+    """
+    Add this option to the user's preferred crossposting options.
+    Return OK.
+    """
+
+    typepad.client.batch_request()
+    request.user = get_user(request)
+    typepad.client.complete_batch()
+
+    # Current crossposting options
+    try:
+        co = motion.models.CrosspostOptions.objects.get(user_id=request.user.url_id)
+    except motion.models.CrosspostOptions.DoesNotExist:
+        co = motion.models.CrosspostOptions(user_id=request.user.url_id)
+    if co.crosspost:
+        options = json.loads(co.crosspost)
+    else:
+        options = []
+
+    # Get checkbox value and if it is checked or unchecked
+    value = request.POST.get('option_value')
+    if not value:
+        raise http.Http404
+    checked = request.POST.get('checked') == 'true'
+
+    # Update crossposting options
+    if checked and not value in options:
+        options.append(value)
+    elif value in options:
+        options.remove(value)
+
+    co.crosspost = json.dumps(options)
+    co.save()
 
     return http.HttpResponse('OK')
 

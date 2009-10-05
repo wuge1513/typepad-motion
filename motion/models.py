@@ -27,3 +27,19 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+from django.db import models
+from typepadapp.models.users import User
+
+
+class CrosspostOptions(models.Model):
+    """
+        Persists the checked state of user's
+        crosspost options.
+    """
+
+    user_id = models.CharField(max_length=100, unique=True, null=False, blank=False)
+    crosspost = models.CharField(max_length=2000)
+
+    @property
+    def user(self):
+        return User.get_by_id(self.user_id)

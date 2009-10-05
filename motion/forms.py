@@ -53,7 +53,7 @@ class PostForm(forms.Form):
     title = forms.CharField(widget=forms.TextInput(attrs={'title':title_default_text, 'id':'compose-title', 'class':'ti'}), required=False)
     url = forms.URLField(widget=forms.TextInput(attrs={'title':url_default_text, 'id':'compose-url', 'class':'ti'}))
     file = forms.FileField(widget=forms.FileInput(attrs={'name':'file', 'id':'compose-file', 'class':'fi'}))
-    crosspost = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple(attrs={'name':'crosspost'}), required=False)
+    crosspost = forms.MultipleChoiceField(widget=forms.CheckboxSelectMultiple(attrs={'name':'crosspost', 'class':'crosspost'}), required=False)
 
     def is_valid(self, *args, **kwargs):
         # remove/require form fields based on the note type

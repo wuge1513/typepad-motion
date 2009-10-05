@@ -34,6 +34,7 @@ settings = {
     upload_url: '',
     favorite_url: '',
     comments_url: '',
+    crosspost_options_url: '',
     phrase: {
         textRequired: 'Please enter some text.',
         URLRequired: 'Please enter a URL.',
@@ -156,6 +157,31 @@ $(document).ready(function () {
             });
         }
         return false;
+    });
+
+    // Crosspost options
+    $('.crosspost').click(function() {
+        if (user && user.is_authenticated) {
+            var checkbox = $(this)
+            // toggle loading graphic
+            checkbox.next().show();
+            checkbox.hide();
+            // update crossposting options
+            $.ajax({
+                type: "POST",
+                url: settings.crosspost_options_url,
+                data: {"option_value": checkbox.attr("value"), "checked": checkbox.attr("checked")},
+                success: function(data){
+                    checkbox.next().hide();
+                    checkbox.show();
+                },
+                error: function(xhr, txtStatus, errorThrown) {
+                    alert('An error occurred: ' + xhr.status + ' -- ' + xhr.statusText);
+                    checkbox.next().hide();
+                    checkbox.show();
+                }
+            });
+        }
     });
 
 // Utility Functions

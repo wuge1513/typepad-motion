@@ -28,6 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from urlparse import urljoin, urlparse
+import simplejson as json
 import re
 
 from django.conf import settings
@@ -44,6 +45,7 @@ from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 
 from motion import forms
+import motion.models
 import typepad
 import typepadapp.forms
 from typepadapp import models, signals
@@ -116,15 +118,22 @@ class AssetPostView(TypePadView):
             for acct in elsewhere:
                 if acct.crosspostable:
                     choices.append((acct.id,
-                        mark_safe("""<img src="%(icon)s" height="16" width="16" alt="" /> """
+                        mark_safe("""<img src="%(media_url)sthemes/motion/images/icons/throbber.gif" alt="loading..." style="display:none;" />"""
+                        """<img src="%(icon)s" height="16" width="16" alt="" /> """
                         """%(username)s """ % {
+                            'media_url': settings.MEDIA_URL,
                             'icon': escape(acct.provider_icon_url),
                             'username': escape(acct.username)
                         })
                     ))
-
             if len(choices):
                 self.form_instance.fields['crosspost'].choices = choices
+                try:
+                    # Saved crossposting options
+                    co = motion.models.CrosspostOptions.objects.get(user_id=request.user.url_id)
+                    self.form_instance.fields['crosspost'].initial = json.loads(co.crosspost)
+                except motion.models.CrosspostOptions.DoesNotExist:
+                    pass
 
     def select_from_typepad(self, request, *args, **kwargs):
         if request.user.is_authenticated():
