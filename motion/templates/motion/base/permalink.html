@@ -71,16 +71,24 @@
         <div class="comments-open" id="comments-open">
         {% if user.is_authenticated %}
             <h2 class="comments-open-header">{% trans "Leave a comment" %}</h2>
-            <form method="post" action="" name="comments_form" id="comments-form">
-                <div id="field-body" class="field">
-                    {% if form.errors.body %}<div class="form-error">{{ form.errors.body|join:" " }}</div>{% endif %}
-                    {{ form.body }}
+
+            <div class="comment">
+                <div class="inner">
+                    {% include "motion/assets/bits/userpic.html" %}
                 </div>
-                <div>
-                    <button type="submit" id="comment-submit" name="comment" value="Submit">{% trans "Post" %}</button>
-                    <span id="comment-posting">{% trans "Posting comment..." %}</span>
+                <div class="comment-content">
+                    <form method="post" action="" name="comments_form" id="comments-form">
+                        <div id="field-body" class="field">
+                            {% if form.errors.body %}<div class="form-error">{{ form.errors.body|join:" " }}</div>{% endif %}
+                            {{ form.body }}
+                        </div>
+                        <div>
+                            <button type="submit" id="comment-submit" name="comment" value="Submit">{% trans "Post" %}</button>
+                            <span id="comment-posting">{% trans "Posting comment..." %}</span>
+                        </div>
+                    </form>
                 </div>
-            </form>
+            </div>
         {% else %}
             <h2 class="comments-open-header">{% spaceless %}
             {% url login as login_url %}
