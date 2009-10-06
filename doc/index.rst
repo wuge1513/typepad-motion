@@ -16,7 +16,7 @@ Contents:
 
    featured
    themes
-   Local profiles <http://svn.sixapart.com/repos/docs/trunk/potion/typepadapp/localprofile.html>
+   Local profiles <http://sixapart.github.com/typepadapp/localprofile.html>
 
 Indices and tables
 ==================
