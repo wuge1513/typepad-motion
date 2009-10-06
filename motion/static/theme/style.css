@@ -791,6 +791,8 @@ button.button-delete {
     width: 16px;
     height: 16px;
     text-indent: -9999px;
+    display: block;
+    float: left;
     padding: 0;
     background-color: transparent;
 }
@@ -801,6 +803,8 @@ button.button-flag {
     width: 16px;
     height: 16px;
     text-indent: -9999px;
+    display: block;
+    float: left;
     padding: 0;
     background-color: transparent;
 }
