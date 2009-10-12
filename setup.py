@@ -57,5 +57,5 @@ setup(
     provides=['motion'],
     include_package_data=True,
     zip_safe=False,
-    requires=['Django(>=1.0.2)', 'typepadapp'],
+    requires=['Django(>=1.1.1)', 'typepadapp'],
 )
