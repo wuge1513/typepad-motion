@@ -155,6 +155,10 @@ p {
     -webkit-border-top-left-radius: 5px;
 }
 
+#content {
+	position: relative;
+}
+
 /* Submit button, used 3 places: user-compose/comments/POST STUFF ----------------------------- */
 .submit-wrapper {
     float: right;
@@ -1090,6 +1094,12 @@ button.button-flag.flagged {
 
 .baconplayer.audio .progress {
     background-color: #ddd;
+}
+
+/* image post */
+
+img.image-full {
+	width: 100%;
 }
 
 /* Pages ------------------------------------------------------------------ */
