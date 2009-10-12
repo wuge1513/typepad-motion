@@ -112,7 +112,7 @@ class AssetPostView(TypePadView):
     def setup(self, request, *args, **kwargs):
         super(AssetPostView, self).setup(request, *args, **kwargs)
 
-        if 'elsewhere' in self.context:
+        if request.user.is_authenticated() and 'elsewhere' in self.context:
             elsewhere = self.context['elsewhere']
             choices = []
             for acct in elsewhere:
