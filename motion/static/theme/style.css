@@ -491,7 +491,7 @@ p {
 #compose-prompt-audio {
     position: absolute;
     left: 0;
-    top: 0;
+    top: -45px;
     font-size: 1.5em;
     display: none;
     color:#444;
@@ -536,6 +536,7 @@ p {
 }
 #entry-fields {
     text-align: left;
+    position: relative;
 }
 #field-file label,
 #field-file em,
