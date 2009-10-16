@@ -35,7 +35,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.generic.simple import redirect_to
-from django.http import Http404, HttpResponseRedirect, HttpResponseForbidden
+from django.http import Http404, HttpResponseRedirect, HttpResponseForbidden, HttpResponseGone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import SiteProfileNotAvailable
@@ -248,8 +248,20 @@ class AssetView(TypePadView):
 
         ### Moderation
         if moderation:
-            entry.moderation_approved = moderation.Asset.objects.filter(asset_id=entry.url_id,
-                status=moderation.Asset.APPROVED)
+            entry.moderation_approved = False
+
+            moderated_asset = moderation.Asset.objects.filter(asset_id=entry.url_id)
+            if len(moderated_asset):
+                moderated_asset = moderated_asset[0]
+            else:
+                moderated_asset = None
+
+            if moderated_asset:
+                if moderated_asset.status == moderation.Asset.SUPPRESSED:
+                    return HttpResponseGone(_('The requested post has been removed from this site.'))
+                elif moderated_asset.status == moderation.Asset.APPROVED:
+                    entry.moderation_approved = True
+
             if not entry.moderation_approved and request.user.is_authenticated():
                 entry.moderation_flagged = moderation.Flag.objects.filter(tp_asset_id=entry.url_id,
                     user_id=request.user.url_id)
