@@ -123,7 +123,7 @@ class AssetPostView(TypePadView):
                         """%(username)s """ % {
                             'media_url': settings.MEDIA_URL,
                             'icon': escape(acct.provider_icon_url),
-                            'username': escape(acct.username)
+                            'username': escape(acct.username or acct.provider_name)
                         })
                     ))
             if len(choices):
