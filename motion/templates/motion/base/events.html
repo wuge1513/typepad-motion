@@ -16,7 +16,7 @@
 
 {% block content_head %}
     <div id="user-compose-friends" class="design-compose-background pkg">
-        {% if settings.allow_posting and user.is_authenticated %}
+        {% if settings.allow_posting and user.is_authenticated and user_can_post %}
         <div id="user-compose-friends-inner" class="pkg">
             {% include "motion/bits/compose_form.html" %}
             {% include "motion/widgets/compose_user.html" %}

@@ -67,7 +67,7 @@
         </div>
     {% endif %}
 
-    {% if settings.allow_commenting %}
+    {% if settings.allow_commenting and user_can_post %}
         <div class="comments-open" id="comments-open">
         {% if user.is_authenticated %}
             <h2 class="comments-open-header">{% trans "Leave a comment" %}</h2>

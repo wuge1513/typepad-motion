@@ -135,6 +135,14 @@ class AssetPostView(TypePadView):
                 except motion.models.CrosspostOptions.DoesNotExist:
                     pass
 
+        self.context['user_can_post'] = True
+
+        ### Moderation
+        if moderation:
+            if request.user.is_authenticated() and not request.user.is_superuser:
+                can_post = moderation.user_can_post(request.user, request.META['REMOTE_ADDR'])
+                self.context['user_can_post'] = can_post
+
     def select_from_typepad(self, request, *args, **kwargs):
         if request.user.is_authenticated():
             upload_xhr_endpoint = reverse('upload_url')
@@ -227,6 +235,13 @@ class AssetView(TypePadView):
             # no need to do these for POST...
             comments = entry.comments.filter(start_index=1, max_results=settings.COMMENTS_PER_PAGE)
             favorites = entry.favorites
+
+        user_can_post = True
+
+        ### Moderation
+        if moderation:
+            if request.user.is_authenticated() and not request.user.is_superuser:
+                user_can_post = moderation.user_can_post(request.user, request.META['REMOTE_ADDR'])
 
         self.context.update(locals())
 
