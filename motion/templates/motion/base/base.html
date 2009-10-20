@@ -8,6 +8,11 @@
     {% include "motion/bits/html_head.html" %}
     {% block feed %}{% endblock %}
     <title>{% block head_title %}{{ request.group.display_name }}{% endblock %}</title>
+
+    {% if moderation and request.user.is_authenticated %}
+    <script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery-ui-1.6.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="{{ settings.media_url }}typepadapp/css/smoothness/ui.all.css" />
+    {% endif %}
     {% endblock %}
 </head>
 
@@ -80,6 +85,11 @@
 
         </div><!-- end #container-inner -->
     </div><!-- end #container -->
+
+
+{% if moderation %}
+{% include "moderation/dialogs.html" %}
+{% endif %}
 
 </body>
 </html>

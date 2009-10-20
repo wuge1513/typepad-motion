@@ -8,11 +8,6 @@
 {% block html_head %}
 {{ block.super }}
 
-{% if moderation %}
-<script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery-ui-1.6.min.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ settings.media_url }}typepadapp/css/smoothness/ui.all.css" />
-{% endif %}
-
 <script type="text/javascript">
 /* <![CDATA[ */
     var asset_id = '{{ entry.url_id }}';
@@ -104,7 +99,4 @@
 
     </div>
 
-{% if moderation %}
-{% include "moderation/dialogs.html" %}
-{% endif %}
 {% endblock %}

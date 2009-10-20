@@ -82,7 +82,7 @@ def home(request, page=1, **kwargs):
 
 class AssetEventView(TypePadView):
 
-    def filter_object_list(self):
+    def filter_object_list(self, request):
         """
         Only include Events with Assets - that is, where event.object is an
         Asset.
@@ -100,6 +100,21 @@ class AssetEventView(TypePadView):
                     suppressed_ids = [a.asset_id for a in suppressed]
                     self.object_list.entries = [event for event in self.object_list.entries
                         if event.object.url_id not in suppressed_ids]
+
+                approved = moderation.Asset.objects.filter(asset_id__in=id_list,
+                    status=moderation.Asset.APPROVED)
+                approved_ids = [a.asset_id for a in approved]
+
+                if request.user.is_authenticated():
+                    flags = moderation.Flag.objects.filter(tp_asset_id__in=id_list,
+                        user_id=request.user.url_id)
+                    flag_ids = [f.tp_asset_id for f in flags]
+                else:
+                    flag_ids = []
+
+                for event in self.object_list.entries:
+                    event.object.moderation_flagged = event.object.url_id in flag_ids
+                    event.object.moderation_approved = event.object.url_id in approved_ids
 
 
 class AssetPostView(TypePadView):
