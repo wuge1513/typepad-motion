@@ -66,7 +66,8 @@
         </div>
     {% endif %}
 
-    {% if settings.allow_commenting and user_can_post %}
+    {% if settings.allow_commenting %}
+    {% if not moderation.user_is_blocked %}
         <div class="comments-open" id="comments-open">
         {% if user.is_authenticated %}
             <h2 class="comments-open-header">{% trans "Leave a comment" %}</h2>
@@ -98,6 +99,7 @@
             {% endspaceless %}</h2>
         {% endif %}
         </div>
+    {% endif %}
     {% endif %}
 
     </div>
