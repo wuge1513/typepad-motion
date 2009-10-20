@@ -1,7 +1,6 @@
 {% extends "motion/base.html" %}
 {% load i18n %}
 {% load generic_filters %}
-{% load ifinstalled %}
 
 {% block head_title %}{{ block.super }}{% if entry.title %}: {{ entry.title }}{% else %}{% if entry.content %}: {{ entry.content|striptags|truncatechars:40 }}{% endif %}{% endif %}{% endblock %}
 {% block page_layout %}layout-two-column-right{% endblock %}
@@ -9,10 +8,10 @@
 {% block html_head %}
 {{ block.super }}
 
-{% ifinstalled moderation %}
+{% if moderation %}
 <script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery-ui-1.6.min.js"></script>
 <link rel="stylesheet" type="text/css" href="{{ settings.media_url }}typepadapp/css/smoothness/ui.all.css" />
-{% endifinstalled %}
+{% endif %}
 
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -103,7 +102,7 @@
 
     </div>
 
-{% ifinstalled moderation %}
+{% if moderation %}
 {% include "moderation/dialogs.html" %}
-{% endifinstalled %}
+{% endif %}
 {% endblock %}

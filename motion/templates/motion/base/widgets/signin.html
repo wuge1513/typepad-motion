@@ -1,5 +1,4 @@
 {% load i18n %}
-{% load ifinstalled %}
 
 <div class="widget-sign-in widget">
     <div id="signin-widget-content" class="widget-content">
@@ -13,12 +12,12 @@
             <span class="separator">|</span>
             <a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a>
 
-            {% ifinstalled moderation %}
+            {% if moderation %}
             {% if request.user.is_superuser %}
             <span class="separator">|</span>
             <a href="{% url dashboard %}">{% trans "Moderation" %} ({{ moderation.count }})</a>
             {% endif %}
-            {% endifinstalled %}
+            {% endif %}
 
             <span class="separator">|</span>
             <a href="{% url logout %}">{% trans "Sign out" %}</a>
