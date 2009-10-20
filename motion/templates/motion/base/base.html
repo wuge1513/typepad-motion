@@ -25,21 +25,23 @@
                     {% if settings.allow_posting %}
                     <div id="user-compose-friends" class="design-compose-background">
                         {% if user.is_authenticated %}
-                            {% if settings.featured_member %}
-                                {% if user.is_featured_member %}
-                                    <form class="submit-wrapper" method="GET" action="{% url home %}">
+                            {% if not moderation.user_is_blocked %}
+                                {% if settings.featured_member %}
+                                    {% if user.is_featured_member %}
+                        <form class="submit-wrapper" method="GET" action="{% url home %}">
+                                    {% else %}
+                        <form class="submit-wrapper" method="GET" action="{% url group_events %}">
+                                    {% endif %}
                                 {% else %}
-                                    <form class="submit-wrapper" method="GET" action="{% url group_events %}">
+                                    {% if settings.home_member_events %}
+                        <form class="submit-wrapper" method="GET" action="{% url group_events %}">
+                                    {% else %}
+                        <form class="submit-wrapper" method="GET" action="{% url home %}">
+                                    {% endif %}
                                 {% endif %}
-                            {% else %}
-                                {% if settings.home_member_events %}
-                                    <form class="submit-wrapper" method="GET" action="{% url group_events %}">
-                                {% else %}
-                                    <form class="submit-wrapper" method="GET" action="{% url home %}">
-                                {% endif %}
-                            {% endif %}
                             <button>{% trans "POST STUFF" %}</button>
-                            </form>
+                        </form>
+                            {% endif %}
                         {% endif %}
                     </div><!-- end #user-compose-friends -->
                     {% endif %}

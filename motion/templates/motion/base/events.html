@@ -16,14 +16,15 @@
 
 {% block content_head %}
     <div id="user-compose-friends" class="design-compose-background pkg">
-        {% if settings.allow_posting and user.is_authenticated and user_can_post %}
+        {% if settings.allow_posting and user.is_authenticated %}
+        {% if moderation.user_is_blocked %}
+        <p id="user-compose-suspended">{% trans "Your posting privileges on this site have been suspended." %}</p>
+        {% else %}
         <div id="user-compose-friends-inner" class="pkg">
             {% include "motion/bits/compose_form.html" %}
             {% include "motion/widgets/compose_user.html" %}
         </div><!-- end #user-compose-friends-inner -->
         {% endif %}
-        {% if not user_can_post %}
-        <p id="user-compose-suspended">{% trans "Your posting privileges on this site have been suspended." %}</p>
         {% endif %}
     </div><!-- end #user-compose-friends -->
 {% endblock %}
