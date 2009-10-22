@@ -132,6 +132,11 @@ class AssetPostView(TypePadView):
             choices = []
             for acct in elsewhere:
                 if acct.crosspostable:
+                    if acct.domain == 'facebook.com':
+                        # due to an issue with crossposting to facebook,
+                        # we need to skip this service for now
+                        continue
+
                     choices.append((acct.id,
                         mark_safe("""<img src="%(media_url)sthemes/motion/images/icons/throbber.gif" alt="loading..." style="display:none;" />"""
                         """<img src="%(icon)s" height="16" width="16" alt="" /> """
