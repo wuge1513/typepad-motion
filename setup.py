@@ -38,7 +38,7 @@ except Exception:
     long_description = None
 
 setup(
-    name='motion',
+    name='typepad-motion',
     version='1.1a1',
     description='Community microblogging in the TypePad cloud',
     author='Six Apart',
@@ -63,5 +63,6 @@ setup(
     provides=['motion'],
     include_package_data=True,
     zip_safe=False,
-    requires=['Django(>=1.1.1)', 'typepadapp'],
+    requires=['Django(>=1.1.1)', 'typepadapp(==1.1a1)', 'django_flash(>=1.5.1)'],
+    install_requires=['Django>=1.1.1', 'typepadapp==1.1a1', 'django_flash>=1.5.1'],
 )
