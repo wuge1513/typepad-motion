@@ -31,15 +31,21 @@
 
 from setuptools import setup, find_packages
 from os.path import join, dirname
+
+try:
+    long_description = open(join(dirname(__file__), 'README.rst')).read()
+except Exception:
+    long_description = None
+
 setup(
-    name='motion',
+    name='typepad-motion',
     version='1.1a1',
     description='Community microblogging in the TypePad cloud',
     author='Six Apart',
     author_email='python@sixapart.com',
     url='http://github.com/sixapart/typepad-motion',
 
-    long_description=open(join(dirname(__file__), 'README.rst')).read(),
+    long_description=long_description,
     classifiers=[
         'Development Status :: 4 - Beta',
         'Environment :: Console',
@@ -57,5 +63,6 @@ setup(
     provides=['motion'],
     include_package_data=True,
     zip_safe=False,
-    requires=['Django(>=1.1.1)', 'typepadapp'],
+    requires=['Django(>=1.1.1)', 'typepadapp(==1.1a1)', 'django_flash(>=1.5.1)'],
+    install_requires=['Django>=1.1.1', 'typepadapp==1.1a1', 'django_flash>=1.5.1'],
 )
