@@ -36,7 +36,7 @@ import simplejson as json
 
 import motion.models
 import typepad
-from typepadapp import models
+from typepadapp import models, signals
 import typepadapp.forms
 from typepadapp.decorators import ajax_required
 
@@ -121,14 +121,70 @@ def favorite(request):
     typepad.client.complete_batch()
 
     if action == 'favorite':
-        favorite = models.Favorite()
-        favorite.in_reply_to = asset.asset_ref
-        request.user.favorites.post(favorite)
+        fav = models.Favorite()
+        fav.in_reply_to = asset.asset_ref
+        request.user.favorites.post(fav)
+        signals.favorite_created.send(sender=favorite, instance=fav, parent=asset,
+            group=request.group)
     else:
-        favorite = models.Favorite.get_by_user_asset(request.user.url_id, asset_id)
-        favorite.delete()
+        typepad.client.batch_request()
+        fav = models.Favorite.get_by_user_asset(request.user.url_id, asset_id)
+        typepad.client.complete_batch()
+        fav.delete()
+        signals.favorite_deleted.send(sender=favorite, instance=fav,
+            parent=asset, group=request.group)
 
     return http.HttpResponse('OK')
+
+
+@ajax_required
+def asset_meta(request):
+    """An AJAX method for returning metadata about a list of assets, in the
+    context of the authenticated user.
+
+    This method requires POST and accepts one or more asset_id parameters
+    which should be a valid TypePad Asset XID.
+
+    The response will be a JSON data structure, mapping the XID as a key
+    to a dictionary with the values "favorite" and "can_delete". Ie:
+
+        {
+            "asset_xid1": { "favorite": true },
+            "asset_xid2": { "can_delete": true }
+        }
+    """
+    if not hasattr(request, 'user'):
+        typepad.client.batch_request()
+        request.user = get_user(request)
+        typepad.client.complete_batch()
+
+    ids = request.POST.getlist('asset_id')
+    if not ids or not request.user.is_authenticated():
+        return http.HttpResponse('')
+
+    user_id = request.user.url_id
+
+    favs = []
+    opts = []
+    typepad.client.batch_request()
+    for id in ids:
+        favs.append((id, typepad.Favorite.head_by_user_asset(user_id, id)))
+        opts.append((id, typepad.Asset.get_by_url_id(id).options()))
+    typepad.client.complete_batch()
+
+    meta = {}
+    for f in favs:
+        if f[1].found():
+            if f[0] not in meta:
+                meta[f[0]] = {}
+            meta[f[0]]['favorite'] = True
+    for o in opts:
+        if o[1].status == 200:
+            if o[1].can_delete():
+                if o[0] not in meta:
+                    meta[o[0]] = {}
+                meta[o[0]]['can_delete'] = True
+    return http.HttpResponse(json.dumps(meta), mimetype='application/json')
 
 
 @ajax_required

@@ -33,6 +33,7 @@ var settings;
 settings = {
     upload_url: '',
     favorite_url: '',
+    asset_meta_url: '',
     comments_url: '',
     crosspost_options_url: '',
     phrase: {
@@ -116,8 +117,8 @@ $(document).ready(function () {
     }
 
     // Favorite an item
-    $('.favorite-action').click(function() {
-        if (user && user.is_authenticated) {
+    if (user && user.is_authenticated) {
+        $('.favorite-action').click(function() {
             // don't do anything if already in progress
             if ($(this).hasClass('loading')) return false;
             // show loading graphic
@@ -155,9 +156,32 @@ $(document).ready(function () {
                     favitem.toggleClass('loading');
                 }
             });
-        }
-        return false;
-    });
+            return false;
+        });
+
+        // set up ajax request for favorites on this page
+        var asset_ids = [];
+        $('.asset').each(function() {
+            var id = $(this).attr("id");
+            id = id.replace(/^asset-/, '');
+            asset_ids.push(id);
+        });
+        $.ajax({
+            url: settings.asset_meta_url,
+            type: "POST",
+            data: {"asset_id": asset_ids},
+            dataType: "json",
+            success: function(data) {
+                var id;
+                for (id in data) {
+                    if (data[id].favorite)
+                        $("#favorite-" + id).addClass("scored");
+                    if (data[id].can_delete)
+                        $("#delete-" + id).show();
+                }
+            }
+        });
+    }
 
     // Crosspost options
     $('.crosspost').click(function() {
