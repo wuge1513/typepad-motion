@@ -15,7 +15,7 @@
             {% if moderation %}
             {% if request.user.is_superuser %}
             <span class="separator">|</span>
-            <a href="{% url dashboard %}">{% trans "Moderation" %} ({{ moderation.count }})</a>
+            <a href="{% url moderation_home %}">{% trans "Moderation" %} ({{ moderation.count }})</a>
             {% endif %}
             {% endif %}
 

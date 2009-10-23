@@ -94,15 +94,14 @@ class AssetEventView(TypePadView):
         if moderation:
             id_list = [event.object.url_id for event in self.object_list.entries]
             if id_list:
-                suppressed = moderation.Asset.objects.filter(asset_id__in=id_list,
-                    status=moderation.Asset.SUPPRESSED)
+                suppressed = moderation.Queue.objects.filter(asset_id__in=id_list,
+                    status=moderation.Queue.SUPPRESSED)
                 if suppressed:
                     suppressed_ids = [a.asset_id for a in suppressed]
                     self.object_list.entries = [event for event in self.object_list.entries
                         if event.object.url_id not in suppressed_ids]
 
-                approved = moderation.Asset.objects.filter(asset_id__in=id_list,
-                    status=moderation.Asset.APPROVED)
+                approved = moderation.Approved.objects.filter(asset_id__in=id_list)
                 approved_ids = [a.asset_id for a in approved]
 
                 if request.user.is_authenticated():
@@ -270,17 +269,14 @@ class AssetView(TypePadView):
         if moderation:
             entry.moderation_approved = False
 
-            moderated_asset = moderation.Asset.objects.filter(asset_id=entry.url_id)
-            if len(moderated_asset):
-                moderated_asset = moderated_asset[0]
+            approved_asset = moderation.Approved.objects.filter(asset_id=entry.url_id)
+            if len(approved_asset):
+                entry.moderation_approved = True
             else:
-                moderated_asset = None
-
-            if moderated_asset:
-                if moderated_asset.status == moderation.Asset.SUPPRESSED:
+                moderated_asset = moderation.Queue.objects.filter(asset_id=entry.url_id)
+                if len(moderated_asset) and \
+                    moderated_asset[0].status == moderation.Queue.SUPPRESSED:
                     return HttpResponseGone(_('The requested post has been removed from this site.'))
-                elif moderated_asset.status == moderation.Asset.APPROVED:
-                    entry.moderation_approved = True
 
             if not entry.moderation_approved and request.user.is_authenticated():
                 entry.moderation_flagged = moderation.Flag.objects.filter(tp_asset_id=entry.url_id,
@@ -290,12 +286,11 @@ class AssetView(TypePadView):
 
             id_list = [comment.url_id for comment in comments]
             if id_list:
-                approved = moderation.Asset.objects.filter(asset_id__in=id_list,
-                    status=moderation.Asset.APPROVED)
+                approved = moderation.Approved.objects.filter(asset_id__in=id_list)
                 approved_ids = [a.asset_id for a in approved]
 
-                suppressed = moderation.Asset.objects.filter(asset_id__in=id_list,
-                    status=moderation.Asset.SUPPRESSED)
+                suppressed = moderation.Queue.objects.filter(asset_id__in=id_list,
+                    status=moderation.Queue.SUPPRESSED)
                 suppressed_ids = [a.asset_id for a in suppressed]
 
                 if request.user.is_authenticated():
