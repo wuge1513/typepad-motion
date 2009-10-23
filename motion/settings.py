@@ -96,7 +96,7 @@ INSTALLED_APPS = (
 )
 
 ##############################
-# POTION INSTALL SETTINGS    #
+# MOTION INSTALL SETTINGS    #
 ##############################
 SITE_ID = 1
 SECRET_KEY = ''
@@ -104,7 +104,7 @@ SECRET_KEY = ''
 BACKEND_URL = 'https://api.typepad.com'
 FRONTEND_URL = 'http://127.0.0.1:8000'
 
-## Potion site layout settings.
+## Motion site layout settings.
 # Override these in your settings.py for a
 # different homepage.
 # 1. Group activity.
