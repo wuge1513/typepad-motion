@@ -138,7 +138,7 @@ class AssetPostView(TypePadView):
     def select_from_typepad(self, request, *args, **kwargs):
         if request.user.is_authenticated():
             upload_xhr_endpoint = reverse('upload_url')
-            elsewhere = request.user.elsewhere_accounts
+            elsewhere = request.user.elsewhere()
 
             ### Moderation
             if moderation:
@@ -162,14 +162,16 @@ class AssetPostView(TypePadView):
                 return HttpResponseRedirect(request.path)
 
         try:
-            new_post = post.save(group=request.group)
+            post.save(group=request.group)
         except models.assets.Video.ConduitError, ex:
             request.flash.add('errors', ex.message)
             # TODO: if request.FILES['file'], do we need to remove the uploaded file?
         else:
             request.flash.add('notices', _('Post created successfully!'))
+            signals.asset_created.send(sender=self.post, instance=post,
+                group=request.group)
             if request.is_ajax():
-                return self.render_to_response('motion/assets/asset.html', { 'entry': new_post })
+                return self.render_to_response('motion/assets/asset.html', { 'entry': post })
             else: # Return to current page.
                 return HttpResponseRedirect(request.path)
 
@@ -180,8 +182,8 @@ class GroupEventsView(AssetEventView, AssetPostView):
 
     def select_from_typepad(self, request, page=1, view='events', *args, **kwargs):
         self.paginate_template = reverse('group_events') + '/page/%d'
-        self.object_list = request.group.events.filter(start_index=self.offset, max_results=self.limit)
-        memberships = request.group.memberships.filter(member=True)[:settings.MEMBERS_PER_WIDGET]
+        self.object_list = request.group.event_stream(start_index=self.offset, max_results=self.limit)
+        memberships = request.group.members(max_results=settings.MEMBERS_PER_WIDGET)
         if request.user.is_authenticated():
             following = request.user.following(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
             followers = request.user.followers(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
@@ -202,7 +204,7 @@ class FollowingEventsView(TypePadView):
 
     def select_from_typepad(self, request, view='following', *args, **kwargs):
         self.paginate_template = reverse('following_events') + '/page/%d'
-        self.object_list = request.user.notifications.filter(by_group=request.group,
+        self.object_list = request.user.group_notifications(request.group,
             start_index=self.offset, max_results=self.paginate_by)
 
 
@@ -225,8 +227,8 @@ class AssetView(TypePadView):
 
         if request.method == 'GET':
             # no need to do these for POST...
-            comments = entry.comments.filter(start_index=1, max_results=settings.COMMENTS_PER_PAGE)
-            favorites = entry.favorites
+            comments = entry.get_comments(start_index=1, max_results=settings.COMMENTS_PER_PAGE)
+            favorites = entry.get_favorites()
 
         self.context.update(locals())
 
@@ -250,6 +252,7 @@ class AssetView(TypePadView):
         if moderation:
             entry.moderation_approved = moderation.Asset.objects.filter(asset_id=entry.url_id,
                 status=moderation.Asset.APPROVED)
+
             if not entry.moderation_approved and request.user.is_authenticated():
                 entry.moderation_flagged = moderation.Flag.objects.filter(tp_asset_id=entry.url_id,
                     user_id=request.user.url_id)
@@ -304,6 +307,7 @@ class AssetView(TypePadView):
             if request.user.is_superuser or settings.ALLOW_USERS_TO_DELETE_POSTS:
                 try:
                     asset.delete()
+                    signals.asset_deleted.send(sender=self.post, instance=asset, group=request.group)
                 except asset.Forbidden:
                     pass
                 else:
@@ -335,6 +339,8 @@ class AssetView(TypePadView):
 
                 asset.comments.post(comment)
                 request.flash.add('notices', _('Comment created successfully!'))
+                signals.asset_created.send(sender=self.post, instance=comment,
+                    parent=asset, group=request.group)
                 # Return to permalink page
                 return HttpResponseRedirect(request.path)
 
@@ -351,8 +357,8 @@ class MembersView(TypePadView):
 
     def select_from_typepad(self, request, *args, **kwargs):
         self.paginate_template = reverse('members') + '/page/%d'
-        self.object_list = request.group.memberships.filter(start_index=self.offset,
-            max_results=self.limit, member=True)
+        self.object_list = request.group.members(start_index=self.offset,
+            max_results=self.limit)
         self.context.update(locals())
 
 
@@ -373,7 +379,7 @@ class MemberView(AssetEventView):
 
         if request.method == 'GET':
             # no need to do these for POST requests
-            elsewhere = member.elsewhere_accounts
+            elsewhere = member.elsewhere()
             self.object_list = member.group_events(request.group,
                 start_index=self.offset, max_results=self.limit)
 
@@ -461,9 +467,11 @@ class MemberView(AssetEventView):
             if is_member:
                 # ban user
                 user_membership.block()
+                signals.member_banned(sender=self.post, instance=self.context['member'])
             elif is_blocked:
                 # unban user
                 user_membership.unblock()
+                signals.member_unbanned(sender=self.post, instance=self.context['member'])
 
         ### Moderation
         elif moderation and request.POST.get('form-action') == 'moderate-user':
@@ -547,7 +555,8 @@ def upload_complete(request):
         instance = models.Asset.get(parts[2], batch=False)
         request.flash.add('notices', _('Thanks for the %(type)s!') \
             % { 'type': instance.type_label.lower() })
-        signals.post_save.send(sender=upload_complete, instance=instance)
+        signals.asset_created.send(sender=upload_complete, instance=instance,
+            group=request.group)
         # Redirect to clear the GET data
         if settings.FEATURED_MEMBER:
             typepad.client.batch_request()
