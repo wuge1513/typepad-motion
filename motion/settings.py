@@ -27,6 +27,22 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+
+"""Settings for Motion sites.
+
+Motion sites use and provide many settings for you to customize the Motion
+site experience. Include the default values for these settings in your Django
+project's settings by importing them at the top of your ``settings.py``
+module::
+
+    from motion.settings import *
+
+You can then override the defaults later in your ``settings.py`` (or in an
+imported ``local_settings.py``) as you would Django's default settings.
+
+"""
+
+
 # Motion application settings.
 # You can override these in your custom app settings.py.
 import os
