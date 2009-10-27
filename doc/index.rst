@@ -14,9 +14,10 @@ Contents:
 .. toctree::
    :maxdepth: 2
 
+   settings
+   views
    featured
    themes
-   Local profiles <http://sixapart.github.com/typepadapp/localprofile.html>
 
 Indices and tables
 ==================
