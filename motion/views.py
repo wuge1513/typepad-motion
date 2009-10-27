@@ -31,8 +31,8 @@
 """Views for Motion sites.
 
 Motion's views provide the Motion community microblogging experience. Motion
-uses the `typepadapp` class-based view system; see :mod:`typepadapp.views` for
-more about how these class-based views work.
+uses the `typepadapp` class-based view system; see `typepadapp.views` for more
+about how these class-based views work.
 
 """
 
