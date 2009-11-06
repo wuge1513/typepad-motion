@@ -162,7 +162,7 @@ $(document).ready(function () {
     // Crosspost options
     $('.crosspost').click(function() {
         if (user && user.is_authenticated) {
-            var checkbox = $(this)
+            var checkbox = $(this);
             // toggle loading graphic
             checkbox.hide().next().show();
             // update crossposting options
