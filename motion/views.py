@@ -374,7 +374,10 @@ class MemberView(AssetEventView):
     def select_from_typepad(self, request, userid, *args, **kwargs):
         self.paginate_template = reverse('member', args=[userid]) + '/page/%d'
 
-        member = models.User.get_by_url_id(userid)
+        # do not use cached responses for superuser requests; this ensures
+        # that the response contains elements that are only provided to
+        # administrators (email address, for instance)
+        member = models.User.get_by_url_id(userid, nocache=request.user.is_superuser)
         user_memberships = member.group_memberships(request.group)
 
         if request.method == 'GET':
