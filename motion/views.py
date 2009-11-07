@@ -138,7 +138,7 @@ class AssetPostView(TypePadView):
     def select_from_typepad(self, request, *args, **kwargs):
         if request.user.is_authenticated():
             upload_xhr_endpoint = reverse('upload_url')
-            elsewhere = request.user.elsewhere()
+            elsewhere = request.user.elsewhere_accounts
 
             ### Moderation
             if moderation:
@@ -182,8 +182,8 @@ class GroupEventsView(AssetEventView, AssetPostView):
 
     def select_from_typepad(self, request, page=1, view='events', *args, **kwargs):
         self.paginate_template = reverse('group_events') + '/page/%d'
-        self.object_list = request.group.event_stream(start_index=self.offset, max_results=self.limit)
-        memberships = request.group.members(max_results=settings.MEMBERS_PER_WIDGET)
+        self.object_list = request.group.events.filter(start_index=self.offset, max_results=self.limit)
+        memberships = request.group.memberships.filter(max_results=settings.MEMBERS_PER_WIDGET)
         if request.user.is_authenticated():
             following = request.user.following(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
             followers = request.user.followers(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
@@ -227,8 +227,8 @@ class AssetView(TypePadView):
 
         if request.method == 'GET':
             # no need to do these for POST...
-            comments = entry.get_comments(start_index=1, max_results=settings.COMMENTS_PER_PAGE)
-            favorites = entry.get_favorites()
+            comments = entry.comments.filter(start_index=1, max_results=settings.COMMENTS_PER_PAGE)
+            favorites = entry.favorites
 
         self.context.update(locals())
 
@@ -357,7 +357,7 @@ class MembersView(TypePadView):
 
     def select_from_typepad(self, request, *args, **kwargs):
         self.paginate_template = reverse('members') + '/page/%d'
-        self.object_list = request.group.members(start_index=self.offset,
+        self.object_list = request.group.memberships.filter(start_index=self.offset,
             max_results=self.limit)
         self.context.update(locals())
 
@@ -375,11 +375,11 @@ class MemberView(AssetEventView):
         self.paginate_template = reverse('member', args=[userid]) + '/page/%d'
 
         member = models.User.get_by_url_id(userid)
-        user_memberships = member.memberships.filter(by_group=request.group)
+        user_memberships = member.group_memberships(request.group)
 
         if request.method == 'GET':
             # no need to do these for POST requests
-            elsewhere = member.elsewhere()
+            elsewhere = member.elsewhere_accounts
             self.object_list = member.group_events(request.group,
                 start_index=self.offset, max_results=self.limit)
 
