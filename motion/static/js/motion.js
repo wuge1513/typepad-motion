@@ -166,21 +166,23 @@ $(document).ready(function () {
             id = id.replace(/^asset-/, '');
             asset_ids.push(id);
         });
-        $.ajax({
-            url: settings.asset_meta_url,
-            type: "POST",
-            data: {"asset_id": asset_ids},
-            dataType: "json",
-            success: function(data) {
-                var id;
-                for (id in data) {
-                    if (data[id].favorite)
-                        $("#favorite-" + id).addClass("scored");
-                    if (data[id].can_delete)
-                        $("#delete-" + id).show();
+        if (asset_ids.length > 0) {
+            $.ajax({
+                url: settings.asset_meta_url,
+                type: "POST",
+                data: {"asset_id": asset_ids},
+                dataType: "json",
+                success: function(data) {
+                    var id;
+                    for (id in data) {
+                        if (data[id].favorite)
+                            $("#favorite-" + id).addClass("scored");
+                        if (data[id].can_delete)
+                            $("#delete-" + id).show();
+                    }
                 }
-            }
-        });
+            });
+        }
     }
 
     // Crosspost options
