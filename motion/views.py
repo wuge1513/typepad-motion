@@ -377,7 +377,7 @@ class MemberView(AssetEventView):
         # do not use cached responses for superuser requests; this ensures
         # that the response contains elements that are only provided to
         # administrators (email address, for instance)
-        member = models.User.get_by_url_id(userid, nocache=request.user.is_superuser)
+        member = models.User.get_by_url_id(userid, cache=not request.user.is_superuser)
         user_memberships = member.group_memberships(request.group)
 
         if request.method == 'GET':
