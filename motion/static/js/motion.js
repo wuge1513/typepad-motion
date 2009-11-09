@@ -223,14 +223,14 @@ $(document).ready(function () {
 
     // Entry Field Manager
         // Field types
-        var fieldTypes = ['title','body','url',"file",'tags','crosspost'];
+        var fieldTypes = ['title','body','url',"file",'crosspost'];
         // Entry Editor
         var entryTypes = {
-            "entry-post": ['title','body','tags','crosspost'],
-            "entry-photo": ['title','body','tags','file'],
-            "entry-link": ['title','body','tags','url'],
-            "entry-video": ['title','body','tags','url'],
-            "entry-audio": ['title','body','tags','file']
+            "entry-post": ['title','body','crosspost'],
+            "entry-photo": ['title','body','file','crosspost'],
+            "entry-link": ['title','body','url','crosspost'],
+            "entry-video": ['title','body','url','crosspost'],
+            "entry-audio": ['title','body','file','crosspost']
         };
         var entryClasses = {
             "entry-link":  "link",
