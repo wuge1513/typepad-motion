@@ -333,6 +333,11 @@ p {
 #user-compose-friends {
     padding: 10px 20px 40px 20px;
 }
+#user-compose-suspended {
+    margin-top: 10px;
+    font-style: italic;
+    text-align: center;
+}
 
 /* Search ----------------------------------------------------------------- */
 

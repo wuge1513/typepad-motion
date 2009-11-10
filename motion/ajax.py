@@ -72,12 +72,11 @@ def more_comments(request):
     if moderation:
         id_list = [comment.url_id for comment in comments]
         if id_list:
-            approved = moderation.Asset.objects.filter(asset_id__in=id_list,
-                status=moderation.Asset.APPROVED)
+            approved = moderation.Approved.objects.filter(asset_id__in=id_list)
             approved_ids = [a.asset_id for a in approved]
 
-            suppressed = moderation.Asset.objects.filter(asset_id__in=id_list,
-                status=moderation.Asset.SUPPRESSED)
+            suppressed = moderation.Queue.objects.filter(asset_id__in=id_list,
+                status=moderation.Queue.SUPPRESSED)
             suppressed_ids = [a.asset_id for a in suppressed]
 
             flags = moderation.Flag.objects.filter(tp_asset_id__in=id_list,

@@ -1,11 +1,10 @@
 {% load i18n %}
-{% load ifinstalled %}
 
 {% if user.is_authenticated %}
 <div class="controls">
     {% block controls %}
     {% if user.is_superuser or settings.allow_users_to_delete_posts %}
-    <form id="delete-{{ entry.url_id }}" method="post" action="" style="display:none">
+    <form id="delete-{{ entry.url_id }}" method="post" action="{{ entry.get_absolute_url }}">
         <input type="hidden" name="asset-id" value="{{ entry.url_id }}" />
         <button class="button-delete" type="submit"
             onclick="return confirm({% spaceless %}
@@ -21,9 +20,9 @@
     </form>
     {% endif %}
 
-    {% ifinstalled moderation %}
-    {% include "moderation/bits/moderate.html" %}
-    {% endifinstalled %}
+    {% if moderation %}
+    {% include moderation.moderate_template %}
+    {% endif %}
 
     {% endblock %}
 </div>

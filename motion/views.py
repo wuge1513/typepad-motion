@@ -27,6 +27,16 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+
+"""Views for Motion sites.
+
+Motion's views provide the Motion community microblogging experience. Motion
+uses the `typepadapp` class-based view system; see `typepadapp.views` for more
+about how these class-based views work.
+
+"""
+
+
 from urlparse import urljoin, urlparse
 import simplejson as json
 import re
@@ -35,7 +45,7 @@ from django.conf import settings
 from django.shortcuts import render_to_response
 from django.template import RequestContext
 from django.views.generic.simple import redirect_to
-from django.http import Http404, HttpResponseRedirect, HttpResponseForbidden
+from django.http import Http404, HttpResponseRedirect, HttpResponseForbidden, HttpResponseGone
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import SiteProfileNotAvailable
@@ -60,10 +70,23 @@ else:
 
 
 def home(request, page=1, **kwargs):
-    """
-    Determine the homepage view based on settings. Options are the list
-    of recent member activity, a featured user's profile page, or the list
-    of activity of people you are following in the group.
+    """Display the home page view, based on local configuration.
+
+    The home page may be the list of recent member activity, a featured user's
+    profile page, or the recent activity in the group of people you are
+    following. Which home page is shown depends on the related settings:
+
+    * If the `FEATURED_MEMBER` setting is set, the home page is the
+      `FeaturedMemberView`.
+    * Otherwise, if `HOME_MEMBER_EVENTS` is ``True`` and the viewer is logged
+      in, the home page is the viewer's `FollowingEventsView`.
+    * Otherwise, the home page is the `GroupEventsView`.
+
+    By default there's no `FEATURED_MEMBER` and `HOME_MEMBER_EVENTS` is
+    ``False``, so the home page view is the group events view. To always use a
+    certain view instead of these rules, change your urlconf to use a
+    different view for the home page.
+
     """
     if settings.FEATURED_MEMBER:
         # Home page is a featured user.
@@ -82,11 +105,16 @@ def home(request, page=1, **kwargs):
 
 class AssetEventView(TypePadView):
 
-    def filter_object_list(self):
-        """
-        Only include Events with Assets - that is, where event.object is an
-        Asset.
-        """
+    """An abstract view for displaying a list of asset events.
+
+    This is an abstract view for showing a list of events, such as on the
+    `GroupEventsView` or `MemberView`. It automatically filters the
+    `object_list` attributes of subclassing views to only include events that
+    refer to assets posted to the group.
+
+    """
+
+    def filter_object_list(self, request):
         self.object_list.entries = [event for event in self.object_list.entries
             if isinstance(event.object, models.Asset) and event.object.is_local]
 
@@ -94,19 +122,46 @@ class AssetEventView(TypePadView):
         if moderation:
             id_list = [event.object.url_id for event in self.object_list.entries]
             if id_list:
-                suppressed = moderation.Asset.objects.filter(asset_id__in=id_list,
-                    status=moderation.Asset.SUPPRESSED)
+                suppressed = moderation.Queue.objects.filter(asset_id__in=id_list,
+                    status=moderation.Queue.SUPPRESSED)
                 if suppressed:
                     suppressed_ids = [a.asset_id for a in suppressed]
                     self.object_list.entries = [event for event in self.object_list.entries
                         if event.object.url_id not in suppressed_ids]
 
+                approved = moderation.Approved.objects.filter(asset_id__in=id_list)
+                approved_ids = [a.asset_id for a in approved]
+
+                if request.user.is_authenticated():
+                    flags = moderation.Flag.objects.filter(tp_asset_id__in=id_list,
+                        user_id=request.user.url_id)
+                    flag_ids = [f.tp_asset_id for f in flags]
+                else:
+                    flag_ids = []
+
+                for event in self.object_list.entries:
+                    event.object.moderation_flagged = event.object.url_id in flag_ids
+                    event.object.moderation_approved = event.object.url_id in approved_ids
+
 
 class AssetPostView(TypePadView):
+
+    """An abstract view that can make new posts to the group.
+
+    Views that subclass AssetPostView can post new content to the group.
+
+    .. rubric:: Template variables:
+
+    * ``form``: A :class:`PostForm` instance to use for the compose form.
+    * ``elsewhere``: A list of `ElsewhereAccount` instances belonging to the
+      signed-in viewer. Some of these accounts may be used for cross-posting.
+    * ``upload_xhr_endpoint``: A URL for posting media assets to.
+    * ``upload_complete_endpoint``: The URL of the `upload_complete` view.
+      Send it to the ``upload_xhr_endpoint`` for it to return to your site
+      after the viewer posts a media asset.
+
     """
-    Views that subclass AssetPostView may post new content
-    to a group.
-    """
+
     form = forms.PostForm
 
     def setup(self, request, *args, **kwargs):
@@ -123,7 +178,7 @@ class AssetPostView(TypePadView):
                         """%(username)s """ % {
                             'media_url': settings.MEDIA_URL,
                             'icon': escape(acct.provider_icon_url),
-                            'username': escape(acct.username)
+                            'username': escape(acct.username or acct.provider_name)
                         })
                     ))
             if len(choices):
@@ -177,6 +232,34 @@ class AssetPostView(TypePadView):
 
 
 class GroupEventsView(AssetEventView, AssetPostView):
+
+    """The list of everyone's events in the group.
+
+    This view displays the group's recent events from all members of the
+    group. Only events related to assets are shown; non-asset events such as
+    joining the group are ignored. The list is split into pages of at most
+    `settings.EVENTS_PER_PAGE` events each.
+
+    .. rubric:: Template:
+
+    ``motion/events.html``
+
+    .. rubric:: Template variables:
+
+    * ``object_list``: The list of `Event` instances for this view.
+    * ``memberships``: A list of `Relationship` instances for the last
+      `settings.MEMBERS_PER_WIDGET` members to join the group.
+    * ``following``: A list of `Relationship` instances for the last
+      `settings.FOLLOWERS_PER_WIDGET` group members the signed-in viewer
+      followed.
+    * ``followers``: A list of `Relationship` instances for the last
+      `settings.FOLLOWERS_PER_WIDGET` group members who followed the signed-in
+      viewer.
+
+    See the variables available from `AssetPostView` too.
+
+    """
+
     paginate_by = settings.EVENTS_PER_PAGE
     template_name = "motion/events.html"
 
@@ -192,12 +275,25 @@ class GroupEventsView(AssetEventView, AssetPostView):
 
 
 class FollowingEventsView(TypePadView):
-    """
-    User Inbox
 
-    View entries posted to this group from members that the logged-in user is
-    following. This is a custom list for the logged-in user.
+    """The recent events by everyone in a group whom the signed-in user is
+    following.
+
+    This view displays events in the group by all group members. That is, this
+    view is like the TypePad dashboard, but localized to the group. This view
+    is also called a member's inbox. The viewer must be signed in. Each page
+    of the view displays up to `settings.EVENTS_PER_PAGE` events.
+
+    .. rubric:: Template:
+
+    ``motion/following.html``
+
+    .. rubric:: Template variables:
+
+    * ``object_list``: The list of `Event` instances to display.
+
     """
+
     template_name = "motion/following.html"
     paginate_by = settings.EVENTS_PER_PAGE
     login_required = True
@@ -209,13 +305,28 @@ class FollowingEventsView(TypePadView):
 
 
 class AssetView(TypePadView):
-    """
-    Post Permalink Page
 
-    Display the entry with comments. More comments can be loaded via ajax. The
-    logged-in user has the option to delete an entry, post a comment, or mark
-    the entry as a favorite.
+    """The permalink page for an asset.
+
+    This view displays one asset by itself, often with comments. More comments
+    can be loaded with Motion's ajax views. Through this view's page, a
+    signed-in viewer may delete the asset (if permitted), post a comment, or
+    mark the entry as a favorite.
+
+    .. rubric:: Template:
+
+    ``motion/permalink.html``
+
+    .. rubric:: Template variables:
+
+    * ``entry``: The `Asset` instance being viewed.
+    * ``comments``: A list of `Asset` instances for the last
+      `settings.COMMENTS_PER_PAGE` comments on this page's asset.
+    * ``favorites``: A list of `Favorite` instances for the most recent times
+      group members have marked this page's asset as a favorite.
+
     """
+
     form = forms.CommentForm
     template_name = "motion/permalink.html"
 
@@ -250,8 +361,16 @@ class AssetView(TypePadView):
 
         ### Moderation
         if moderation:
-            entry.moderation_approved = moderation.Asset.objects.filter(asset_id=entry.url_id,
-                status=moderation.Asset.APPROVED)
+            entry.moderation_approved = False
+
+            approved_asset = moderation.Approved.objects.filter(asset_id=entry.url_id)
+            if len(approved_asset):
+                entry.moderation_approved = True
+            else:
+                moderated_asset = moderation.Queue.objects.filter(asset_id=entry.url_id)
+                if len(moderated_asset) and \
+                    moderated_asset[0].status == moderation.Queue.SUPPRESSED:
+                    return HttpResponseGone(_('The requested post has been removed from this site.'))
 
             if not entry.moderation_approved and request.user.is_authenticated():
                 entry.moderation_flagged = moderation.Flag.objects.filter(tp_asset_id=entry.url_id,
@@ -261,12 +380,11 @@ class AssetView(TypePadView):
 
             id_list = [comment.url_id for comment in comments]
             if id_list:
-                approved = moderation.Asset.objects.filter(asset_id__in=id_list,
-                    status=moderation.Asset.APPROVED)
+                approved = moderation.Approved.objects.filter(asset_id__in=id_list)
                 approved_ids = [a.asset_id for a in approved]
 
-                suppressed = moderation.Asset.objects.filter(asset_id__in=id_list,
-                    status=moderation.Asset.SUPPRESSED)
+                suppressed = moderation.Queue.objects.filter(asset_id__in=id_list,
+                    status=moderation.Queue.SUPPRESSED)
                 suppressed_ids = [a.asset_id for a in suppressed]
 
                 if request.user.is_authenticated():
@@ -346,12 +464,24 @@ class AssetView(TypePadView):
 
 
 class MembersView(TypePadView):
-    """
-    Member List Page
 
-    Paginated list of all members in the group with the option for a logged-in
-    user to follow/unfollow.
+    """The group's members list.
+
+    This view displays a paginated list of all members in the group. From this
+    page, a signed-in viewer may follow and unfollow these members. Up to
+    `settings.MEMBERS_PER_PAGE` members are shown on each page.
+
+    .. rubric:: Template:
+
+    ``motion/members.html``
+
+    .. rubric:: Template variables:
+
+    * ``object_list``: The list of `User` instances for members of the group
+      to display on this page.
+
     """
+
     paginate_by = settings.MEMBERS_PER_PAGE
     template_name = "motion/members.html"
 
@@ -363,10 +493,46 @@ class MembersView(TypePadView):
 
 
 class MemberView(AssetEventView):
-    """ Member Profile Page
-        Displays basic info about the user
-        as well as their recent activity in the group.
+
+    """A group member's profile page.
+
+    This view shows a group member's per-group profile page. This page shows
+    the member's profile information as well as the member's most recent
+    events in the group.
+
+    Profiles for TypePad members are only visible in the group if the member
+    is either a current member of the group or has posted content in the group
+    that has not been deleted. If a TypePad member leaves the group without
+    posting content, the profile page will not exist, as though that TypePad
+    member had never joined the group. Use the ``is_member`` template variable
+    to test if the member is currently in the group.
+
+    Profiles for blocked members are similarly not visible, except if the
+    signed-in viewer is a group administrator. Use the ``is_blocked`` template
+    variable to test if the member is blocked from the group.
+
+    .. rubric:: Template:
+
+    ``motion/member.html``
+
+    .. rubric:: Template variables:
+
+    * ``member``: The `User` instance for the group member whose profile page
+      this is.
+    * ``elsewhere``: A list of `ElsewhereAccount` instances for the member
+      whose profile page is being displayed.
+    * ``object_list``: The profile member's `settings.EVENTS_PER_PAGE` most
+      recent events in the group.
+    * ``is_self``: Whether the member whose page is being viewed is also the
+      signed-in viewer. That is, whether the signed-in viewer is viewing their
+      own profile page.
+    * ``is_member``: Whether the member being viewed is still a member of the
+      group.
+    * ``is_blocked``: Whether the member being viewed is blocked from
+      membership in the group.
+
     """
+
     paginate_by = settings.EVENTS_PER_PAGE
     template_name = "motion/member.html"
     methods = ('GET', 'POST')
@@ -506,7 +672,24 @@ class MemberView(AssetEventView):
 
 
 class FeaturedMemberView(MemberView, AssetPostView):
-    """ Featured Member Profile Page """
+
+    """The profile page for a featured member of the group.
+
+    This view is like the `MemberView`, but can include a form for posting new
+    content into the group, so that this view can be used as the home page.
+    This view is used as the home page when a featured member is configured in
+    the site settings; see the `home` view for more information.
+
+    .. rubric:: Template:
+
+    ``motion/featured_member.html``
+
+    .. rubric:: Template variables:
+
+    See the variables provided by `MemberView` and `AssetPostView`.
+
+    """
+
     template_name = "motion/featured_member.html"
 
     def select_from_typepad(self, request, userid, *args, **kwargs):
@@ -523,12 +706,31 @@ class FeaturedMemberView(MemberView, AssetPostView):
 
 
 class RelationshipsView(TypePadView):
-    """
-    Following/followers Page
 
-    Displays members of the group who are following or followers of the
-    logged-in user.
+    """A list of group members either following or being followed by a
+    particular member of the group.
+
+    This view displays members of the group who are following a given group
+    member, or members of the group whom the given group member is following.
+    The list is displayed the same way as the full group member directory
+    (even using the same template).
+
+    .. rubric:: Template:
+
+    ``motion/members.html``
+
+    .. rubric:: Template variables:
+
+    * ``member``: The `User` instance for the member whose relationships are
+      being viewed.
+    * ``object_list``: A list of `Relationship` instances for up to
+      `settings.MEMBER_PER_PAGE` "followings." If viewing a member's
+      "followers" page, that member is the `target` of the `Relationship` and
+      the followers are the `source` attributes; on a member's "following"
+      page, these are reversed.
+
     """
+
     paginate_by = settings.MEMBERS_PER_PAGE
     template_name = "motion/members.html"
 

@@ -1,18 +1,12 @@
 {% extends "motion/base.html" %}
 {% load i18n %}
 {% load generic_filters %}
-{% load ifinstalled %}
 
 {% block head_title %}{{ block.super }}{% if entry.title %}: {{ entry.title }}{% else %}{% if entry.content %}: {{ entry.content|striptags|truncatechars:40 }}{% endif %}{% endif %}{% endblock %}
 {% block page_layout %}layout-two-column-right{% endblock %}
 
 {% block html_head %}
 {{ block.super }}
-
-{% ifinstalled moderation %}
-<script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery-ui-1.6.min.js"></script>
-<link rel="stylesheet" type="text/css" href="{{ settings.media_url }}typepadapp/css/smoothness/ui.all.css" />
-{% endifinstalled %}
 
 <script type="text/javascript">
 /* <![CDATA[ */
@@ -68,6 +62,7 @@
     {% endif %}
 
     {% if settings.allow_commenting %}
+    {% if not moderation.user_is_blocked %}
         <div class="comments-open" id="comments-open">
         {% if user.is_authenticated %}
             <h2 class="comments-open-header">{% trans "Leave a comment" %}</h2>
@@ -100,10 +95,8 @@
         {% endif %}
         </div>
     {% endif %}
+    {% endif %}
 
     </div>
 
-{% ifinstalled moderation %}
-{% include "moderation/dialogs.html" %}
-{% endifinstalled %}
 {% endblock %}

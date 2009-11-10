@@ -55,7 +55,11 @@ class PublicEventsFeed(TypePadEventFeed):
         return self.request.group.tagline
 
     def select_from_typepad(self, *args, **kwargs):
-        self.items = self.request.group.events.filter(max_results=settings.ITEMS_PER_FEED)
+        self.events = self.request.group.events.filter(max_results=settings.ITEMS_PER_FEED)
+
+    def items(self):
+        return [event for event in self.events.entries
+            if isinstance(event.object, models.Asset) and event.object.is_local]
 
 
 class MemberFeed(TypePadEventFeed):
@@ -68,9 +72,13 @@ class MemberFeed(TypePadEventFeed):
             raise ObjectDoesNotExist
         userid = bits[0]
         user = models.User.get_by_url_id(userid)
-        self.items = user.group_events(self.request.group,
+        self.events = user.group_events(self.request.group,
             max_results=settings.ITEMS_PER_FEED)
         self.object = user
+
+    def items(self):
+        return [event for event in self.events.entries
+            if isinstance(event.object, models.Asset) and event.object.is_local]
 
     def title(self, obj):
         return _("Recent Entries from %(user)s") \
