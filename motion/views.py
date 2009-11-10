@@ -636,11 +636,15 @@ class MemberView(AssetEventView):
             if is_member:
                 # ban user
                 user_membership.block()
-                signals.member_banned(sender=self.post, instance=self.context['member'])
+                signals.member_banned.send(sender=self.post,
+                    instance=self.context['member'], group=request.group,
+                    membership=user_membership)
             elif is_blocked:
                 # unban user
                 user_membership.unblock()
-                signals.member_unbanned(sender=self.post, instance=self.context['member'])
+                signals.member_unbanned.send(sender=self.post,
+                    instance=self.context['member'], group=request.group,
+                    membership=user_membership)
 
         ### Moderation
         elif moderation and request.POST.get('form-action') == 'moderate-user':
