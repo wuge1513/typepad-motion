@@ -162,13 +162,15 @@ def asset_meta(request):
         return http.HttpResponse('')
 
     user_id = request.user.url_id
+    admin_user = request.user.is_superuser
 
     favs = []
     opts = []
     typepad.client.batch_request()
     for id in ids:
         favs.append((id, typepad.Favorite.head_by_user_asset(user_id, id)))
-        opts.append((id, typepad.Asset.get_by_url_id(id).options()))
+        if not admin_user:
+            opts.append((id, typepad.Asset.get_by_url_id(id).options()))
     typepad.client.complete_batch()
 
     meta = {}
@@ -179,7 +181,7 @@ def asset_meta(request):
             meta[f[0]]['favorite'] = True
     for o in opts:
         if o[1].status == 200:
-            if o[1].can_delete():
+            if admin_user or o[1].can_delete():
                 if o[0] not in meta:
                     meta[o[0]] = {}
                 meta[o[0]]['can_delete'] = True
