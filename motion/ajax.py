@@ -166,14 +166,18 @@ def asset_meta(request):
 
     favs = []
     opts = []
+    meta = {}
     typepad.client.batch_request()
     for id in ids:
         favs.append((id, typepad.Favorite.head_by_user_asset(user_id, id)))
-        if not admin_user:
+        if admin_user:
+            if id not in meta:
+                meta[id] = {}
+            meta[id]['can_delete'] = True
+        else:
             opts.append((id, typepad.Asset.get_by_url_id(id).options()))
     typepad.client.complete_batch()
 
-    meta = {}
     for f in favs:
         if f[1].found():
             if f[0] not in meta:
@@ -181,7 +185,7 @@ def asset_meta(request):
             meta[f[0]]['favorite'] = True
     for o in opts:
         if o[1].status == 200:
-            if admin_user or o[1].can_delete():
+            if o[1].can_delete():
                 if o[0] not in meta:
                     meta[o[0]] = {}
                 meta[o[0]]['can_delete'] = True
