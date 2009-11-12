@@ -161,17 +161,17 @@ $(document).ready(function () {
 
         // set up ajax request for favorites on this page
         var asset_ids = [];
-        $('.asset').each(function() {
+        $('.asset[id]').each(function() {
             var id = $(this).attr("id");
             id = id.replace(/^asset-/, '');
-            asset_ids.push(id);
-        });
-        $('.comment').each(function() {
-            var id = $(this).attr("id");
-            if (id) {
-                id = id.replace(/^comment-/, '');
+            if (id)
                 asset_ids.push(id);
-            }
+        });
+        $('.comment[id]').each(function() {
+            var id = $(this).attr("id");
+            id = id.replace(/^comment-/, '');
+            if (id)
+                asset_ids.push(id);
         });
         if (asset_ids.length > 0) {
             $.ajax({
