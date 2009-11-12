@@ -166,6 +166,13 @@ $(document).ready(function () {
             id = id.replace(/^asset-/, '');
             asset_ids.push(id);
         });
+        $('.comment').each(function() {
+            var id = $(this).attr("id");
+            if (id) {
+                id = id.replace(/^comment-/, '');
+                asset_ids.push(id);
+            }
+        });
         if (asset_ids.length > 0) {
             $.ajax({
                 url: settings.asset_meta_url,
