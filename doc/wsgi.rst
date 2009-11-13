@@ -92,10 +92,15 @@ The ``app.wsgi`` file
 ---------------------
 
 We'll need a new file called ``app.wsgi`` in your site project path to tell
-mod_wsgi how to run your Motion site. Download this file to your site project
-path (replacing the existing the ``app.wsgi`` file if one is already there):
+mod_wsgi how to run your Motion site. Run this command in your project to
+create or update your project's ``app.wsgi`` file::
 
-`Download app.wsgi <http://developer.typepad.com/motion/app.wsgi>`_
+    python manage.py refreshwsgi
+
+You should run this command even if your project already has an ``app.wsgi``
+file to ensure you're using the best version for your version of Motion. (If
+you made important changes to your ``app.wsgi`` file, you'll need to reapply
+them after refreshing it.)
 
 Once that file is there, we need only configure Apache to run a mod_wsgi site
 using those file's directions.
@@ -216,8 +221,14 @@ Virtual environments
 --------------------
 
 This guide covers running Motion from the regular Python library path. If
-you're configuring Motion to run from a Python virtual environment, see
-`mod_wsgi's excellent virtual environments documentation`_.
+you're configuring Motion to run from a Python virtual environment, add your
+virtual environment's ``site-packages`` directory as the ``python-path``
+argument in your ``WSGIDaemonProcess`` directive::
+
+    WSGIDaemonProcess motionsites display-name=%{GROUP} processes=10 threads=1 python-path=/VIRTUALENV/PATH/lib/python2.6/site-packages
+
+See `mod_wsgi's excellent virtual environments documentation`_ for further
+information.
 
 .. _mod_wsgi's excellent virtual environments documentation: http://code.google.com/p/modwsgi/wiki/VirtualEnvironments
 
