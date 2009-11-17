@@ -20,7 +20,7 @@
         {% else %}
             {% if is_member %}
 
-            {% if settings.moderate_some %}
+            {% if settings.moderate_by_user %}
             <form id="moderate-user-form" action="{{ request.path }}" method="post">
                 <input type="hidden" name="form-action" value="moderate-user" />
                     <label for="moderation-status">{% trans "Moderation Status:" %}</label><br />
