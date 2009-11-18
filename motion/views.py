@@ -422,7 +422,7 @@ class AssetView(TypePadView):
                 typepad.client.complete_batch()
 
             # Only let plain users delete stuff if so configured.
-            if request.user.is_superuser or settings.ALLOW_USERS_TO_DELETE_POSTS:
+            if settings.ALLOW_USERS_TO_DELETE_POSTS or request.user.is_superuser:
                 try:
                     asset.delete()
                     signals.asset_deleted.send(sender=self.post, instance=asset, group=request.group)
@@ -438,7 +438,8 @@ class AssetView(TypePadView):
                     return HttpResponseRedirect(reverse('home'))
 
             # Not allowed to delete
-            return HttpResponseForbidden(_('User not authorized to delete this asset.'))
+            request.flash.add('errors', _('You are not authorized to delete this asset.'))
+            return HttpResponseRedirect(request.path)
 
         elif 'comment' in request.POST:
             if self.form_instance.is_valid():
@@ -602,7 +603,7 @@ class MemberView(AssetEventView):
 
         ### Moderation
         if moderation:
-            if hasattr(settings, 'MODERATE_SOME') and settings.MODERATE_SOME:
+            if hasattr(settings, 'MODERATE_BY_USER') and settings.MODERATE_BY_USER:
                 blacklist = moderation.Blacklist.objects.filter(user_id=member.url_id)
                 if blacklist:
                     self.context['moderation_moderated'] = not blacklist[0].block

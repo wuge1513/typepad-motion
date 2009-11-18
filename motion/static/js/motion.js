@@ -389,7 +389,7 @@ $(document).ready(function () {
                     // Fetch the upload URL via XHR. Submit form to returned URL in callback.
                     $.ajax({
                         'type': 'GET',
-                        'url': settings.upload_xhr_endpoint,
+                        'url': settings.upload_xhr_endpoint + '?post_type=' + post_type,
                         'success': function(data, textStatus) {
                             f.action = data.substring(8, data.length);
                             if (!f.action) {

@@ -18,6 +18,7 @@ Contents:
    views
    featured
    themes
+   wsgi
 
 Indices and tables
 ==================
