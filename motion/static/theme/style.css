@@ -72,7 +72,7 @@ textarea {
     border:1px solid #aaa;
 }
 p {
-    margin: 0 0 10px;
+    margin: 10px 0;
 }
 .default-value,
 .tip,
