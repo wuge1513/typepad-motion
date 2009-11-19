@@ -27,6 +27,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import re
+
 from django import http
 from django.conf import settings
 from django.contrib.auth import get_user
@@ -56,7 +58,7 @@ def more_comments(request):
     """
 
     asset_id = request.GET.get('asset_id')
-    offset = request.GET.get('offset')
+    offset = int(request.GET.get('offset')) or 1
     if not asset_id or not offset:
         raise http.Http404
 
@@ -142,14 +144,20 @@ def asset_meta(request):
     context of the authenticated user.
 
     This method requires POST and accepts one or more asset_id parameters
-    which should be a valid TypePad Asset XID.
+    which should be a valid TypePad Asset XID, prefixed with either
+    'asset-' or 'comment-' (the prefix informs the type of metadata to
+    supply. Comments cannot be favorited, so there is no need to issue
+    favorite requests for them).
 
-    The response will be a JSON data structure, mapping the XID as a key
-    to a dictionary with the values "favorite" and "can_delete". Ie:
+    The response will be a JSON data structure, mapping the supplied IDs as a
+    key to a dictionary containing "favorite" and "can_delete" members that
+    are assigned a true value. If an asset is neither a favorite or can be
+    deleted by the requesting user, the ID will not be present in the
+    response. An example response would look like this:
 
         {
-            "asset_xid1": { "favorite": true },
-            "asset_xid2": { "can_delete": true }
+            "asset-asset_xid1": { "favorite": true },
+            "comment-asset_xid2": { "can_delete": true }
         }
     """
     if not hasattr(request, 'user'):
@@ -169,13 +177,18 @@ def asset_meta(request):
     meta = {}
     typepad.client.batch_request()
     for id in ids:
-        favs.append((id, typepad.Favorite.head_by_user_asset(user_id, id)))
-        if admin_user:
-            if id not in meta:
-                meta[id] = {}
-            meta[id]['can_delete'] = True
-        else:
-            opts.append((id, typepad.Asset.get_by_url_id(id).options()))
+        xid = re.sub(r'^(asset|comment)-', '', id)
+        # deleted comments and assets can leave a 'asset-' or 'comment-' in the request
+        if not len(xid): continue
+
+        # request favorite status for assets
+        if id.startswith('asset-'):
+            favs.append((id, typepad.Favorite.head_by_user_asset(user_id, xid)))
+
+        # for non-admins and only if this install permits asset deletion,
+        # request if the user can delete this asset.
+        if not admin_user and settings.ALLOW_USERS_TO_DELETE_POSTS:
+            opts.append((id, typepad.Asset.get_by_url_id(xid).options()))
     typepad.client.complete_batch()
 
     for f in favs:

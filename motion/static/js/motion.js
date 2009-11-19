@@ -106,6 +106,7 @@ $(document).ready(function () {
                             el.html(settings.phrase.more);
                         else
                             el.hide();
+                        loadAssetMeta();
                     },
                     error: function(xhr, txtStatus, errorThrown) {
                         el.removeAttr("disabled");
@@ -159,37 +160,35 @@ $(document).ready(function () {
             return false;
         });
 
-        // set up ajax request for favorites on this page
-        var asset_ids = [];
-        $('.asset[id]').each(function() {
-            var id = $(this).attr("id");
-            id = id.replace(/^asset-/, '');
-            if (id)
-                asset_ids.push(id);
-        });
-        $('.comment[id]').each(function() {
-            var id = $(this).attr("id");
-            id = id.replace(/^comment-/, '');
-            if (id)
-                asset_ids.push(id);
-        });
-        if (asset_ids.length > 0) {
-            $.ajax({
-                url: settings.asset_meta_url,
-                type: "POST",
-                data: {"asset_id": asset_ids},
-                dataType: "json",
-                success: function(data) {
-                    var id;
-                    for (id in data) {
-                        if (data[id].favorite)
-                            $("#favorite-" + id).addClass("scored");
-                        if (data[id].can_delete)
-                            $("#delete-" + id).show();
-                    }
+        // set up ajax request for favorites/delete controls on this page
+        function loadAssetMeta() {
+            var asset_ids = [];
+            $('.asset[id], .comment[id]').each(function() {
+                if (!$(this).hasClass("with-meta")) {
+                    asset_ids.push($(this).attr("id"));
+                    $(this).addClass("with-meta");
                 }
             });
+            if (asset_ids.length > 0) {
+                $.ajax({
+                    url: settings.asset_meta_url,
+                    type: "POST",
+                    data: {"asset_id": asset_ids},
+                    dataType: "json",
+                    success: function(data) {
+                        var id;
+                        for (id in data) {
+                            var xid = id.replace(/^(asset|comment)-/, '');
+                            if (data[id].favorite)
+                                $("#favorite-" + xid).addClass("scored");
+                            if (data[id].can_delete)
+                                $("#delete-" + xid).show();
+                        }
+                    }
+                });
+            }
         }
+        loadAssetMeta();
     }
 
     // Crosspost options

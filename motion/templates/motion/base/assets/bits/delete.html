@@ -4,7 +4,7 @@
 <div class="controls">
     {% block controls %}
     {% if user.is_superuser or settings.allow_users_to_delete_posts %}
-    <form id="delete-{{ entry.url_id }}" method="post" action="{{ entry.get_absolute_url }}" style="display:none">
+    <form id="delete-{{ entry.url_id }}" method="post" action="{{ entry.get_absolute_url }}"{% if not user.is_superuser %} style="display:none"{% endif %}>
         <input type="hidden" name="asset-id" value="{{ entry.url_id }}" />
         <button class="button-delete" type="submit"
             onclick="return confirm({% spaceless %}
