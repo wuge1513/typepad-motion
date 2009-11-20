@@ -699,7 +699,7 @@ class FeaturedMemberView(MemberView, AssetPostView):
 
     def select_from_typepad(self, request, userid, *args, **kwargs):
         super(FeaturedMemberView, self).select_from_typepad(request, userid, *args, **kwargs)
-        memberships = request.group.memberships.filter(member=True)[:settings.MEMBERS_PER_WIDGET]
+        memberships = request.group.memberships.filter(member=True, max_results=settings.MEMBERS_PER_WIDGET)
         # this view can be accessed in different ways; lets preserve the
         # request path used, and strip off any pagination portion to construct
         # the pagination template
