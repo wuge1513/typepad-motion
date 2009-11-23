@@ -39,7 +39,7 @@ except Exception:
 
 setup(
     name='typepad-motion',
-    version='1.1a1',
+    version='1.1',
     description='Community microblogging in the TypePad cloud',
     author='Six Apart',
     author_email='python@sixapart.com',
