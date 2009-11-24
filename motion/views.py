@@ -172,11 +172,6 @@ class AssetPostView(TypePadView):
             choices = []
             for acct in elsewhere:
                 if acct.crosspostable:
-                    if acct.domain == 'facebook.com':
-                        # due to an issue with crossposting to facebook,
-                        # we need to skip this service for now
-                        continue
-
                     choices.append((acct.id,
                         mark_safe("""<img src="%(media_url)sthemes/motion/images/icons/throbber.gif" alt="loading..." style="display:none;" />"""
                         """<img src="%(icon)s" height="16" width="16" alt="" /> """
@@ -222,14 +217,16 @@ class AssetPostView(TypePadView):
                 return HttpResponseRedirect(request.path)
 
         try:
-            new_post = post.save(group=request.group)
+            post.save(group=request.group)
         except models.assets.Video.ConduitError, ex:
             request.flash.add('errors', ex.message)
             # TODO: if request.FILES['file'], do we need to remove the uploaded file?
         else:
             request.flash.add('notices', _('Post created successfully!'))
+            signals.asset_created.send(sender=self.post, instance=post,
+                group=request.group)
             if request.is_ajax():
-                return self.render_to_response('motion/assets/asset.html', { 'entry': new_post })
+                return self.render_to_response('motion/assets/asset.html', { 'entry': post })
             else: # Return to current page.
                 return HttpResponseRedirect(request.path)
 
@@ -269,7 +266,7 @@ class GroupEventsView(AssetEventView, AssetPostView):
     def select_from_typepad(self, request, page=1, view='events', *args, **kwargs):
         self.paginate_template = reverse('group_events') + '/page/%d'
         self.object_list = request.group.events.filter(start_index=self.offset, max_results=self.limit)
-        memberships = request.group.memberships.filter(member=True)[:settings.MEMBERS_PER_WIDGET]
+        memberships = request.group.memberships.filter(max_results=settings.MEMBERS_PER_WIDGET)
         if request.user.is_authenticated():
             following = request.user.following(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
             followers = request.user.followers(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
@@ -303,7 +300,7 @@ class FollowingEventsView(TypePadView):
 
     def select_from_typepad(self, request, view='following', *args, **kwargs):
         self.paginate_template = reverse('following_events') + '/page/%d'
-        self.object_list = request.user.notifications.filter(by_group=request.group,
+        self.object_list = request.user.group_notifications(request.group,
             start_index=self.offset, max_results=self.paginate_by)
 
 
@@ -425,9 +422,10 @@ class AssetView(TypePadView):
                 typepad.client.complete_batch()
 
             # Only let plain users delete stuff if so configured.
-            if request.user.is_superuser or settings.ALLOW_USERS_TO_DELETE_POSTS:
+            if settings.ALLOW_USERS_TO_DELETE_POSTS or request.user.is_superuser:
                 try:
                     asset.delete()
+                    signals.asset_deleted.send(sender=self.post, instance=asset, group=request.group)
                 except asset.Forbidden:
                     pass
                 else:
@@ -440,7 +438,8 @@ class AssetView(TypePadView):
                     return HttpResponseRedirect(reverse('home'))
 
             # Not allowed to delete
-            return HttpResponseForbidden(_('User not authorized to delete this asset.'))
+            request.flash.add('errors', _('You are not authorized to delete this asset.'))
+            return HttpResponseRedirect(request.path)
 
         elif 'comment' in request.POST:
             if self.form_instance.is_valid():
@@ -459,6 +458,8 @@ class AssetView(TypePadView):
 
                 asset.comments.post(comment)
                 request.flash.add('notices', _('Comment created successfully!'))
+                signals.asset_created.send(sender=self.post, instance=comment,
+                    parent=asset, group=request.group)
                 # Return to permalink page
                 return HttpResponseRedirect(request.path)
 
@@ -488,7 +489,7 @@ class MembersView(TypePadView):
     def select_from_typepad(self, request, *args, **kwargs):
         self.paginate_template = reverse('members') + '/page/%d'
         self.object_list = request.group.memberships.filter(start_index=self.offset,
-            max_results=self.limit, member=True)
+            max_results=self.limit)
         self.context.update(locals())
 
 
@@ -540,8 +541,11 @@ class MemberView(AssetEventView):
     def select_from_typepad(self, request, userid, *args, **kwargs):
         self.paginate_template = reverse('member', args=[userid]) + '/page/%d'
 
-        member = models.User.get_by_url_id(userid)
-        user_memberships = member.memberships.filter(by_group=request.group)
+        # do not use cached responses for superuser requests; this ensures
+        # that the response contains elements that are only provided to
+        # administrators (email address, for instance)
+        member = models.User.get_by_url_id(userid, cache=not request.user.is_superuser)
+        user_memberships = member.group_memberships(request.group)
 
         if request.method == 'GET':
             # no need to do these for POST requests
@@ -599,7 +603,7 @@ class MemberView(AssetEventView):
 
         ### Moderation
         if moderation:
-            if hasattr(settings, 'MODERATE_SOME') and settings.MODERATE_SOME:
+            if hasattr(settings, 'MODERATE_BY_USER') and settings.MODERATE_BY_USER:
                 blacklist = moderation.Blacklist.objects.filter(user_id=member.url_id)
                 if blacklist:
                     self.context['moderation_moderated'] = not blacklist[0].block
@@ -633,9 +637,15 @@ class MemberView(AssetEventView):
             if is_member:
                 # ban user
                 user_membership.block()
+                signals.member_banned.send(sender=self.post,
+                    instance=self.context['member'], group=request.group,
+                    membership=user_membership)
             elif is_blocked:
                 # unban user
                 user_membership.unblock()
+                signals.member_unbanned.send(sender=self.post,
+                    instance=self.context['member'], group=request.group,
+                    membership=user_membership)
 
         ### Moderation
         elif moderation and request.POST.get('form-action') == 'moderate-user':
@@ -689,7 +699,7 @@ class FeaturedMemberView(MemberView, AssetPostView):
 
     def select_from_typepad(self, request, userid, *args, **kwargs):
         super(FeaturedMemberView, self).select_from_typepad(request, userid, *args, **kwargs)
-        memberships = request.group.memberships.filter(member=True)[:settings.MEMBERS_PER_WIDGET]
+        memberships = request.group.memberships.filter(member=True, max_results=settings.MEMBERS_PER_WIDGET)
         # this view can be accessed in different ways; lets preserve the
         # request path used, and strip off any pagination portion to construct
         # the pagination template
@@ -755,7 +765,8 @@ def upload_complete(request):
         instance = models.Asset.get(parts[2], batch=False)
         request.flash.add('notices', _('Thanks for the %(type)s!') \
             % { 'type': instance.type_label.lower() })
-        signals.post_save.send(sender=upload_complete, instance=instance)
+        signals.asset_created.send(sender=upload_complete, instance=instance,
+            group=request.group)
         # Redirect to clear the GET data
         if settings.FEATURED_MEMBER:
             typepad.client.batch_request()

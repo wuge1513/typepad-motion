@@ -27,6 +27,8 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
+import re
+
 from django import http
 from django.conf import settings
 from django.contrib.auth import get_user
@@ -36,7 +38,7 @@ import simplejson as json
 
 import motion.models
 import typepad
-from typepadapp import models
+from typepadapp import models, signals
 import typepadapp.forms
 from typepadapp.decorators import ajax_required
 
@@ -56,7 +58,7 @@ def more_comments(request):
     """
 
     asset_id = request.GET.get('asset_id')
-    offset = request.GET.get('offset')
+    offset = int(request.GET.get('offset')) or 1
     if not asset_id or not offset:
         raise http.Http404
 
@@ -120,14 +122,87 @@ def favorite(request):
     typepad.client.complete_batch()
 
     if action == 'favorite':
-        favorite = models.Favorite()
-        favorite.in_reply_to = asset.asset_ref
-        request.user.favorites.post(favorite)
+        fav = models.Favorite()
+        fav.in_reply_to = asset.asset_ref
+        request.user.favorites.post(fav)
+        signals.favorite_created.send(sender=favorite, instance=fav, parent=asset,
+            group=request.group)
     else:
-        favorite = models.Favorite.get_by_user_asset(request.user.url_id, asset_id)
-        favorite.delete()
+        typepad.client.batch_request()
+        fav = models.Favorite.get_by_user_asset(request.user.url_id, asset_id)
+        typepad.client.complete_batch()
+        fav.delete()
+        signals.favorite_deleted.send(sender=favorite, instance=fav,
+            parent=asset, group=request.group)
 
     return http.HttpResponse('OK')
+
+
+@ajax_required
+def asset_meta(request):
+    """An AJAX method for returning metadata about a list of assets, in the
+    context of the authenticated user.
+
+    This method requires POST and accepts one or more asset_id parameters
+    which should be a valid TypePad Asset XID, prefixed with either
+    'asset-' or 'comment-' (the prefix informs the type of metadata to
+    supply. Comments cannot be favorited, so there is no need to issue
+    favorite requests for them).
+
+    The response will be a JSON data structure, mapping the supplied IDs as a
+    key to a dictionary containing "favorite" and "can_delete" members that
+    are assigned a true value. If an asset is neither a favorite or can be
+    deleted by the requesting user, the ID will not be present in the
+    response. An example response would look like this:
+
+        {
+            "asset-asset_xid1": { "favorite": true },
+            "comment-asset_xid2": { "can_delete": true }
+        }
+    """
+    if not hasattr(request, 'user'):
+        typepad.client.batch_request()
+        request.user = get_user(request)
+        typepad.client.complete_batch()
+
+    ids = request.POST.getlist('asset_id')
+    if not ids or not request.user.is_authenticated():
+        return http.HttpResponse('')
+
+    user_id = request.user.url_id
+    admin_user = request.user.is_superuser
+
+    favs = []
+    opts = []
+    meta = {}
+    typepad.client.batch_request()
+    for id in ids:
+        xid = re.sub(r'^(asset|comment)-', '', id)
+        # deleted comments and assets can leave a 'asset-' or 'comment-' in the request
+        if not len(xid): continue
+
+        # request favorite status for assets
+        if id.startswith('asset-'):
+            favs.append((id, typepad.Favorite.head_by_user_asset(user_id, xid)))
+
+        # for non-admins and only if this install permits asset deletion,
+        # request if the user can delete this asset.
+        if not admin_user and settings.ALLOW_USERS_TO_DELETE_POSTS:
+            opts.append((id, typepad.Asset.get_by_url_id(xid).options()))
+    typepad.client.complete_batch()
+
+    for f in favs:
+        if f[1].found():
+            if f[0] not in meta:
+                meta[f[0]] = {}
+            meta[f[0]]['favorite'] = True
+    for o in opts:
+        if o[1].status == 200:
+            if o[1].can_delete():
+                if o[0] not in meta:
+                    meta[o[0]] = {}
+                meta[o[0]]['can_delete'] = True
+    return http.HttpResponse(json.dumps(meta), mimetype='application/json')
 
 
 @ajax_required

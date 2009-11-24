@@ -33,6 +33,7 @@ var settings;
 settings = {
     upload_url: '',
     favorite_url: '',
+    asset_meta_url: '',
     comments_url: '',
     crosspost_options_url: '',
     phrase: {
@@ -105,6 +106,7 @@ $(document).ready(function () {
                             el.html(settings.phrase.more);
                         else
                             el.hide();
+                        loadAssetMeta();
                     },
                     error: function(xhr, txtStatus, errorThrown) {
                         el.removeAttr("disabled");
@@ -116,8 +118,8 @@ $(document).ready(function () {
     }
 
     // Favorite an item
-    $('.favorite-action').click(function() {
-        if (user && user.is_authenticated) {
+    if (user && user.is_authenticated) {
+        $('.favorite-action').click(function() {
             // don't do anything if already in progress
             if ($(this).hasClass('loading')) return false;
             // show loading graphic
@@ -155,9 +157,39 @@ $(document).ready(function () {
                     favitem.toggleClass('loading');
                 }
             });
+            return false;
+        });
+
+        // set up ajax request for favorites/delete controls on this page
+        function loadAssetMeta() {
+            var asset_ids = [];
+            $('.asset[id], .comment[id]').each(function() {
+                if (!$(this).hasClass("with-meta")) {
+                    asset_ids.push($(this).attr("id"));
+                    $(this).addClass("with-meta");
+                }
+            });
+            if (asset_ids.length > 0) {
+                $.ajax({
+                    url: settings.asset_meta_url,
+                    type: "POST",
+                    data: {"asset_id": asset_ids},
+                    dataType: "json",
+                    success: function(data) {
+                        var id;
+                        for (id in data) {
+                            var xid = id.replace(/^(asset|comment)-/, '');
+                            if (data[id].favorite)
+                                $("#favorite-" + xid).addClass("scored");
+                            if (data[id].can_delete)
+                                $("#delete-" + xid).show();
+                        }
+                    }
+                });
+            }
         }
-        return false;
-    });
+        loadAssetMeta();
+    }
 
     // Crosspost options
     $('.crosspost').click(function() {
@@ -223,14 +255,14 @@ $(document).ready(function () {
 
     // Entry Field Manager
         // Field types
-        var fieldTypes = ['title','body','url',"file",'tags','crosspost'];
+        var fieldTypes = ['title','body','url',"file",'crosspost'];
         // Entry Editor
         var entryTypes = {
-            "entry-post": ['title','body','tags','crosspost'],
-            "entry-photo": ['title','body','tags','file'],
-            "entry-link": ['title','body','tags','url'],
-            "entry-video": ['title','body','tags','url'],
-            "entry-audio": ['title','body','tags','file']
+            "entry-post": ['title','body','crosspost'],
+            "entry-photo": ['title','body','file','crosspost'],
+            "entry-link": ['title','body','url','crosspost'],
+            "entry-video": ['title','body','url','crosspost'],
+            "entry-audio": ['title','body','file','crosspost']
         };
         var entryClasses = {
             "entry-link":  "link",
@@ -356,7 +388,7 @@ $(document).ready(function () {
                     // Fetch the upload URL via XHR. Submit form to returned URL in callback.
                     $.ajax({
                         'type': 'GET',
-                        'url': settings.upload_xhr_endpoint,
+                        'url': settings.upload_xhr_endpoint + '?post_type=' + post_type,
                         'success': function(data, textStatus) {
                             f.action = data.substring(8, data.length);
                             if (!f.action) {
