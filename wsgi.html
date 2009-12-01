@@ -1,0 +1,308 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Using mod_wsgi &mdash; motion v1.1 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="motion v1.1 documentation" href="index.html" />
+    <link rel="prev" title="Theming Motion" href="themes.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="themes.html" title="Theming Motion"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">motion v1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="using-mod-wsgi">
+<h1>Using mod_wsgi<a class="headerlink" href="#using-mod-wsgi" title="Permalink to this headline">¶</a></h1>
+<p>While Django&#8217;s development server is fine for trying Motion out, to run Motion
+on a production internet web site requires a more stable Web server
+environment. Because Django applications can run as <a class="reference external" href="http://wsgi.org/wsgi/Learn_WSGI">WSGI applications</a>, you
+have several excellent options for production grade application serving. We
+recommend using Apache with <a class="reference external" href="http://code.google.com/p/modwsgi/">mod_wsgi</a>.</p>
+<div class="section" id="installing-mod-wsgi">
+<h2>Installing mod_wsgi<a class="headerlink" href="#installing-mod-wsgi" title="Permalink to this headline">¶</a></h2>
+<p>Many Linux distributions provide Apache and mod_wsgi as packages for easy
+installation.</p>
+<p>Once mod_wsgi is installed, make sure Apache is configured to use it.
+Somewhere in the Apache configuration will need to be a directive to load the
+mod_wsgi module. The <tt class="docutils literal"><span class="pre">LoadModule</span></tt> directive looks like this:</p>
+<div class="highlight-python"><pre>LoadModule wsgi_module modules/mod_wsgi.so</pre>
+</div>
+<p>If you installed mod_wsgi from a package, though, it will probably have
+already configured this. Consult the documentation for your mod_wsgi package.</p>
+<p>For further guidance, see <a class="reference external" href="http://code.google.com/p/modwsgi/wiki/InstallationInstructions">the mod_wsgi installation guide</a>.</p>
+</div>
+<div class="section" id="configuring-motion-for-mod-wsgi">
+<h2>Configuring Motion for mod_wsgi<a class="headerlink" href="#configuring-motion-for-mod-wsgi" title="Permalink to this headline">¶</a></h2>
+<p>Once you&#8217;ve installed mod_wsgi and <a class="reference external" href="http://developer.typepad.com/motion/create-motion.html">made a Motion project</a>, you need only
+configure Apache to serve your Motion project as a WSGI application.</p>
+<div class="section" id="your-motion-and-typepadapp-library-paths">
+<h3>Your Motion and Typepadapp library paths<a class="headerlink" href="#your-motion-and-typepadapp-library-paths" title="Permalink to this headline">¶</a></h3>
+<p>For some of the Apache configuration directives, you&#8217;ll need to know where
+your Motion and Typepadapp <em>library paths</em> are. That&#8217;s where on the filesystem
+the <tt class="docutils literal"><span class="pre">motion</span></tt> and <tt class="docutils literal"><span class="pre">typepadapp</span></tt> Python packages are installed. You can find
+out your Motion path by running this command:</p>
+<div class="highlight-python"><pre>python -c "import motion; print motion.__file__"</pre>
+</div>
+<p>This should tell you a full path to the main <tt class="docutils literal"><span class="pre">motion</span></tt> Python file, such as:</p>
+<div class="highlight-python"><pre>/usr/lib/python2.6/site-packages/typepad_motion-1.0.2-py2.6.egg/motion/__init__.pyc</pre>
+</div>
+<p>The <tt class="docutils literal"><span class="pre">__init__.pyc</span></tt> at the end is the package filename, so ignore that part.
+In this case, your Motion library path would be the first part:
+<tt class="docutils literal"><span class="pre">/usr/lib/python2.6/site-packages/typepad_motion-1.0.2-py2.6.egg/motion</span></tt>.
+This is the path we&#8217;ll need to use in the Apache configuration directives.</p>
+<p>Do the same with <tt class="docutils literal"><span class="pre">typepadapp</span></tt> instead of <tt class="docutils literal"><span class="pre">motion</span></tt> to get your Typepadapp
+library path:</p>
+<div class="highlight-python"><pre>python -c "import typepadapp; print typepadapp.__file__"</pre>
+</div>
+</div>
+<div class="section" id="your-site-project-path">
+<h3>Your site project path<a class="headerlink" href="#your-site-project-path" title="Permalink to this headline">¶</a></h3>
+<p>We&#8217;ll also need to configure Apache to point to <a class="reference external" href="http://developer.typepad.com/motion/create-motion.html">the Motion site you already
+created</a>. The <tt class="docutils literal"><span class="pre">typepadproject</span></tt> command you used to create a Motion project
+created your site, including the settings files you configured with your
+site&#8217;s settings. We&#8217;ll put a new file called <tt class="docutils literal"><span class="pre">app.wsgi</span></tt> in this directory
+that will tell mod_wsgi how to run your Motion site.</p>
+<p>Because we&#8217;ll need to use your project path in the Apache configuration,
+you&#8217;ll need to know the full path to your Motion project directory. To find
+out what it is, at the terminal in the Motion project directory, enter:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="n">pwd</span>
+</pre></div>
+</div>
+<p>This command will show you a full path to your project, something like:</p>
+<div class="highlight-python"><pre>/home/example/mymotion</pre>
+</div>
+<p>This is the full project path we&#8217;ll use to configure Apache.</p>
+</div>
+<div class="section" id="the-app-wsgi-file">
+<h3>The <tt class="docutils literal"><span class="pre">app.wsgi</span></tt> file<a class="headerlink" href="#the-app-wsgi-file" title="Permalink to this headline">¶</a></h3>
+<p>We&#8217;ll need a new file called <tt class="docutils literal"><span class="pre">app.wsgi</span></tt> in your site project path to tell
+mod_wsgi how to run your Motion site. Run this command in your project to
+create or update your project&#8217;s <tt class="docutils literal"><span class="pre">app.wsgi</span></tt> file:</p>
+<div class="highlight-python"><pre>python manage.py refreshwsgi</pre>
+</div>
+<p>You should run this command even if your project already has an <tt class="docutils literal"><span class="pre">app.wsgi</span></tt>
+file to ensure you&#8217;re using the best version for your version of Motion. (If
+you made important changes to your <tt class="docutils literal"><span class="pre">app.wsgi</span></tt> file, you&#8217;ll need to reapply
+them after refreshing it.)</p>
+<p>Once that file is there, we need only configure Apache to run a mod_wsgi site
+using those file&#8217;s directions.</p>
+</div>
+<div class="section" id="the-apache-configuration">
+<h3>The Apache configuration<a class="headerlink" href="#the-apache-configuration" title="Permalink to this headline">¶</a></h3>
+<p>Here&#8217;s the Apache configuration we recommend for running Motion under
+mod_wsgi. This example configuration sets up Motion to run with these
+settings:</p>
+<ul class="simple">
+<li>Domain name: <tt class="docutils literal"><span class="pre">motion.example.com</span></tt></li>
+<li>Motion library path: <tt class="docutils literal"><span class="pre">/MOTION/PATH</span></tt></li>
+<li>Typepadapp library path: <tt class="docutils literal"><span class="pre">/TYPEPADAPP/PATH</span></tt></li>
+<li>Project path: <tt class="docutils literal"><span class="pre">/PROJECT/PATH</span></tt></li>
+</ul>
+<p>When using this configuration, make sure to replace the paths with your own as
+you found above:</p>
+<div class="highlight-python"><pre>&lt;VirtualHost *:80&gt;
+    ServerName motion.example.com
+
+    # serve static files directly through apache
+    Alias /static/themes/motion /MOTION/PATH/static/theme
+    Alias /static/motion /MOTION/PATH/static
+    Alias /static/typepadapp /TYPEPADAPP/PATH/static
+
+    # serve motion with mod_wsgi
+    WSGIScriptAlias / /PROJECT/PATH/app.wsgi
+    WSGIProcessGroup motionsites
+    WSGIDaemonProcess motionsites display-name=%{GROUP} processes=10 threads=1
+&lt;/VirtualHost&gt;</pre>
+</div>
+<p>By using <a class="reference external" href="http://httpd.apache.org/docs/2.0/vhosts/">a virtual host section</a> like this, the Motion site would run on its
+own domain, <tt class="docutils literal"><span class="pre">motion.example.com</span></tt>. If you&#8217;re adding the Motion application to
+an existing site, you may wish to add the individual directives above into
+your existing Apache configuration, instead of putting them in a new
+<tt class="docutils literal"><span class="pre">&lt;VirtualHost&gt;</span></tt> section. See <a class="reference external" href="http://httpd.apache.org/docs/2.0/">the Apache manual</a> for more information about
+configuring Apache.</p>
+</div>
+</div>
+<div class="section" id="possible-problems">
+<h2>Possible problems<a class="headerlink" href="#possible-problems" title="Permalink to this headline">¶</a></h2>
+<p>There are a few issues to keep in mind when setting up Motion with mod_wsgi.
+If you run into other problems, please do <a class="reference external" href="http://developer.typepad.com/help/">ask around</a> about it.</p>
+<div class="section" id="database-configuration">
+<h3>Database configuration<a class="headerlink" href="#database-configuration" title="Permalink to this headline">¶</a></h3>
+<p>While our initial developer configuration uses Django&#8217;s default SQLite
+database, when running a production site, you may want to use another database
+such as MySQL. Consult the Django documentation for <a class="reference external" href="http://docs.djangoproject.com/en/dev/topics/install/#database-installation">how to install additional
+database support</a> and <a class="reference external" href="http://docs.djangoproject.com/en/dev/ref/settings/#setting-DATABASE_ENGINE">the settings to reconfigure your project</a> to use
+another database system.</p>
+<p>If you want to continue using SQLite, you&#8217;ll need to make sure the Apache user
+has permission to write to the directory the database file is in, so it can
+properly lock the database against simultaneous writes. Also, when specifying
+your database file&#8217;s name in the <tt class="docutils literal"><span class="pre">DATABASE_NAME</span></tt> setting, use the file&#8217;s
+full path; mod_wsgi won&#8217;t be able to find the database with only the path from
+your project directory or a lone filename.</p>
+</div>
+<div class="section" id="unix-socket-paths">
+<h3>UNIX socket paths<a class="headerlink" href="#unix-socket-paths" title="Permalink to this headline">¶</a></h3>
+<p>The above configuration sets up mod_wsgi in <em>daemon mode</em>, which requires that
+mod_wsgi processes be able to read from UNIX sockets the Apache processes
+open. This normally works fine, but some Linux distributions may put more
+restrictive permissions on Apache&#8217;s default socket path, resulting in &#8220;503
+Service Temporarily Unavailable&#8221; responses and a &#8220;Permission denied&#8221; error in
+the Apache error log. See <a class="reference external" href="http://code.google.com/p/modwsgi/wiki/ConfigurationIssues#Location_Of_UNIX_Sockets">the mod_wsgi documentation</a> for more information
+on configuring your socket path.</p>
+</div>
+<div class="section" id="python-egg-cache-path">
+<h3>Python egg cache path<a class="headerlink" href="#python-egg-cache-path" title="Permalink to this headline">¶</a></h3>
+<p>Using daemon mode also means the mod_wsgi processes may need to write to the
+Python egg cache. This path is used to unpack zipped eggs for use; you may
+have installed (such as when using <tt class="docutils literal"><span class="pre">pip</span></tt> instead of <tt class="docutils literal"><span class="pre">easy_install</span></tt>), in
+which case no additional configuration is necessary. If you receive an
+&#8220;ExtractionError&#8221; and a message about the Python egg cache in your Apache
+error log, check the permissions on the directory or reconfigure the egg cache
+path <a class="reference external" href="http://code.google.com/p/modwsgi/wiki/ApplicationIssues#Access_Rights_Of_Apache_User">as described in the mod_wsgi documentation</a>.</p>
+</div>
+<div class="section" id="setting-user-and-group-before-configuring-wsgi">
+<h3>Setting User and Group before configuring WSGI<a class="headerlink" href="#setting-user-and-group-before-configuring-wsgi" title="Permalink to this headline">¶</a></h3>
+<p>The daemon mode configuration depends on the <tt class="docutils literal"><span class="pre">User</span></tt> and <tt class="docutils literal"><span class="pre">Group</span></tt> settings
+in the Apache configuration being set before the <tt class="docutils literal"><span class="pre">WSGIDaemonProcess</span></tt>
+directive. Some Linux distributions&#8217; default may include before the <tt class="docutils literal"><span class="pre">User</span></tt>
+and <tt class="docutils literal"><span class="pre">Group</span></tt> directives. If you get an <cite>Unable to determine home directory
+for uid</cite> error in the Apache error log, check that the Apache configuration is
+setting <tt class="docutils literal"><span class="pre">User</span></tt> and <tt class="docutils literal"><span class="pre">Group</span></tt> before it gets to the Motion configuration
+block you added above.</p>
+</div>
+<div class="section" id="selinux">
+<h3>SELinux<a class="headerlink" href="#selinux" title="Permalink to this headline">¶</a></h3>
+<p>Daemon mode can also be more complicated to configure under SELinux. You might
+find it easier to use <em>embedded mode</em> instead. You can see <a class="reference external" href="http://code.google.com/p/modwsgi/wiki/ApplicationIssues#Secure_Variants_Of_UNIX">more about SELinux
+in the mod_wsgi documentation</a>.</p>
+</div>
+<div class="section" id="virtual-environments">
+<h3>Virtual environments<a class="headerlink" href="#virtual-environments" title="Permalink to this headline">¶</a></h3>
+<p>This guide covers running Motion from the regular Python library path. If
+you&#8217;re configuring Motion to run from a Python virtual environment, add your
+virtual environment&#8217;s <tt class="docutils literal"><span class="pre">site-packages</span></tt> directory as the <tt class="docutils literal"><span class="pre">python-path</span></tt>
+argument in your <tt class="docutils literal"><span class="pre">WSGIDaemonProcess</span></tt> directive:</p>
+<div class="highlight-python"><pre>WSGIDaemonProcess motionsites display-name=%{GROUP} processes=10 threads=1 python-path=/VIRTUALENV/PATH/lib/python2.6/site-packages</pre>
+</div>
+<p>See <a class="reference external" href="http://code.google.com/p/modwsgi/wiki/VirtualEnvironments">mod_wsgi&#8217;s excellent virtual environments documentation</a> for further
+information.</p>
+</div>
+</div>
+<div class="section" id="happy-motion">
+<h2>Happy Motion<a class="headerlink" href="#happy-motion" title="Permalink to this headline">¶</a></h2>
+<p>We hope this guide helps you run more public, stable Motion sites using
+mod_wsgi. If you have trouble or other tips for running production Motion
+sites, please <a class="reference external" href="http://developer.typepad.com/help/">let us and the community know</a>.</p>
+</div>
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h3><a href="index.html">Table Of Contents</a></h3>
+            <ul>
+<li><a class="reference external" href="">Using mod_wsgi</a><ul>
+<li><a class="reference external" href="#installing-mod-wsgi">Installing mod_wsgi</a></li>
+<li><a class="reference external" href="#configuring-motion-for-mod-wsgi">Configuring Motion for mod_wsgi</a><ul>
+<li><a class="reference external" href="#your-motion-and-typepadapp-library-paths">Your Motion and Typepadapp library paths</a></li>
+<li><a class="reference external" href="#your-site-project-path">Your site project path</a></li>
+<li><a class="reference external" href="#the-app-wsgi-file">The <tt class="docutils literal"><span class="pre">app.wsgi</span></tt> file</a></li>
+<li><a class="reference external" href="#the-apache-configuration">The Apache configuration</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#possible-problems">Possible problems</a><ul>
+<li><a class="reference external" href="#database-configuration">Database configuration</a></li>
+<li><a class="reference external" href="#unix-socket-paths">UNIX socket paths</a></li>
+<li><a class="reference external" href="#python-egg-cache-path">Python egg cache path</a></li>
+<li><a class="reference external" href="#setting-user-and-group-before-configuring-wsgi">Setting User and Group before configuring WSGI</a></li>
+<li><a class="reference external" href="#selinux">SELinux</a></li>
+<li><a class="reference external" href="#virtual-environments">Virtual environments</a></li>
+</ul>
+</li>
+<li><a class="reference external" href="#happy-motion">Happy Motion</a></li>
+</ul>
+</li>
+</ul>
+
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="themes.html"
+                                  title="previous chapter">Theming Motion</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="sources/wsgi.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="themes.html" title="Theming Motion"
+             >previous</a> |</li>
+        <li><a href="index.html">motion v1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, Six Apart.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+    </div>
+  </body>
+</html>

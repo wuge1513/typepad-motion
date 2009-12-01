@@ -1,0 +1,361 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN"
+  "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+  <head>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    
+    <title>Settings &mdash; motion v1.1 documentation</title>
+    <link rel="stylesheet" href="static/default.css" type="text/css" />
+    <link rel="stylesheet" href="static/pygments.css" type="text/css" />
+    <script type="text/javascript">
+      var DOCUMENTATION_OPTIONS = {
+        URL_ROOT:    '',
+        VERSION:     '1.1',
+        COLLAPSE_MODINDEX: false,
+        FILE_SUFFIX: '.html',
+        HAS_SOURCE:  true
+      };
+    </script>
+    <script type="text/javascript" src="static/jquery.js"></script>
+    <script type="text/javascript" src="static/doctools.js"></script>
+    <link rel="top" title="motion v1.1 documentation" href="index.html" />
+    <link rel="next" title="Views" href="views.html" />
+    <link rel="prev" title="motion – Motion in the TypePad cloud" href="index.html" /> 
+  </head>
+  <body>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             accesskey="I">index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             accesskey="M">modules</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="Views"
+             accesskey="N">next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="motion – Motion in the TypePad cloud"
+             accesskey="P">previous</a> |</li>
+        <li><a href="index.html">motion v1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>  
+
+    <div class="document">
+      <div class="documentwrapper">
+        <div class="bodywrapper">
+          <div class="body">
+            
+  <div class="section" id="module-motion.settings">
+<h1>Settings<a class="headerlink" href="#module-motion.settings" title="Permalink to this headline">¶</a></h1>
+<p>Settings for Motion sites.</p>
+<p>Motion sites use and provide many settings for you to customize the Motion
+site experience. Include the default values for these settings in your Django
+project&#8217;s settings by importing them at the top of your <tt class="docutils literal"><span class="pre">settings.py</span></tt>
+module:</p>
+<div class="highlight-python"><div class="highlight"><pre><span class="kn">from</span> <span class="nn">motion.settings</span> <span class="kn">import</span> <span class="o">*</span>
+</pre></div>
+</div>
+<p>You can then override the defaults later in your <tt class="docutils literal"><span class="pre">settings.py</span></tt> (or in an
+imported <tt class="docutils literal"><span class="pre">local_settings.py</span></tt>) as you would Django&#8217;s default settings.</p>
+<dl class="data">
+<dt id="motion.settings.ALLOW_COMMENTING">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">ALLOW_COMMENTING</tt><a class="headerlink" href="#motion.settings.ALLOW_COMMENTING" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to provide the Motion commenting interface.</p>
+<p>If set to <tt class="xref docutils literal"><span class="pre">False</span></tt>, the Motion commenting interface will not be shown. Use
+this setting to temporarily disable the leaving of new comments.</p>
+<p>By default, this setting is <tt class="xref docutils literal"><span class="pre">True</span></tt> (commenting is enabled).</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.ALLOW_COMMUNITY_POSTS">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">ALLOW_COMMUNITY_POSTS</tt><a class="headerlink" href="#motion.settings.ALLOW_COMMUNITY_POSTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether regular group members should be able to post to the group.</p>
+<p>If this setting is set to <tt class="xref docutils literal"><span class="pre">False</span></tt>, only administrators of the group can make
+new posts. To disable for all members including administrators, use
+<a title="motion.settings.ALLOW_POSTING" class="reference internal" href="#motion.settings.ALLOW_POSTING"><tt class="xref docutils literal"><span class="pre">ALLOW_POSTING</span></tt></a> instead.</p>
+<p>By default, this setting is <tt class="xref docutils literal"><span class="pre">True</span></tt> and all group members can post.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.ALLOW_POSTING">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">ALLOW_POSTING</tt><a class="headerlink" href="#motion.settings.ALLOW_POSTING" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to allow posting new posts in the Motion interface.</p>
+<p>If set to <tt class="xref docutils literal"><span class="pre">False</span></tt>, the Motion posting interface will not be shown to anyone.
+Use this setting to temporarily disable addition of new posts. To turn off
+posting for regular members but let administrators still post, use
+<a title="motion.settings.ALLOW_COMMUNITY_POSTS" class="reference internal" href="#motion.settings.ALLOW_COMMUNITY_POSTS"><tt class="xref docutils literal"><span class="pre">ALLOW_COMMUNITY_POSTS</span></tt></a> instead.</p>
+<p>By default, this setting is <tt class="xref docutils literal"><span class="pre">True</span></tt> (posting is enabled).</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.ALLOW_RATING">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">ALLOW_RATING</tt><a class="headerlink" href="#motion.settings.ALLOW_RATING" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to provide Motion&#8217;s interface for favoriting posts.</p>
+<p>If set to <tt class="xref docutils literal"><span class="pre">False</span></tt>, the interface for marking posts as favorites will not be
+provided. Use this setting to temporarily prevent saving posts as favorites.</p>
+<p>By default, this setting is <tt class="xref docutils literal"><span class="pre">True</span></tt> (favoriting is enabled).</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.ALLOW_USERS_TO_DELETE_POSTS">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">ALLOW_USERS_TO_DELETE_POSTS</tt><a class="headerlink" href="#motion.settings.ALLOW_USERS_TO_DELETE_POSTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether Motion should allow group members to delete their own posts and
+comments.</p>
+<p>The ability to delete some assets may be affected by further permissions
+provided by TypePad (for example, group members may only be allowed to delete
+comments during a grace period after leaving them). This setting does not
+affect administrators&#8217; ability to delete any post in the group, only regular
+members&#8217; ability to delete their own assets. Regular members can never delete
+other members&#8217; content in the group.</p>
+<p>By default, this setting is <tt class="xref docutils literal"><span class="pre">True</span></tt> and group members can delete their assets.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.BACKEND_URL">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">BACKEND_URL</tt><a class="headerlink" href="#motion.settings.BACKEND_URL" title="Permalink to this definition">¶</a></dt>
+<dd><p>The URL of the TypePad API service to use.</p>
+<p>This setting should normally always be the default value of
+<tt class="docutils literal"><span class="pre">https://api.typepad.com</span></tt>, but it may be useful to send API requests
+somewhere else for development or debugging.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.DEFAULT_USERPIC_PATH">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">DEFAULT_USERPIC_PATH</tt><a class="headerlink" href="#motion.settings.DEFAULT_USERPIC_PATH" title="Permalink to this definition">¶</a></dt>
+<dd><p>The path to the to use if a problem occurs finding a member&#8217;s userpic.</p>
+<p>All TypePad accounts have their own default userpics, so this userpic won&#8217;t
+appear unless a problem occurs. You should not need to change it from its
+default value of <tt class="docutils literal"><span class="pre">images/default-avatars/spaceface-50x50.jpg</span></tt>.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.FEATURED_MEMBER">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">FEATURED_MEMBER</tt><a class="headerlink" href="#motion.settings.FEATURED_MEMBER" title="Permalink to this definition">¶</a></dt>
+<dd><p>The TypePad XID of an account to use as a featured member of the group.</p>
+<p>Setting a <a title="motion.settings.FEATURED_MEMBER" class="reference internal" href="#motion.settings.FEATURED_MEMBER"><tt class="xref docutils literal"><span class="pre">FEATURED_MEMBER</span></tt></a> changes the home page of the site into that
+member&#8217;s activity. See <a class="reference external" href="featured.html"><em>Featured accounts</em></a> for more information on using featured
+members.</p>
+<p>By default, this setting is <tt class="xref docutils literal"><span class="pre">None</span></tt> (no featured member).</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.FOLLOWERS_PER_WIDGET">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">FOLLOWERS_PER_WIDGET</tt><a class="headerlink" href="#motion.settings.FOLLOWERS_PER_WIDGET" title="Permalink to this definition">¶</a></dt>
+<dd><p>How many group members to show in each following/followers bar on the home
+page.</p>
+<p>When viewing the group events page, signed-in members see short bars of group
+members following and being followed by them next to the compose form. This
+settings governs how many members&#8217; userpics are shown in each bar.</p>
+<p>By default, the bars show five userpics.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.FRONTEND_URL">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">FRONTEND_URL</tt><a class="headerlink" href="#motion.settings.FRONTEND_URL" title="Permalink to this definition">¶</a></dt>
+<dd><p>The URL at which the Motion site is available to internet viewers.</p>
+<p>This URL is used to build the URL a group member returns to after uploading a
+media post, so you should set it to where your Motion site is hosted.</p>
+<p>By default, this setting is <tt class="docutils literal"><span class="pre">http://127.0.0.1:8000</span></tt>.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.FULL_FEED_CONTENT">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">FULL_FEED_CONTENT</tt><a class="headerlink" href="#motion.settings.FULL_FEED_CONTENT" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether the full content of posts is included in feeds.</p>
+<p>If set to <tt class="xref docutils literal"><span class="pre">True</span></tt>, the full content of posts is included in each feed item,
+as when viewing the assets on their permalink pages. If <tt class="xref docutils literal"><span class="pre">False</span></tt>, are
+truncated as on the group events page (that is, to the first
+<a title="motion.settings.PARAGRAPH_WORDCOUNT" class="reference internal" href="#motion.settings.PARAGRAPH_WORDCOUNT"><tt class="xref docutils literal"><span class="pre">PARAGRAPH_WORDCOUNT</span></tt></a> words).</p>
+<p>By default, this setting is <tt class="xref docutils literal"><span class="pre">False</span></tt> and feed items are truncated.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.HOME_MEMBER_EVENTS">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">HOME_MEMBER_EVENTS</tt><a class="headerlink" href="#motion.settings.HOME_MEMBER_EVENTS" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to show signed-in members their &#8220;Following&#8221; pages as the Motion
+site&#8217;s home page.</p>
+<p>This setting has no effect if the <a title="motion.settings.FEATURED_MEMBER" class="reference internal" href="#motion.settings.FEATURED_MEMBER"><tt class="xref docutils literal"><span class="pre">FEATURED_MEMBER</span></tt></a> setting is also set.</p>
+<p>By default, this setting is <tt class="xref docutils literal"><span class="pre">False</span></tt> (the group events page is the home page).</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.ITEMS_PER_FEED">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">ITEMS_PER_FEED</tt><a class="headerlink" href="#motion.settings.ITEMS_PER_FEED" title="Permalink to this definition">¶</a></dt>
+<dd><p>How many items to put in the site&#8217;s XML feeds.</p>
+<p>This setting affects how many events are in the group events feed, how many
+posts are in a member&#8217;s feed, and how many comments are in a post&#8217;s comments
+feed.</p>
+<p>By default, 18 items are shown in feeds.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.LINK_TITLE_LENGTH">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">LINK_TITLE_LENGTH</tt><a class="headerlink" href="#motion.settings.LINK_TITLE_LENGTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>How many characters to include in the title of a link post.</p>
+<p>If a link post has a longer title, it is truncated to this many characters.
+Note titles are only shown at all if the <a title="motion.settings.USE_TITLES" class="reference internal" href="#motion.settings.USE_TITLES"><tt class="xref docutils literal"><span class="pre">USE_TITLES</span></tt></a> setting is <tt class="xref docutils literal"><span class="pre">True</span></tt>.</p>
+<p>By default, the first 60 characters of link posts&#8217; titles are used.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.MEMBERS_PER_PAGE">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">MEMBERS_PER_PAGE</tt><a class="headerlink" href="#motion.settings.MEMBERS_PER_PAGE" title="Permalink to this definition">¶</a></dt>
+<dd><p>How many members to show on pages of members lists.</p>
+<p>This setting governs how many members are shown per page in the group members
+list and the lists of members following or being followed by another member of
+the group. Depending on the theme your Motion site uses, the members lists may
+be shown in three columns; for these themes, use a multiple of three for this
+setting to avoid incomplete rows.</p>
+<p>By default, 18 members are shown per page.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.OAUTH_CONSUMER_KEY">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">OAUTH_CONSUMER_KEY</tt><a class="headerlink" href="#motion.settings.OAUTH_CONSUMER_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>The key portion of your TypePad API consumer token.</p>
+<p>Set this to the &#8220;Consumer Key&#8221; portion of the API key.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.OAUTH_CONSUMER_SECRET">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">OAUTH_CONSUMER_SECRET</tt><a class="headerlink" href="#motion.settings.OAUTH_CONSUMER_SECRET" title="Permalink to this definition">¶</a></dt>
+<dd><p>The secret portion of your TypePad API consumer token.</p>
+<p>Set this to the &#8220;Consumer Secret&#8221; portion of the API key.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.OAUTH_GENERAL_PURPOSE_KEY">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">OAUTH_GENERAL_PURPOSE_KEY</tt><a class="headerlink" href="#motion.settings.OAUTH_GENERAL_PURPOSE_KEY" title="Permalink to this definition">¶</a></dt>
+<dd><p>The key portion of your TypePad API anonymous access token.</p>
+<p>Set this to the &#8220;Anonymous Access Key&#8221; portion of the API key.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.OAUTH_GENERAL_PURPOSE_SECRET">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">OAUTH_GENERAL_PURPOSE_SECRET</tt><a class="headerlink" href="#motion.settings.OAUTH_GENERAL_PURPOSE_SECRET" title="Permalink to this definition">¶</a></dt>
+<dd><p>The secret portion of your TypePad API anonymous access secret.</p>
+<p>Set this to the &#8220;Anonymous Access Secret&#8221; portion of the API key.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.PARAGRAPH_WORDCOUNT">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">PARAGRAPH_WORDCOUNT</tt><a class="headerlink" href="#motion.settings.PARAGRAPH_WORDCOUNT" title="Permalink to this definition">¶</a></dt>
+<dd><p>How many words of each post to show on the group events page.</p>
+<p>By default, 100 words are shown.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.PHOTO_MAX_WIDTH">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">PHOTO_MAX_WIDTH</tt><a class="headerlink" href="#motion.settings.PHOTO_MAX_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum width in pixels at which to display photos.</p>
+<p>This setting should specify the width of the column in your theme where photo
+posts are displayed, in pixels. Photos wider than this size may be posted to
+the group, but they will be constrained to display at this width.</p>
+<p>By default, <a title="motion.settings.PHOTO_MAX_WIDTH" class="reference internal" href="#motion.settings.PHOTO_MAX_WIDTH"><tt class="xref docutils literal"><span class="pre">PHOTO_MAX_WIDTH</span></tt></a> is 460.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.POST_TYPES">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">POST_TYPES</tt><a class="headerlink" href="#motion.settings.POST_TYPES" title="Permalink to this definition">¶</a></dt>
+<dd><p>The post type IDs and labels displayed in the member posting interface.</p>
+<p>This setting is a list of dictionaries, each dictionary containing an <tt class="docutils literal"><span class="pre">id</span></tt>,
+the code identifier for a type of post; and a <tt class="docutils literal"><span class="pre">label</span></tt>, the localized name
+for that type of post. To remove a post type from the posting interface,
+redefine this setting without that type.</p>
+<p>By default, this setting defines <tt class="docutils literal"><span class="pre">post</span></tt>, <tt class="docutils literal"><span class="pre">link</span></tt>, <tt class="docutils literal"><span class="pre">photo</span></tt>, <tt class="docutils literal"><span class="pre">video</span></tt>, and
+<tt class="docutils literal"><span class="pre">audio</span></tt> post types.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.THEME">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">THEME</tt><a class="headerlink" href="#motion.settings.THEME" title="Permalink to this definition">¶</a></dt>
+<dd><p>The name of the theme to use for this Motion site.</p>
+<p>This setting controls which <tt class="docutils literal"><span class="pre">theme</span></tt> path of the stylesheet to include in the
+Motion site pages. For example, if you added a <tt class="docutils literal"><span class="pre">kittens</span></tt> theme and set
+<a title="motion.settings.THEME" class="reference internal" href="#motion.settings.THEME"><tt class="xref docutils literal"><span class="pre">THEME</span></tt></a> to <tt class="docutils literal"><span class="pre">kittens</span></tt>, the Motion templates would include the
+<tt class="docutils literal"><span class="pre">themes/kittens/style.css</span></tt> stylesheet.</p>
+<p>By default, the <tt class="docutils literal"><span class="pre">motion</span></tt> theme is used.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.USE_TITLES">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">USE_TITLES</tt><a class="headerlink" href="#motion.settings.USE_TITLES" title="Permalink to this definition">¶</a></dt>
+<dd><p>Whether to provide titles in the posting interface.</p>
+<p>If set to <tt class="xref docutils literal"><span class="pre">True</span></tt>, the Motion posting interface will include a &#8220;more options&#8221;
+section that includes a field for post titles.</p>
+<p>By default, <a title="motion.settings.USE_TITLES" class="reference internal" href="#motion.settings.USE_TITLES"><tt class="xref docutils literal"><span class="pre">USE_TITLES</span></tt></a> is <tt class="xref docutils literal"><span class="pre">False</span></tt> and titles are not used.</p>
+</dd></dl>
+
+<dl class="data">
+<dt id="motion.settings.VIDEO_MAX_WIDTH">
+<tt class="descclassname">motion.settings.</tt><tt class="descname">VIDEO_MAX_WIDTH</tt><a class="headerlink" href="#motion.settings.VIDEO_MAX_WIDTH" title="Permalink to this definition">¶</a></dt>
+<dd><p>The maximum width in pixels at which to display video embeds.</p>
+<p>This setting should specify a safe size at which to embed video in the page,
+equal to or less than the width in pixels of the column in your theme where
+video posts are displayed.</p>
+<p>By default, <a title="motion.settings.VIDEO_MAX_WIDTH" class="reference internal" href="#motion.settings.VIDEO_MAX_WIDTH"><tt class="xref docutils literal"><span class="pre">VIDEO_MAX_WIDTH</span></tt></a> is 400.</p>
+</dd></dl>
+
+</div>
+
+
+          </div>
+        </div>
+      </div>
+      <div class="sphinxsidebar">
+        <div class="sphinxsidebarwrapper">
+            <h4>Previous topic</h4>
+            <p class="topless"><a href="index.html"
+                                  title="previous chapter"><tt class="docutils literal docutils literal docutils literal"><span class="pre">motion</span></tt> – Motion in the TypePad cloud</a></p>
+            <h4>Next topic</h4>
+            <p class="topless"><a href="views.html"
+                                  title="next chapter">Views</a></p>
+            <h3>This Page</h3>
+            <ul class="this-page-menu">
+              <li><a href="sources/settings.txt"
+                     rel="nofollow">Show Source</a></li>
+            </ul>
+          <div id="searchbox" style="display: none">
+            <h3>Quick search</h3>
+              <form class="search" action="search.html" method="get">
+                <input type="text" name="q" size="18" />
+                <input type="submit" value="Go" />
+                <input type="hidden" name="check_keywords" value="yes" />
+                <input type="hidden" name="area" value="default" />
+              </form>
+              <p class="searchtip" style="font-size: 90%">
+              Enter search terms or a module, class or function name.
+              </p>
+          </div>
+          <script type="text/javascript">$('#searchbox').show(0);</script>
+        </div>
+      </div>
+      <div class="clearer"></div>
+    </div>
+    <div class="related">
+      <h3>Navigation</h3>
+      <ul>
+        <li class="right" style="margin-right: 10px">
+          <a href="genindex.html" title="General Index"
+             >index</a></li>
+        <li class="right" >
+          <a href="modindex.html" title="Global Module Index"
+             >modules</a> |</li>
+        <li class="right" >
+          <a href="views.html" title="Views"
+             >next</a> |</li>
+        <li class="right" >
+          <a href="index.html" title="motion – Motion in the TypePad cloud"
+             >previous</a> |</li>
+        <li><a href="index.html">motion v1.1 documentation</a> &raquo;</li> 
+      </ul>
+    </div>
+    <div class="footer">
+      &copy; Copyright 2009, Six Apart.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+    </div>
+  </body>
+</html>
