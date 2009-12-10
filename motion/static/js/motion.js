@@ -402,7 +402,7 @@ $(document).ready(function () {
                             };
                             if (f['crosspost']) {
                                 crosspost = [];
-                                for (var i in f.elements) {
+                                for (var i = 0, ii = f.elements.length; i < ii; i++) {
                                     var fld = f.elements[i];
                                     if ((fld.name == 'crosspost') && fld.checked)
                                         crosspost.push(fld.value);
