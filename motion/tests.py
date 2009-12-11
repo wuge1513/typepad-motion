@@ -139,12 +139,6 @@ class TwittilizeTestCase(unittest.TestCase):
                 '<a href="http://twitter.com/search?q=%23scifi">#scifi</a>'),
         )
 
-    def test_safety(self):
-        self.run_tests(
-            ('I was <a href="http://example.com/awesome">totally</a> <script>bad_things()</script> and like hey',
-             'I was &lt;a href=&quot;http://example.com/awesome&quot;&gt;totally&lt;/a&gt; &lt;script&gt;bad_things()&lt;/script&gt; and like hey'),
-        )
-
     def test_futureproof(self):
         """Checks that the auto-linking doesn't auto-link strings that are
         already linked."""
@@ -169,4 +163,20 @@ class TwittilizeTestCase(unittest.TestCase):
                 '<a href="http://bit.ly/nmpoK" rel="nofollow">http://bit.ly/nmpoK</a> '
                 '<a href="http://twitter.com/search?q=#lego">#lego</a> '
                 '<a href="http://twitter.com/search?q=#scifi">#scifi</a>'),
+            ('RT <a href="http://twitter.com/monkinetic">@monkinetic</a> '
+                'Grease Alley continues to grow: '
+                '<a href="http://bit.ly/nmpoK" rel="nofollow">http://bit.ly/nmpoK</a> '
+                '<a href="http://twitter.com/search?q=#lego">#lego</a> '
+                '<a href="http://twitter.com/search?q=#scifi">#scifi</a>',
+             'RT <a href="http://twitter.com/monkinetic">@monkinetic</a> '
+                'Grease Alley continues to grow: '
+                '<a href="http://bit.ly/nmpoK" rel="nofollow">http://bit.ly/nmpoK</a> '
+                '<a href="http://twitter.com/search?q=#lego">#lego</a> '
+                '<a href="http://twitter.com/search?q=#scifi">#scifi</a>'),
+            (mark_safe('&quot;quoted&quot;'),
+             '&quot;quoted&quot;'),
+            ('"quoted"',
+             '&quot;quoted&quot;'),
+            ('&quot;quoted&quot;',
+             '&quot;quoted&quot;'),
         )

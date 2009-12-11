@@ -97,6 +97,15 @@ def html_escaped_to_uri_escaped(text):
 @needs_autoescape
 @stringfilter
 def twittilize(tweet, autoescape=None):
+    # If the tweet post is already escaped with HTML entities or
+    # contains a link (since TypePad is now autolinking new posts),
+    # return it as-is. TypePad already escapes <, > and & to HTML
+    # entities.
+    if tweet.find('<a href') != -1 \
+        or re.search(html_numeric_entity_re, tweet) \
+        or re.search(html_named_entity_re, tweet):
+        return mark_safe(tweet)
+
     if autoescape:
         tweet = conditional_escape(tweet)
 
