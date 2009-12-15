@@ -1,6 +1,14 @@
 typepad-motion Changelog
 ========================
 
+1.1.1 (2009-12-16)
+------------------
+
+* Fixed a compose form IE bug in Motion javascript affecting users with crossposting options.
+* Updated the group event feed with PubSubHubbub support.
+* Removed some template files that were relocated to 'typepadapp' with the Motion 1.1 release.
+
+
 1.1 (2009-11-24)
 ----------------
 
@@ -16,15 +24,18 @@ typepad-motion Changelog
 * Changed video posts attribution say "shared a video from" instead of "posted from" to better indicate the video was not necessarily authored by the member posting it.
 * Fix for thumbnail selection of photo posts.
 
+
 1.0.2 (2009-10-12)
 ------------------
 
 * Updated Django dependency for their security release.
 
+
 1.0.1 (2009-10-02)
 ------------------
 
 * Version bump for PyPi packaging issues.
+
 
 1.0 (2009-09-30)
 ----------------
