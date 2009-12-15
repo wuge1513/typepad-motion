@@ -43,6 +43,7 @@ import typepad
 class PublicEventsFeed(TypePadEventFeed):
     title_template = 'motion/assets/feed_title.html'
     description_template = 'motion/assets/feed.html'
+    hub_url = 'http://hubbub.api.typepad.com/'
 
     def title(self):
         return _("Recent Entries in %(group)s") \
