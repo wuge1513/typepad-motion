@@ -88,7 +88,7 @@ MIDDLEWARE_CLASSES = (
     'typepadapp.middleware.ConfigurationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'djangoflash.middleware.FlashMiddleware',
-    'typepadapp.debug_middleware.DebugToolbarMiddleware',
+    'typepadapp.middleware.debug.DebugToolbarMiddleware',
     'typepadapp.middleware.ApplicationMiddleware',
     'typepadapp.middleware.UserAgentMiddleware',
     'typepadapp.middleware.AuthorizationExceptionMiddleware',
