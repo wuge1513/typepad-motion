@@ -1,0 +1,667 @@
+# SOME DESCRIPTIVE TITLE.
+# Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
+# This file is distributed under the same license as the PACKAGE package.
+# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PACKAGE VERSION\n"
+"Report-Msgid-Bugs-To: \n"
+"POT-Creation-Date: 2010-01-06 11:40-0800\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+
+#: feeds.py:49
+#, python-format
+msgid "Recent Entries in %(group)s"
+msgstr ""
+
+#: feeds.py:85
+#, python-format
+msgid "Recent Entries from %(user)s"
+msgstr ""
+
+#: feeds.py:94
+#, python-format
+msgid "Recent Entries from %(user)s in %(group)s."
+msgstr ""
+
+#: feeds.py:115
+#, python-format
+msgid "Recent Comments on %(title)s"
+msgstr ""
+
+#: feeds.py:123
+#, python-format
+msgid "Recent Comments on %(title)s in %(group)s."
+msgstr ""
+
+#: forms.py:70
+msgid "An error occurred while uploading your file. Please try again."
+msgstr ""
+
+#: forms.py:82 forms.py:91
+msgid "This field is required."
+msgstr ""
+
+#: settings.py:196
+msgid "Text"
+msgstr ""
+
+#: settings.py:197
+msgid "Link"
+msgstr ""
+
+#: settings.py:198
+msgid "Photo"
+msgstr ""
+
+#: settings.py:199
+msgid "Video"
+msgstr ""
+
+#: settings.py:200
+msgid "Audio"
+msgstr ""
+
+#: views.py:209
+msgid "Please correct the errors below."
+msgstr ""
+
+#: views.py:225
+msgid "Post created successfully!"
+msgstr ""
+
+#: views.py:373
+msgid "The requested post has been removed from this site."
+msgstr ""
+
+#: views.py:434
+msgid "Comment deleted."
+msgstr ""
+
+#: views.py:437
+msgid "Post deleted."
+msgstr ""
+
+#: views.py:441
+msgid "You are not authorized to delete this asset."
+msgstr ""
+
+#: views.py:460
+msgid "Comment created successfully!"
+msgstr ""
+
+#: views.py:663
+msgid "This user can no longer post."
+msgstr ""
+
+#: views.py:667
+msgid "This user's posts will be moderated."
+msgstr ""
+
+#: views.py:670
+msgid "This user is no longer moderated."
+msgstr ""
+
+#: views.py:766
+#, python-format
+msgid "Thanks for the %(type)s!"
+msgstr ""
+
+#: templates/motion/base/base.html:47
+msgid "POST STUFF"
+msgstr ""
+
+#: templates/motion/base/error.html:5
+msgid "An Error Occured"
+msgstr ""
+
+#: templates/motion/base/error.html:9
+msgid "Go home?"
+msgstr ""
+
+#: templates/motion/base/events.html:5
+#, python-format
+msgid "%(super)s: Recent Activity"
+msgstr ""
+
+#: templates/motion/base/events.html:21
+msgid "Your posting privileges on this site have been suspended."
+msgstr ""
+
+#: templates/motion/base/featured_member.html:19
+#, python-format
+msgid "%(name)s&rsquo;s Recent Activity"
+msgstr ""
+
+#: templates/motion/base/following.html:13
+#, python-format
+msgid ""
+"\n"
+"<p><a href=\"%(members_url)s\">Follow members</a> of %(group_name)s and see "
+"their updates as they get posted.</p>\n"
+"<p>Once the people you follow add new content, their updates will show here."
+"</p>\n"
+msgstr ""
+
+#: templates/motion/base/member.html:5
+#, python-format
+msgid "%(super)s: %(name)s&rsquo;s Profile"
+msgstr ""
+
+#: templates/motion/base/member.html:10
+#, python-format
+msgid "Recent Entries from %(name)s"
+msgstr ""
+
+#: templates/motion/base/member.html:39
+msgid "About Me:"
+msgstr ""
+
+#: templates/motion/base/member.html:43
+msgid "Location:"
+msgstr ""
+
+#: templates/motion/base/member.html:47
+msgid "Homepage:"
+msgstr ""
+
+#: templates/motion/base/member.html:51
+msgid "Interests:"
+msgstr ""
+
+#: templates/motion/base/member.html:62
+msgid "TypePad"
+msgstr ""
+
+#: templates/motion/base/member.html:64
+msgid "Edit my TypePad profile"
+msgstr ""
+
+#: templates/motion/base/member.html:64
+msgid "manage my TypePad memberships"
+msgstr ""
+
+#: templates/motion/base/member.html:66
+msgid "View full TypePad profile"
+msgstr ""
+
+#: templates/motion/base/member.html:77
+msgid "Recent Activity"
+msgstr ""
+
+#: templates/motion/base/members.html:8
+#, python-format
+msgid "%(super)s: Members"
+msgstr ""
+
+#: templates/motion/base/members.html:14
+msgid "Export Member List"
+msgstr ""
+
+#: templates/motion/base/members.html:20
+#, python-format
+msgid ""
+"\n"
+"                %(name)s follows 1 person.\n"
+"            "
+msgid_plural ""
+"\n"
+"                %(name)s follows %(count)s people.\n"
+"            "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/motion/base/members.html:26
+#, python-format
+msgid ""
+"\n"
+"                %(name)s&rsquo;s 1 Follower\n"
+"            "
+msgid_plural ""
+"\n"
+"                %(name)s&rsquo;s %(count)s Followers\n"
+"            "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/motion/base/members.html:33
+#: templates/motion/base/widgets/members.html:5
+#, python-format
+msgid ""
+"\n"
+"            1 Member\n"
+"        "
+msgid_plural ""
+"\n"
+"            %(count)s Members\n"
+"        "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/motion/base/members.html:39
+#, python-format
+msgid ""
+"\n"
+"                Showing %(offset)s-%(end_index)s\n"
+"            "
+msgstr ""
+
+#: templates/motion/base/members.html:54
+msgid ""
+"To follow a member, hover over their picture and click &lsquo;Follow&rsquo;."
+msgstr ""
+
+#: templates/motion/base/permalink.html:23
+msgid "Recent Comments"
+msgstr ""
+
+#: templates/motion/base/permalink.html:46
+#, python-format
+msgid ""
+"\n"
+"                    1 Comment\n"
+"                "
+msgid_plural ""
+"\n"
+"                    %(count)s Comments\n"
+"                "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/motion/base/permalink.html:60
+msgid "More"
+msgstr ""
+
+#: templates/motion/base/permalink.html:68
+msgid "Leave a comment"
+msgstr ""
+
+#: templates/motion/base/permalink.html:81
+#: templates/motion/base/bits/compose_form.html:61
+msgid "Post"
+msgstr ""
+
+#: templates/motion/base/permalink.html:82
+msgid "Posting comment..."
+msgstr ""
+
+#: templates/motion/base/permalink.html:91
+#, python-format
+msgid ""
+"\n"
+"                <a href=\"%(login_url)s?next=%(next)s\">Sign in or join %"
+"(group_name)s</a> to add a comment.\n"
+"            "
+msgstr ""
+
+#: templates/motion/base/assets/bits/delete.html:11
+#, python-format
+msgid ""
+"\n"
+"                'Are you sure you want to delete this %(type)s? This action "
+"cannot be undone.'\n"
+"            "
+msgstr ""
+
+#: templates/motion/base/assets/bits/delete.html:15
+#, python-format
+msgid ""
+"\n"
+"                \"Delete %(type)s\"\n"
+"            "
+msgstr ""
+
+#: templates/motion/base/assets/bits/delete.html:18
+msgid "Delete"
+msgstr ""
+
+#: templates/motion/base/assets/bits/footer.html:7
+#, python-format
+msgid ""
+"\n"
+"            1 <span>Comment</span>\n"
+"        "
+msgid_plural ""
+"\n"
+"            %(count)s <span>Comments</span>\n"
+"        "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/motion/base/assets/bits/footer.html:25
+#, python-format
+msgid ""
+"\n"
+"                    <a rel=\"bookmark\" href=\"%(url)s\">%(timestamp)s</a>\n"
+"                    "
+msgstr ""
+
+#: templates/motion/base/assets/bits/header.html:10
+msgid "posted from"
+msgstr ""
+
+#: templates/motion/base/assets/bits/header.html:23
+msgid "posted"
+msgstr ""
+
+#: templates/motion/base/assets/bits/header/video.html:5
+msgid "shared a video from"
+msgstr ""
+
+#: templates/motion/base/assets/body/comment.html:11
+#, python-format
+msgid ""
+"\n"
+"                <span class=\"vcard author\"><a href=\"%(author_url)s\">%"
+"(name)s</a></span> commented on an <a href=\"%(url)s\">%(type)s post by %"
+"(author)s</a> <abbr class=\"published\" title=\"%(published)s\">%(timestamp)"
+"s</abbr>.\n"
+"            "
+msgstr ""
+
+#: templates/motion/base/assets/body/comment.html:15
+#, python-format
+msgid ""
+"\n"
+"                <span class=\"vcard author\"><a href=\"%(author_url)s\">%"
+"(name)s</a></span> commented on a <a href=\"%(url)s\">%(type)s by %(author)"
+"s</a> <abbr class=\"published\" title=\"%(published)s\">%(timestamp)s</"
+"abbr>.\n"
+"            "
+msgstr ""
+
+#: templates/motion/base/assets/body/favorite.html:12
+#, python-format
+msgid ""
+"%(actor_name)s favorited an <a href=\"%(url)s\">%(post_type)s by %"
+"(author_name)s</a> <abbr class=\"published\" title=\"%(published)s\">%"
+"(timestamp)s</abbr>."
+msgstr ""
+
+#: templates/motion/base/assets/body/favorite.html:14
+#, python-format
+msgid ""
+"%(actor_name)s favorited a <a href=\"%(url)s\">%(post_type)s by %"
+"(author_name)s</a> <abbr class=\"published\" title=\"%(published)s\">%"
+"(timestamp)s</abbr>."
+msgstr ""
+
+#: templates/motion/base/assets/body/photo.html:38
+msgid "original"
+msgstr ""
+
+#: templates/motion/base/banners/footer.html:6
+#: templates/motion/base/pages/terms.html:4
+#: templates/motion/base/pages/terms.html:8
+msgid "Terms of Service"
+msgstr ""
+
+#: templates/motion/base/banners/footer.html:8
+msgid "Privacy"
+msgstr ""
+
+#: templates/motion/base/banners/footer.html:10
+msgid "Copyright &copy; 2009 Six Apart Ltd. All rights reserved."
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:15
+msgid "Add a post!"
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:16
+msgid "Add a link!"
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:17
+msgid "Add a photo!"
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:18
+msgid "Add a video!"
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:19
+msgid "Add an audio post!"
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:23
+msgid "URL of a web page."
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:24
+msgid "URL of a YouTube or Vimeo video."
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:27
+msgid "Select an audio file"
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:28
+msgid "Select a photo file"
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:31
+msgid "Only MP3 audio files are supported."
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:32
+msgid "Only GIF, JPEG and PNG image files are supported."
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:44
+msgid "Also post to..."
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:59
+msgid "+ more options"
+msgstr ""
+
+#: templates/motion/base/bits/compose_form.html:62
+msgid "Posting..."
+msgstr ""
+
+#: templates/motion/base/bits/member_status.html:5
+#, python-format
+msgid ""
+"\n"
+"    %(name)s has been banned from this site.\n"
+"    "
+msgstr ""
+
+#: templates/motion/base/bits/member_status.html:12
+#, python-format
+msgid ""
+"\n"
+"        %(name)s is no longer a member of this site, but their activity is "
+"archived.\n"
+"        "
+msgstr ""
+
+#: templates/motion/base/bits/navigation.html:17
+msgid "Home"
+msgstr ""
+
+#: templates/motion/base/bits/navigation.html:20
+#: templates/motion/base/bits/navigation.html:39
+#: templates/motion/base/bits/navigation.html:43
+#: templates/motion/base/bits/navigation.html:54
+msgid "Everyone"
+msgstr ""
+
+#: templates/motion/base/bits/navigation.html:24
+#: templates/motion/base/bits/navigation.html:36
+#: templates/motion/base/bits/navigation.html:58
+#: templates/motion/base/widgets/following.html:3
+#: templates/motion/base/widgets/following.html:8
+msgid "Following"
+msgstr ""
+
+#: templates/motion/base/bits/navigation.html:28
+#: templates/motion/base/bits/navigation.html:47
+#: templates/motion/base/bits/navigation.html:62
+msgid "Members"
+msgstr ""
+
+#: templates/motion/base/bits/pagination.html:4
+#, python-format
+msgid ""
+"\n"
+"            Page %(number)s of %(total)s\n"
+"        "
+msgstr ""
+
+#: templates/motion/base/bits/pagination.html:9
+msgid "&#171; Previous"
+msgstr ""
+
+#: templates/motion/base/bits/pagination.html:12
+msgid "Next &#187;"
+msgstr ""
+
+#: templates/motion/base/bits/profile.html:9
+#, python-format
+msgid ""
+"\n"
+"        More About %(name)s\n"
+"    "
+msgstr ""
+
+#: templates/motion/base/bits/profile.html:29
+msgid "Edit my profile"
+msgstr ""
+
+#: templates/motion/base/pages/privacy.html:4
+#: templates/motion/base/pages/privacy.html:8
+msgid "Privacy Policy"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:4
+msgid "Administrative Options"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:8
+#, python-format
+msgid "E-mail %(name)s"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:16
+msgid ""
+"'Are you sure you want to un-ban this user? They will be able to rejoin this "
+"group.'"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:18
+#, python-format
+msgid "Un-ban %(name)s"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:26
+msgid "Moderation Status:"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:28
+msgid "Moderate"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:29
+msgid "Cannot post"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:30
+msgid "Unmoderated"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:32
+msgid "Set"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:38
+msgid ""
+"'Are you sure you want to ban this user? They will no longer be a member of "
+"the group and will be unable to post, comment, or rejoin.'"
+msgstr ""
+
+#: templates/motion/base/widgets/admin.html:40
+#, python-format
+msgid "Ban %(name)s"
+msgstr ""
+
+#: templates/motion/base/widgets/ads.html:4
+msgid "Sponsored by..."
+msgstr ""
+
+#: templates/motion/base/widgets/elsewhere.html:4
+msgid "Elsewhere"
+msgstr ""
+
+#: templates/motion/base/widgets/favorited.html:5
+#, python-format
+msgid ""
+"\n"
+"            1 person made this a favorite\n"
+"        "
+msgid_plural ""
+"\n"
+"            %(count)s people made this a favorite\n"
+"        "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/motion/base/widgets/favorited.html:22
+msgid "(only first 50 shown)"
+msgstr ""
+
+#: templates/motion/base/widgets/followers.html:7
+msgid "Followers"
+msgstr ""
+
+#: templates/motion/base/widgets/followers.html:15
+msgid ""
+"\n"
+"                    Follower\n"
+"                "
+msgid_plural ""
+"\n"
+"                    Followers\n"
+"                "
+msgstr[0] ""
+msgstr[1] ""
+
+#: templates/motion/base/widgets/followers.html:37
+#: templates/motion/base/widgets/following.html:29
+#: templates/motion/base/widgets/members.html:21
+msgid "view all"
+msgstr ""
+
+#: templates/motion/base/widgets/signin.html:7
+#, python-format
+msgid ""
+"\n"
+"                <a href=\"%(login_url)s?next=%(request_path)s\">Sign in or "
+"join %(group_name)s</a>\n"
+"            "
+msgstr ""
+
+#: templates/motion/base/widgets/signin.html:11
+#, python-format
+msgid "Hi <a href=\"%(url)s\">%(name)s</a>"
+msgstr ""
+
+#: templates/motion/base/widgets/signin.html:13
+msgid "Profile"
+msgstr ""
+
+#: templates/motion/base/widgets/signin.html:18
+msgid "Moderation"
+msgstr ""
+
+#: templates/motion/base/widgets/signin.html:23
+msgid "Sign out"
+msgstr ""
