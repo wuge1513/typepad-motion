@@ -84,11 +84,11 @@ TEMPLATE_LOADERS = (
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
     'django.middleware.locale.LocaleMiddleware',
-    'typepadapp.csrf_middleware.CsrfMiddleware', # django.contrib.csrf.middleware
-    'typepadapp.middleware.ConfigurationMiddleware',
+    'django.contrib.csrf.middleware.CsrfMiddleware',
+    'typepadapp.middleware.config.ConfigurationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'djangoflash.middleware.FlashMiddleware',
-    'typepadapp.debug_middleware.DebugToolbarMiddleware',
+    'typepadapp.middleware.debug.DebugToolbarMiddleware',
     'typepadapp.middleware.ApplicationMiddleware',
     'typepadapp.middleware.UserAgentMiddleware',
     'typepadapp.middleware.AuthorizationExceptionMiddleware',
