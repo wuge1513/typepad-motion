@@ -13,7 +13,7 @@
             <a href="{{ user.get_absolute_url }}">{% trans "Profile" %}</a>
 
             {% if moderation %}
-            {% if request.user.is_superuser %}
+            {% if permissions.is_admin %}
             <span class="separator">|</span>
             <a href="{% url moderation_home %}">{% trans "Moderation" %} ({{ moderation.count }})</a>
             {% endif %}

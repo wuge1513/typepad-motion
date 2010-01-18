@@ -171,7 +171,7 @@ def asset_meta(request):
         return http.HttpResponse('')
 
     user_id = request.user.url_id
-    admin_user = request.user.is_superuser
+    admin_user = request.user.is_group_admin(request.group)
 
     favs = []
     opts = []

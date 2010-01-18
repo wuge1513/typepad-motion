@@ -78,6 +78,8 @@ AUTHENTICATION_BACKENDS = (
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
+    # must be listed ahead of the app_directories template loader
+    'typepadapp.template.loaders.groups.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
 )
 
@@ -88,9 +90,9 @@ MIDDLEWARE_CLASSES = (
     'typepadapp.middleware.config.ConfigurationMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'djangoflash.middleware.FlashMiddleware',
-    'typepadapp.middleware.debug.DebugToolbarMiddleware',
     'typepadapp.middleware.ApplicationMiddleware',
     'typepadapp.middleware.UserAgentMiddleware',
+    'typepadapp.middleware.debug.DebugToolbarMiddleware',
     'typepadapp.middleware.AuthorizationExceptionMiddleware',
 )
 
@@ -114,6 +116,7 @@ INSTALLED_APPS = (
 ##############################
 # MOTION INSTALL SETTINGS    #
 ##############################
+
 SITE_ID = 1
 SECRET_KEY = ''
 

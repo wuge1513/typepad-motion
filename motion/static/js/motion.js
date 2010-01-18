@@ -123,7 +123,7 @@ $(document).ready(function () {
             // don't do anything if already in progress
             if ($(this).hasClass('loading')) return false;
             // show loading graphic
-            $(this).toggleClass('loading');
+            $(this).addClass('loading');
             // favorite or un-favorite?
             var action = $(this).hasClass('scored') ? "unfavorite" : "favorite";
             // id="favorite-6a0117a70cb0017bf60117d8ad20014cb2"
@@ -149,12 +149,12 @@ $(document).ready(function () {
                         favitem.html('&nbsp;');
                     // show star status
                     favitem.toggleClass('scored');
-                    favitem.toggleClass('loading');
+                    favitem.removeClass('loading');
                 },
                 error: function(xhr, txtStatus, errorThrown) {
                     alert('An error occurred: ' + xhr.status + ' -- ' + xhr.statusText);
                     // restore old star status
-                    favitem.toggleClass('loading');
+                    favitem.removeClass('loading');
                 }
             });
             return false;
@@ -196,18 +196,18 @@ $(document).ready(function () {
         if (user && user.is_authenticated) {
             var checkbox = $(this);
             // toggle loading graphic
-            checkbox.hide().next().show();
+            checkbox.hide().prev().show();
             // update crossposting options
             $.ajax({
                 type: "POST",
                 url: settings.crosspost_options_url,
                 data: {"option_value": checkbox.attr("value"), "checked": checkbox.attr("checked")},
                 success: function(data){
-                    checkbox.show().next().hide();
+                    checkbox.show().prev().hide();
                 },
                 error: function(xhr, txtStatus, errorThrown) {
                     alert('An error occurred: ' + xhr.status + ' -- ' + xhr.statusText);
-                    checkbox.show().next().hide();
+                    checkbox.show().prev().hide();
                 }
             });
         }

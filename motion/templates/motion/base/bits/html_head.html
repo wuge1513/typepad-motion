@@ -36,13 +36,13 @@ var clear_pixel = '{{ settings.media_url }}typepadapp/images/clear.gif';
 var profileUrlTemplate = '{{ settings.frontend_url }}{% url member userid="__profilealias__" %}'.replace('__profilealias__', '<profile-alias>');
 {% if user.is_authenticated %}
 user = {
-    is_authenticated: true,{% if user.is_admin %}
-    is_admin: true,{% endif %}{% if user.is_staff %}
-    is_staff: true,{% endif %}{% if settings.allow_posting and user.can_post %}
+    is_authenticated: true,{% if permissions.is_admin %}
+    is_admin: true,{% endif %}{% if permissions.is_staff %}
+    is_staff: true,{% endif %}{% if settings.allow_posting and permissions.can_post %}
     can_post: true,{% endif %}
     name: '{{ user.display_name|escapejs }}',
     email: '{{ user.email|escapejs }}',
-    url: '{{ user.aboutMe|escapejs }}',
+    url: '{{ user.get_absolute_url|escapejs }}',
     userpic: '{{ user.userpic|escapejs }}'
 };
 {% endif %}

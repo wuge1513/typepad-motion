@@ -116,7 +116,8 @@ class AssetEventView(TypePadView):
 
     def filter_object_list(self, request):
         self.object_list.entries = [event for event in self.object_list.entries
-            if isinstance(event.object, models.Asset) and event.object.is_local]
+            if isinstance(event.object, models.Asset) and \
+                event.object.is_local_for_group(request.group)]
 
         ### Moderation
         if moderation:
@@ -347,7 +348,7 @@ class AssetView(TypePadView):
         # Verify this user is a member of the group.
         entry = self.context['entry']
 
-        if not entry.is_local:
+        if not entry.is_local_for_group(request.group):
             # if this entry isn't local, 404
             raise Http404
 
@@ -422,10 +423,13 @@ class AssetView(TypePadView):
                 typepad.client.complete_batch()
 
             # Only let plain users delete stuff if so configured.
-            if settings.ALLOW_USERS_TO_DELETE_POSTS or request.user.is_superuser:
+            if settings.ALLOW_USERS_TO_DELETE_POSTS or \
+                (request.user.is_authenticated() and \
+                 request.user.is_group_admin(request.group)):
                 try:
                     asset.delete()
-                    signals.asset_deleted.send(sender=self.post, instance=asset, group=request.group)
+                    signals.asset_deleted.send(sender=self.post,
+                        instance=asset, group=request.group)
                 except asset.Forbidden:
                     pass
                 else:
@@ -544,7 +548,9 @@ class MemberView(AssetEventView):
         # do not use cached responses for superuser requests; this ensures
         # that the response contains elements that are only provided to
         # administrators (email address, for instance)
-        member = models.User.get_by_url_id(userid, cache=not request.user.is_superuser)
+        member = models.User.get_by_url_id(userid,
+            cache=(not request.user.is_authenticated()) or \
+                (not request.user.is_group_admin(request.group)))
         user_memberships = member.group_memberships(request.group)
 
         if request.method == 'GET':
@@ -570,7 +576,8 @@ class MemberView(AssetEventView):
             is_member = user_membership.is_member()
             is_blocked = user_membership.is_blocked()
 
-        if not request.user.is_superuser: # admins can see all members
+        if (not request.user.is_authenticated()) or \
+            (not request.user.is_group_admin(request.group)): # admins can see all members
             if not len(self.object_list) and not is_member:
                 # if the user has no events and they aren't a member of the group,
                 # then this is a 404, effectively
@@ -630,7 +637,8 @@ class MemberView(AssetEventView):
                 is_member = user_membership.is_member()
                 is_blocked = user_membership.is_blocked()
 
-            if not request.user.is_superuser or is_admin:
+            if (request.user.is_authenticated() and \
+                not request.user.is_group_admin(request.group)) or is_admin:
                 # must be an admin to ban and cannot ban/unban another admin
                 raise Http404
 

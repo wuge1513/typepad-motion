@@ -1,13 +1,16 @@
 {% load i18n %}
+{% load ifgroupadmin %}
 
-<div class="widget widget-admin-options{% if member.email %} display{% endif %}{% if not member.is_superuser %} display{% endif %}">
+<div class="widget widget-admin-options{% if member.email %} display{% endif %}{% ifgroupadmin member %} display{% endifgroupadmin %}">
     <h3 class="design-highlight-color">{% trans "Administrative Options" %}</h3>
     <div class="widget-content">
     {% block options %}
     {% if member.email %}
         <p><a href="mailto:{{ member.email }}">{% blocktrans with member.display_name as name %}E-mail {{ name }}{% endblocktrans %}</a></p>
     {% endif %}
-    {% if not member.is_superuser and not member.is_featured_member %}
+    {% if not member.is_featured_member %}
+    {% ifgroupadmin member %}
+    {% else %}
         <form id="ban-user-form" action="{{ request.path }}" method="post">
             <input type="hidden" name="form-action" value="ban-user" />
         </form>
@@ -25,7 +28,7 @@
                 <input type="hidden" name="form-action" value="moderate-user" />
                     <label for="moderation-status">{% trans "Moderation Status:" %}</label><br />
                     <select id="moderation-status" name="moderation_status">
-                        <option value="moderate" {% if moderation_moderated %}selected="selected"{% endif %}>{% trans "Moderate" %}</option>
+                        <option value="moderate" {% if moderation_moderated %}selected="selected"{% endif %}>{% trans "Moderated" %}</option>
                         <option value="block" {% if moderation_blocked %}selected="selected"{% endif %}>{% trans "Cannot post" %}</option>
                         <option value="normal" {% if moderation_unmoderated %}selected="selected"{% endif %}>{% trans "Unmoderated" %}</option>
                     </select>
@@ -41,6 +44,7 @@
             </p>
             {% endif %}
         {% endif %}
+    {% endifgroupadmin %}
     {% endif %}
     {% endblock %}
     </div><!-- end .widget-content -->

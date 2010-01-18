@@ -2,7 +2,7 @@
 {% load withblock %}
 
 <!-- Entry -->
-<li id="asset-{{ entry.url_id }}" class="asset {% if event %}action-asset{% endif %} hentry {{ entry.type_id }} {% if event.actor.is_superuser %}admin{% endif %} {% if event.actor.is_featured_member %}featured{% endif %} {% if entry.source %}elsewhere elsewhere-{{ entry.source.provider.name|lower }}{% endif %} {% if not entry.is_local %}external{% endif %}">
+<li id="asset-{{ entry.url_id }}" class="asset {% if event %}action-asset{% endif %} hentry {{ entry.type_id }} {% if event.actor.is_featured_member %}featured{% endif %} {% if entry.source %}elsewhere elsewhere-{{ entry.source.provider.name|lower }}{% endif %}">
 
 {% if event and event.is_added_favorite %}
     {% include "motion/assets/body/favorite.html" %}

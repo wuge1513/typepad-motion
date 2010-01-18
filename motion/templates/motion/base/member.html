@@ -11,7 +11,7 @@
 {% endblock %}
 
 {% block beta_widgets %}
-    {% if user.is_superuser %}
+    {% if permissions.is_admin %}
     {% include "motion/widgets/admin.html" %}
     {% endif %}
     {% include "motion/widgets/typepad_frame.html" %}
