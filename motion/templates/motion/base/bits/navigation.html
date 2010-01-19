@@ -19,7 +19,7 @@
                 <li class="events{% if request.path|regex_starts_with:url_group_events %} current{% endif %}">
                     <a href="{{ url_group_events }}">{% trans "Everyone" %}</a>
                 </li>
-                {% if request.user.is_authenticated %}
+                {% if request.typepad_user.is_authenticated %}
                     <li class="following{% if request.path|regex_starts_with:url_following_events %} current{% endif %}">
                         <a href="{{ url_following_events }}">{% trans "Following" %}</a>
                     </li>
@@ -31,7 +31,7 @@
             {% else %}{% if settings.home_member_events %}
 
                 {# Following events is homepage #}
-                {% if request.user.is_authenticated %}
+                {% if request.typepad_user.is_authenticated %}
                     <li class="home{% ifequal view 'home' %} current{% endifequal %} {% if request.path|regex_starts_with:url_following_events %} current{% endif %}">
                         <a href="{{ url_home }}">{% trans "Following" %}</a>
                     </li>
@@ -53,7 +53,7 @@
                 <li class="home{% ifequal view 'home' %} current{% endifequal %}{% if request.path|regex_starts_with:url_group_events %} current{% endif %}">
                     <a href="{{ url_home }}">{% trans "Everyone" %}</a>
                 </li>
-                {% if request.user.is_authenticated %}
+                {% if request.typepad_user.is_authenticated %}
                 <li class="following{% if request.path|regex_starts_with:url_following_events %} current{% endif %}">
                     <a href="{{ url_following_events }}">{% trans "Following" %}</a>
                 </li>
