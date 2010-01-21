@@ -28,7 +28,12 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from django.db import models
+from django.conf import settings
+from django.core.cache import cache
+
 from typepadapp.models.users import User
+from typepadapp.models.assets import Comment
+from typepadapp import signals
 
 
 class CrosspostOptions(models.Model):
@@ -43,3 +48,42 @@ class CrosspostOptions(models.Model):
     @property
     def user(self):
         return User.get_by_id(self.user_id)
+
+
+def update_event_stream(sender, instance=None, group=None, **kwargs):
+    if group is None:
+        return
+
+    if isinstance(instance, Comment):
+        # ignore comments
+        return
+
+    group_id = group.xid
+    lock_key = 'event_stream_lock:%s' % group_id
+    stream_key = 'event_stream:%s' % group_id
+
+    event = {
+        "asset_id": instance.xid,
+        # "event": event_name,
+        # "ts": instance.published
+    }
+
+    tries = 0
+    while tries < 10:
+        if cache.add(lock_key, 1, 2):
+            # we have a lock
+            events = cache.get(stream_key, [])
+            # add new event
+            events.insert(0, event)
+            if len(events) > 100:
+                events = events[0:100]
+            # update event stream
+            cache.set(stream_key, events, settings.LONG_TERM_CACHE_PERIOD)
+            # release our lock
+            cache.delete(lock_key)
+            return
+        else:
+            # lets retry
+            tries += 1
+
+signals.asset_created.connect(update_event_stream)

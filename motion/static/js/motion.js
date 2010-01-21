@@ -35,7 +35,9 @@ settings = {
     favorite_url: '',
     asset_meta_url: '',
     comments_url: '',
+    asset_ping_url: '',
     crosspost_options_url: '',
+    ajax_ping_frequency: 0,
     phrase: {
         textRequired: 'Please enter some text.',
         URLRequired: 'Please enter a URL.',
@@ -430,7 +432,7 @@ $(document).ready(function () {
             $('#quickpost-error').fadeOut().remove();
             $('#spinner, #spinner-status').fadeIn('fast').css('height',$('#compose').height());
         }
-    };
+    }
 
     // local profile editing
     if ($('#profile-data-form').size()) {
@@ -488,6 +490,38 @@ $(document).ready(function () {
                 }
             }
         });
+    }
+
+    var assets;
+    if (settings.ajax_ping_frequency && (assets = $(".asset[id]"))) {
+        var last_asset = assets.get(0).id;
+        last_asset = last_asset.replace(/^(asset|comment)-/, '');
+        var new_asset_count = 0;
+        function updateStatus() {
+            $.ajax({
+                url: settings.asset_ping_url,
+                type: "POST",
+                data: {"xid": last_asset},
+                dataType: "json",
+                success: function(data) {
+                    last_asset = data['last'];
+                    new_asset_count += data['count'];
+                    if (new_asset_count > 0) {
+                        if (!$("#flash-asset-ping").size()) {
+                            $("#pagebody").before('<div class="flash notice" id="flash-asset-ping"></div>');
+                        }
+                    }
+                    if (new_asset_count == 1) {
+                        $("#flash-asset-ping").html('<a href="#" onclick="window.location.reload()">1 new post</a>');
+                    }
+                    else if (new_asset_count > 1) {
+                        $("#flash-asset-ping").html('<a href="#" onclick="window.location.reload()">' + new_asset_count.toString() + " new posts</a>");
+                    }
+                    window.setTimeout(updateStatus, settings.ajax_ping_frequency * 1000);
+                }
+            });
+        }
+        window.setTimeout(updateStatus, settings.ajax_ping_frequency * 1000);
     }
 
     // Initiate Entry Hover behavior

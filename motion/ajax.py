@@ -31,6 +31,7 @@ import re
 
 from django import http
 from django.conf import settings
+from django.core.cache import cache
 from django.contrib.auth import get_user
 from django.template.loader import render_to_string
 from django.template import RequestContext
@@ -204,6 +205,24 @@ def asset_meta(request):
                     meta[o[0]] = {}
                 meta[o[0]]['can_delete'] = True
     return http.HttpResponse(json.dumps(meta), mimetype='application/json')
+
+
+@ajax_required
+def asset_ping(request):
+    stream_key = 'event_stream:%s' % request.group.xid
+    last = request.POST['xid']
+    events = cache.get(stream_key)
+    resp = {"count": 0, "last": last}
+    if events:
+        match = None
+        if last:
+            match = [i for i, a in enumerate(events) if a['asset_id'] == last]
+        if not match:
+            match = [len(events)]
+        if match:
+            resp = {"count": match[0],
+                "last": events[0]["asset_id"]}
+    return http.HttpResponse(json.dumps(resp), mimetype='application/json')
 
 
 @ajax_required

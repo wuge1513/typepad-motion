@@ -46,11 +46,16 @@ user = {
     userpic: '{{ user.userpic|escapejs }}'
 };
 {% endif %}
+var view = '{{ view|escapejs }}';
 settings.upload_xhr_endpoint = '{{ upload_xhr_endpoint|escapejs }}';
 settings.comments_url = '{% url comments_url %}';
 settings.favorite_url = '{% url favorite_url %}';
 settings.asset_meta_url = '{% url asset_meta_url %}';
-settings.crosspost_options_url = '{% url crosspost_options_url %}';
+settings.crosspost_options_url = '{% url crosspost_options_url %}';{% if settings.ajax_ping_frequency %}
+if ((view == 'home') || (view == 'events')) {
+    settings.asset_ping_url = '{% url asset_ping_url %}';
+    settings.ajax_ping_frequency = {{ settings.ajax_ping_frequency }};
+}{% endif %}
 /* ]]> */
 </script>
 

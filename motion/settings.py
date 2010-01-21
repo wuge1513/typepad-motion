@@ -192,6 +192,15 @@ SESSION_COOKIE_NAME = 'motion'
 AUTH_PROFILE_MODULE = ''
 CACHE_BACKEND = 'locmem:///'
 
+AJAX_PING_FREQUENCY = 0
+"""Controls the duration (in seconds) for requesting whether new posts are
+available.
+
+Assign to a non-zero value to enable this feature. Note: this feature is
+only usable when used with memcached.
+
+"""
+
 POST_TYPES =  [
     { "id": "post", "label": _("Text") },
     { "id": "link", "label": _("Link") },
