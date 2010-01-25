@@ -4,7 +4,7 @@
 <div id="comment-{{ comment.url_id }}" class="comment {% ifequal entry.author.id comment.author.id %}comment-by-author{% endifequal %}{% if comment.suppress %} suppress{% endif %}">
 
     <div class="inner">
-        {% with comment.author as user %}
+        {% with comment.author as typepad_user %}
             {% include "motion/assets/bits/userpic.html" %}
         {% endwith %}
     </div>
