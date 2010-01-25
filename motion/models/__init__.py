@@ -27,7 +27,6 @@
 # ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
 # POSSIBILITY OF SUCH DAMAGE.
 
-from django.db import models
 from django.conf import settings
 from django.core.cache import cache
 
@@ -35,19 +34,10 @@ from typepadapp.models.users import User
 from typepadapp.models.assets import Comment
 from typepadapp import signals
 
-
-class CrosspostOptions(models.Model):
-    """
-        Persists the checked state of user's
-        crosspost options.
-    """
-
-    user_id = models.CharField(max_length=100, unique=True, null=False, blank=False)
-    crosspost = models.CharField(max_length=2000)
-
-    @property
-    def user(self):
-        return User.get_by_id(self.user_id)
+if hasattr(settings, 'KEY_VALUE_STORE_BACKEND'):
+    from motion.models.kv import CrosspostOptions
+else:
+    from motion.models.db import CrosspostOptions
 
 
 def update_event_stream(sender, instance=None, group=None, **kwargs):

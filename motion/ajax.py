@@ -237,9 +237,8 @@ def crosspost_options(request):
     typepad.client.complete_batch()
 
     # Current crossposting options
-    try:
-        co = motion.models.CrosspostOptions.objects.get(user_id=request.user.url_id)
-    except motion.models.CrosspostOptions.DoesNotExist:
+    co = motion.models.CrosspostOptions.get(request.user.url_id)
+    if co is None:
         co = motion.models.CrosspostOptions(user_id=request.user.url_id)
     if co.crosspost:
         options = json.loads(co.crosspost)

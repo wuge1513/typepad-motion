@@ -183,12 +183,10 @@ class AssetPostView(TypePadView):
                     ))
             if len(choices):
                 self.form_instance.fields['crosspost'].choices = choices
-                try:
-                    # Saved crossposting options
-                    co = motion.models.CrosspostOptions.objects.get(user_id=request.user.url_id)
+                # Saved crossposting options
+                co = motion.models.CrosspostOptions.get(request.user.url_id)
+                if co is not None:
                     self.form_instance.fields['crosspost'].initial = json.loads(co.crosspost)
-                except motion.models.CrosspostOptions.DoesNotExist:
-                    pass
 
     def select_from_typepad(self, request, *args, **kwargs):
         if request.user.is_authenticated():
