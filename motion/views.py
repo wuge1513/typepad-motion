@@ -197,7 +197,7 @@ class AssetPostView(TypePadView):
             if moderation:
                 upload_xhr_endpoint = reverse('moderated_upload_url')
 
-            upload_complete_endpoint = urljoin(settings.FRONTEND_URL, reverse('upload_complete'))
+            upload_complete_endpoint = request.build_absolute_uri(reverse('upload_complete'))
         self.context.update(locals())
 
     def post(self, request, *args, **kwargs):

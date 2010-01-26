@@ -33,7 +33,7 @@ var clear_pixel = '{{ settings.media_url }}typepadapp/images/clear.gif';
 <script type="text/javascript">
 /* <![CDATA[ */
 // user data
-var profileUrlTemplate = '{{ settings.frontend_url }}{% url member userid="__profilealias__" %}'.replace('__profilealias__', '<profile-alias>');
+var profileUrlTemplate = 'http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{% url member userid="__profilealias__" %}'.replace('__profilealias__', '<profile-alias>');
 {% if user.is_authenticated %}
 user = {
     is_authenticated: true,{% if user.is_admin %}

@@ -126,16 +126,6 @@ somewhere else for development or debugging.
 
 """
 
-FRONTEND_URL = 'http://127.0.0.1:8000'
-"""The URL at which the Motion site is available to internet viewers.
-
-This URL is used to build the URL a group member returns to after uploading a
-media post, so you should set it to where your Motion site is hosted.
-
-By default, this setting is ``http://127.0.0.1:8000``.
-
-"""
-
 FEATURED_MEMBER = None
 """The TypePad XID of an account to use as a featured member of the group.
 
