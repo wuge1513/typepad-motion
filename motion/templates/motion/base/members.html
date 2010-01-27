@@ -10,7 +10,7 @@ Template used for displaying the member directory for the group.
 
 {% block content_body %}
 
-    {% if request.user.is_superuser and not rel %}
+    {% if request.typepad_user.is_superuser and not rel %}
     <div style="float: right;"><a href="{% url export_members %}">{% trans "Export Member List" %}</a></div>
     {% endif %}
 
@@ -49,7 +49,7 @@ Template used for displaying the member directory for the group.
     {% endwith %}
     {% endif %}
 
-    {% if request.user.is_authenticated %}
+    {% if request.typepad_user.is_authenticated %}
     {% ifnotequal rel "following" %} {# text doesn't make sense since you're already following them #}
     <p class="hint hint-following">{% trans "To follow a member, hover over their picture and click &lsquo;Follow&rsquo;." %}</p>
     {% endifnotequal %}

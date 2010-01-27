@@ -9,7 +9,7 @@
 {% endblock %}
 
 {% block content_body %}
-    {% if is_self and user.is_featured_member %}
+    {% if is_self and typepad_user.is_featured_member %}
 	    <div id="featured-member-compose" class="pkg">
         {% include "motion/bits/compose_form.html" %}
         </div>

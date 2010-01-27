@@ -64,7 +64,7 @@
     {% if settings.allow_commenting %}
     {% if not moderation.user_is_blocked %}
         <div class="comments-open" id="comments-open">
-        {% if user.is_authenticated %}
+        {% if typepad_user.is_authenticated %}
             <h2 class="comments-open-header">{% trans "Leave a comment" %}</h2>
 
             <div class="comment">

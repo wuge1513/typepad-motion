@@ -34,16 +34,16 @@ var clear_pixel = '{{ settings.media_url }}typepadapp/images/clear.gif';
 /* <![CDATA[ */
 // user data
 var profileUrlTemplate = 'http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{% url member userid="__profilealias__" %}'.replace('__profilealias__', '<profile-alias>');
-{% if user.is_authenticated %}
+{% if typepad_user.is_authenticated %}
 user = {
-    is_authenticated: true,{% if user.is_admin %}
-    is_admin: true,{% endif %}{% if user.is_staff %}
-    is_staff: true,{% endif %}{% if settings.allow_posting and user.can_post %}
+    is_authenticated: true,{% if typepad_user.is_admin %}
+    is_admin: true,{% endif %}{% if typepad_user.is_staff %}
+    is_staff: true,{% endif %}{% if settings.allow_posting and typepad_user.can_post %}
     can_post: true,{% endif %}
-    name: '{{ user.display_name|escapejs }}',
-    email: '{{ user.email|escapejs }}',
-    url: '{{ user.aboutMe|escapejs }}',
-    userpic: '{{ user.userpic|escapejs }}'
+    name: '{{ typepad_user.display_name|escapejs }}',
+    email: '{{ typepad_user.email|escapejs }}',
+    url: '{{ typepad_user.aboutMe|escapejs }}',
+    userpic: '{{ typepad_user.userpic|escapejs }}'
 };
 {% endif %}
 var view = '{{ view|escapejs }}';

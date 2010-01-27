@@ -132,9 +132,9 @@ class AssetEventView(TypePadView):
                 approved = moderation.Approved.objects.filter(asset_id__in=id_list)
                 approved_ids = [a.asset_id for a in approved]
 
-                if request.user.is_authenticated():
+                if request.typepad_user.is_authenticated():
                     flags = moderation.Flag.objects.filter(tp_asset_id__in=id_list,
-                        user_id=request.user.url_id)
+                        user_id=request.typepad_user.url_id)
                     flag_ids = [f.tp_asset_id for f in flags]
                 else:
                     flag_ids = []
@@ -167,7 +167,7 @@ class AssetPostView(TypePadView):
     def setup(self, request, *args, **kwargs):
         super(AssetPostView, self).setup(request, *args, **kwargs)
 
-        if request.user.is_authenticated() and 'elsewhere' in self.context:
+        if request.typepad_user.is_authenticated() and 'elsewhere' in self.context:
             elsewhere = self.context['elsewhere']
             choices = []
             for acct in elsewhere:
@@ -184,14 +184,14 @@ class AssetPostView(TypePadView):
             if len(choices):
                 self.form_instance.fields['crosspost'].choices = choices
                 # Saved crossposting options
-                co = motion.models.CrosspostOptions.get(request.user.url_id)
+                co = motion.models.CrosspostOptions.get(request.typepad_user.url_id)
                 if co is not None:
                     self.form_instance.fields['crosspost'].initial = json.loads(co.crosspost)
 
     def select_from_typepad(self, request, *args, **kwargs):
-        if request.user.is_authenticated():
+        if request.typepad_user.is_authenticated():
             upload_xhr_endpoint = reverse('upload_url')
-            elsewhere = request.user.elsewhere_accounts
+            elsewhere = request.typepad_user.elsewhere_accounts
 
             ### Moderation
             if moderation:
@@ -265,9 +265,9 @@ class GroupEventsView(AssetEventView, AssetPostView):
         self.paginate_template = reverse('group_events') + '/page/%d'
         self.object_list = request.group.events.filter(start_index=self.offset, max_results=self.limit)
         memberships = request.group.memberships.filter(max_results=settings.MEMBERS_PER_WIDGET)
-        if request.user.is_authenticated():
-            following = request.user.following(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
-            followers = request.user.followers(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
+        if request.typepad_user.is_authenticated():
+            following = request.typepad_user.following(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
+            followers = request.typepad_user.followers(group=request.group, max_results=settings.FOLLOWERS_PER_WIDGET)
         self.context.update(locals())
         super(GroupEventsView, self).select_from_typepad(request, *args, **kwargs)
 
@@ -298,7 +298,7 @@ class FollowingEventsView(TypePadView):
 
     def select_from_typepad(self, request, view='following', *args, **kwargs):
         self.paginate_template = reverse('following_events') + '/page/%d'
-        self.object_list = request.user.group_notifications(request.group,
+        self.object_list = request.typepad_user.group_notifications(request.group,
             start_index=self.offset, max_results=self.paginate_by)
 
 
@@ -370,9 +370,9 @@ class AssetView(TypePadView):
                     moderated_asset[0].status == moderation.Queue.SUPPRESSED:
                     return HttpResponseGone(_('The requested post has been removed from this site.'))
 
-            if not entry.moderation_approved and request.user.is_authenticated():
+            if not entry.moderation_approved and request.typepad_user.is_authenticated():
                 entry.moderation_flagged = moderation.Flag.objects.filter(tp_asset_id=entry.url_id,
-                    user_id=request.user.url_id)
+                    user_id=request.typepad_user.url_id)
 
             comments = self.context['comments']
 
@@ -385,9 +385,9 @@ class AssetView(TypePadView):
                     status=moderation.Queue.SUPPRESSED)
                 suppressed_ids = [a.asset_id for a in suppressed]
 
-                if request.user.is_authenticated():
+                if request.typepad_user.is_authenticated():
                     flags = moderation.Flag.objects.filter(tp_asset_id__in=id_list,
-                        user_id=request.user.url_id)
+                        user_id=request.typepad_user.url_id)
                     flag_ids = [f.tp_asset_id for f in flags]
                 else:
                     flag_ids = []
@@ -420,7 +420,7 @@ class AssetView(TypePadView):
                 typepad.client.complete_batch()
 
             # Only let plain users delete stuff if so configured.
-            if settings.ALLOW_USERS_TO_DELETE_POSTS or request.user.is_superuser:
+            if settings.ALLOW_USERS_TO_DELETE_POSTS or request.typepad_user.is_superuser:
                 try:
                     asset.delete()
                     signals.asset_deleted.send(sender=self.post, instance=asset, group=request.group)
@@ -542,7 +542,7 @@ class MemberView(AssetEventView):
         # do not use cached responses for superuser requests; this ensures
         # that the response contains elements that are only provided to
         # administrators (email address, for instance)
-        member = models.User.get_by_url_id(userid, cache=not request.user.is_superuser)
+        member = models.User.get_by_url_id(userid, cache=not request.typepad_user.is_superuser)
         user_memberships = member.group_memberships(request.group)
 
         if request.method == 'GET':
@@ -568,13 +568,13 @@ class MemberView(AssetEventView):
             is_member = user_membership.is_member()
             is_blocked = user_membership.is_blocked()
 
-        if not request.user.is_superuser: # admins can see all members
+        if not request.typepad_user.is_superuser: # admins can see all members
             if not len(self.object_list) and not is_member:
                 # if the user has no events and they aren't a member of the group,
                 # then this is a 404, effectively
                 raise Http404
 
-        self.context['is_self'] = request.user.id == member.id
+        self.context['is_self'] = request.typepad_user.id == member.id
         self.context['is_member'] = is_member
         self.context['is_blocked'] = is_blocked
 
@@ -628,7 +628,7 @@ class MemberView(AssetEventView):
                 is_member = user_membership.is_member()
                 is_blocked = user_membership.is_blocked()
 
-            if not request.user.is_superuser or is_admin:
+            if not request.typepad_user.is_superuser or is_admin:
                 # must be an admin to ban and cannot ban/unban another admin
                 raise Http404
 

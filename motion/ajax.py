@@ -65,7 +65,7 @@ def more_comments(request):
 
     # Fetch more comments!
     typepad.client.batch_request()
-    request.user = get_user(request)
+    request.typepad_user = get_user(request)
     asset = models.Asset.get_by_url_id(asset_id)
     comments = asset.comments.filter(start_index=offset,
         max_results=settings.COMMENTS_PER_PAGE)
@@ -83,7 +83,7 @@ def more_comments(request):
             suppressed_ids = [a.asset_id for a in suppressed]
 
             flags = moderation.Flag.objects.filter(tp_asset_id__in=id_list,
-                user_id=request.user.url_id)
+                user_id=request.typepad_user.url_id)
             flag_ids = [f.tp_asset_id for f in flags]
 
             for comment in comments:
@@ -119,19 +119,19 @@ def favorite(request):
         raise http.Http404
 
     typepad.client.batch_request()
-    request.user = get_user(request)
+    request.typepad_user = get_user(request)
     asset = models.Asset.get_by_url_id(asset_id)
     typepad.client.complete_batch()
 
     if action == 'favorite':
         fav = models.Favorite()
         fav.in_reply_to = asset.asset_ref
-        request.user.favorites.post(fav)
+        request.typepad_user.favorites.post(fav)
         signals.favorite_created.send(sender=favorite, instance=fav, parent=asset,
             group=request.group)
     else:
         typepad.client.batch_request()
-        fav = models.Favorite.get_by_user_asset(request.user.url_id, asset_id)
+        fav = models.Favorite.get_by_user_asset(request.typepad_user.url_id, asset_id)
         typepad.client.complete_batch()
         fav.delete()
         signals.favorite_deleted.send(sender=favorite, instance=fav,
@@ -162,17 +162,17 @@ def asset_meta(request):
             "comment-asset_xid2": { "can_delete": true }
         }
     """
-    if not hasattr(request, 'user'):
+    if not hasattr(request, 'typepad_user'):
         typepad.client.batch_request()
-        request.user = get_user(request)
+        request.typepad_user = get_user(request)
         typepad.client.complete_batch()
 
     ids = request.POST.getlist('asset_id')
-    if not ids or not request.user.is_authenticated():
+    if not ids or not request.typepad_user.is_authenticated():
         return http.HttpResponse('')
 
-    user_id = request.user.url_id
-    admin_user = request.user.is_superuser
+    user_id = request.typepad_user.url_id
+    admin_user = request.typepad_user.is_superuser
 
     favs = []
     opts = []
@@ -233,13 +233,13 @@ def crosspost_options(request):
     """
 
     typepad.client.batch_request()
-    request.user = get_user(request)
+    request.typepad_user = get_user(request)
     typepad.client.complete_batch()
 
     # Current crossposting options
-    co = motion.models.CrosspostOptions.get(request.user.url_id)
+    co = motion.models.CrosspostOptions.get(request.typepad_user.url_id)
     if co is None:
-        co = motion.models.CrosspostOptions(user_id=request.user.url_id)
+        co = motion.models.CrosspostOptions(user_id=request.typepad_user.url_id)
     if co.crosspost:
         options = json.loads(co.crosspost)
     else:

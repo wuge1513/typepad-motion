@@ -1,7 +1,7 @@
 {% load generic_filters %}
 <li class="member-listitem {% cycle '' 'even' %}{% ifequal column '1' %} first{% endifequal %}">
     <div class="userpic">
-        {% with member as user %}
+        {% with member as typepad_user %}
             {% include "motion/assets/bits/userpic.html" %}
         {% endwith %}
     </div>

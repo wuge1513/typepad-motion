@@ -9,7 +9,7 @@
     {% block feed %}{% endblock %}
     <title>{% block head_title %}{{ request.group.display_name }}{% endblock %}</title>
 
-    {% if moderation and request.user.is_authenticated %}
+    {% if moderation and request.typepad_user.is_authenticated %}
     <script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery-ui-1.6.min.js"></script>
     <link rel="stylesheet" type="text/css" href="{{ settings.media_url }}typepadapp/css/smoothness/ui.all.css" />
     {% endif %}
@@ -29,10 +29,10 @@
                     {% block content_head %}
                     {% if settings.allow_posting %}
                     <div id="user-compose-friends" class="design-compose-background">
-                        {% if user.is_authenticated %}
+                        {% if typepad_user.is_authenticated %}
                             {% if not moderation.user_is_blocked %}
                                 {% if settings.featured_member %}
-                                    {% if user.is_featured_member %}
+                                    {% if typepad_user.is_featured_member %}
                         <form class="submit-wrapper" method="GET" action="{% url home %}">
                                     {% else %}
                         <form class="submit-wrapper" method="GET" action="{% url group_events %}">
