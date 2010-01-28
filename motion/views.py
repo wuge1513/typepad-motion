@@ -655,12 +655,16 @@ class MemberView(AssetEventView):
                 blacklist = moderation.Blacklist()
                 blacklist.user_id = member.url_id
 
+            blacklist.user_display_name = member.display_name
+
             if request.POST['moderation_status'] == 'block':
                 blacklist.block = True
+                blacklist.note = 'Blocked by %s' % request.typepad_user.display_name
                 blacklist.save()
                 request.flash.add('notices', _('This user can no longer post.'))
             elif request.POST['moderation_status'] == 'moderate':
                 blacklist.block = False
+                blacklist.note = 'Moderated by %s' % request.typepad_user.display_name
                 blacklist.save()
                 request.flash.add('notices', _('This user\'s posts will be moderated.'))
             elif blacklist and blacklist.pk:
