@@ -75,6 +75,7 @@ function convertLineBreaks(str) {
 }
 
 $(document).ready(function () {
+    $.ajaxSettings.traditional = true;
 
     // Hide comment button on submit
     $('#comments-form').submit(function(){
