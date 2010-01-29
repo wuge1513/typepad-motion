@@ -374,31 +374,32 @@ class AssetView(TypePadView):
                 entry.moderation_flagged = moderation.Flag.objects.filter(tp_asset_id=entry.url_id,
                     user_id=request.typepad_user.url_id)
 
-            comments = self.context['comments']
+            if 'comments' in self.context:
+                comments = self.context['comments']
 
-            id_list = [comment.url_id for comment in comments]
-            if id_list:
-                approved = moderation.Approved.objects.filter(asset_id__in=id_list)
-                approved_ids = [a.asset_id for a in approved]
+                id_list = [comment.url_id for comment in comments]
+                if id_list:
+                    approved = moderation.Approved.objects.filter(asset_id__in=id_list)
+                    approved_ids = [a.asset_id for a in approved]
 
-                suppressed = moderation.Queue.objects.filter(asset_id__in=id_list,
-                    status=moderation.Queue.SUPPRESSED)
-                suppressed_ids = [a.asset_id for a in suppressed]
+                    suppressed = moderation.Queue.objects.filter(asset_id__in=id_list,
+                        status=moderation.Queue.SUPPRESSED)
+                    suppressed_ids = [a.asset_id for a in suppressed]
 
-                if request.typepad_user.is_authenticated():
-                    flags = moderation.Flag.objects.filter(tp_asset_id__in=id_list,
-                        user_id=request.typepad_user.url_id)
-                    flag_ids = [f.tp_asset_id for f in flags]
-                else:
-                    flag_ids = []
+                    if request.typepad_user.is_authenticated():
+                        flags = moderation.Flag.objects.filter(tp_asset_id__in=id_list,
+                            user_id=request.typepad_user.url_id)
+                        flag_ids = [f.tp_asset_id for f in flags]
+                    else:
+                        flag_ids = []
 
-                for comment in comments:
-                    if comment.url_id in suppressed_ids:
-                        comment.suppress = True
-                    if comment.url_id in approved_ids:
-                        comment.moderation_approved = True
-                    if comment.url_id in flag_ids:
-                        comment.moderation_flagged = True
+                    for comment in comments:
+                        if comment.url_id in suppressed_ids:
+                            comment.suppress = True
+                        if comment.url_id in approved_ids:
+                            comment.moderation_approved = True
+                        if comment.url_id in flag_ids:
+                            comment.moderation_flagged = True
 
         return super(AssetView, self).get(request, *args, **kwargs)
 

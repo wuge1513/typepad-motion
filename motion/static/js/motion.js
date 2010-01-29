@@ -80,6 +80,14 @@ $(document).ready(function () {
     $('#comments-form').submit(function(){
         $('#comment-submit').hide();
         $('#comment-posting').show();
+
+        // verify that the text field is non-empty
+        var comment_text = $('#comment-text').val();
+        if (comment_text == "") {
+            return comment_error(settings.phrase.textRequired);
+        }
+
+        return true;
     });
 
     // Click flash to close
@@ -544,6 +552,15 @@ function compose_error(message){
     // enable the submit button
     $("#post-submit-posting").hide();
     $("#post-submit").show();
+    return false;
+}
+
+// Compose Form Errors
+function comment_error(message){
+    alert(message);
+    // enable the submit button
+    $('#comment-posting').hide();
+    $('#comment-submit').show();
     return false;
 }
 

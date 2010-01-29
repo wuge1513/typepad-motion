@@ -78,7 +78,7 @@ class PostForm(forms.Form):
     def clean_body(self):
         # Check that the post body is valid.
         if self.cleaned_data['post_type'] == 'post':
-            if self.cleaned_data['body'] == self.body_default_text:
+            if self.cleaned_data['body'].strip() == self.body_default_text:
                 raise forms.ValidationError(_('This field is required.'))
         if self.cleaned_data['body'] == self.body_default_text:
             return ''
@@ -126,7 +126,13 @@ class PostForm(forms.Form):
 class CommentForm(forms.Form):
     """ Form for creating comments. """
 
-    body = forms.CharField(widget=forms.Textarea(attrs={'id':'comment-text'}))
+    body = forms.CharField(widget=forms.Textarea(attrs={'id':'comment-text'}),
+        required=True)
+
+    def clean_body(self):
+        if self.cleaned_data['body'].strip() == '':
+            raise forms.ValidationError(_('This field is required.'))
+        return self.cleaned_data['body']
 
     def save(self):
         """ Create the new comment and return it,
