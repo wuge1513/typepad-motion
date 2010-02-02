@@ -32,7 +32,6 @@ import re
 from django import http
 from django.conf import settings
 from django.core.cache import cache
-from django.contrib.auth import get_user
 from django.template.loader import render_to_string
 from django.template import RequestContext
 import simplejson as json
@@ -40,6 +39,7 @@ import simplejson as json
 import motion.models
 import typepad
 from typepadapp import models, signals
+from typepadapp.auth import get_user
 import typepadapp.forms
 from typepadapp.decorators import ajax_required
 

@@ -49,7 +49,6 @@ from django.http import Http404, HttpResponseRedirect, HttpResponseForbidden, Ht
 from django.core.urlresolvers import reverse
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.models import SiteProfileNotAvailable
-from django.contrib.auth import get_user
 from django.utils.html import escape
 from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
@@ -59,6 +58,7 @@ import motion.models
 import typepad
 import typepadapp.forms
 from typepadapp import models, signals
+from typepadapp.auth import get_user
 from typepadapp.views.base import TypePadView
 
 
