@@ -335,7 +335,7 @@ def asset_post(request):
 
             try:
                 asset.comments.post(comment)
-            except Exception as e:
+            except Exception, e:
                 return http.HttpResponse(json.dumps({
                     'status': 'error',
                     'data': str(e),
