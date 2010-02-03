@@ -151,12 +151,13 @@ class AssetEventView(TypePadView):
             events = self.object_list
             typepad.client.batch_request()
             for event in events:
-                if not event.object: continue
-                if event.object.type_id in ('favorite', 'comment'): continue
-                if event.object.comment_count() > 0:
-                    start = (event.object.comment_count() - num) + 1
+                obj = event.object
+                if not (obj and obj.commentable): continue
+                if obj.comment_count() > 0:
+                    start = (obj.comment_count() - num) + 1
                     if start < 1: start = 1
-                    event.object.recent_comments = event.object.comments.filter(max_results=num, start_index=start)
+                    obj.recent_comments = obj.comments.filter(max_results=num,
+                        start_index=start)
             typepad.client.complete_batch()
         return super(AssetEventView, self).get(request, *args, **kwargs)
 
