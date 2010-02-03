@@ -1382,7 +1382,6 @@ img.image-full {
 body.user-profile .comment,
 body.user-following .comment {
     margin-left: 8px;
-    width: 100%;
     position: relative;
 }
 .comment-last {
