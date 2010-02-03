@@ -272,8 +272,8 @@ class GroupEventsView(AssetEventView, AssetPostView):
         super(GroupEventsView, self).select_from_typepad(request, *args, **kwargs)
 
     def get(self, request, *args, **kwargs):
-        if settings.INLINE_COMMENT_COUNT > 0:
-            num = settings.INLINE_COMMENT_COUNT
+        num = settings.INLINE_COMMENT_COUNT
+        if num > 0:
             if num > 50: num = 50
             events = self.object_list
             typepad.client.batch_request()
@@ -284,8 +284,6 @@ class GroupEventsView(AssetEventView, AssetPostView):
                     if start < 1: start = 1
                     event.object.recent_comments = event.object.comments.filter(max_results=num, start_index=start)
             typepad.client.complete_batch()
-            if request.typepad_user.is_authenticated():
-                self.context.update({ "comment_form": forms.CommentForm() })
         return super(GroupEventsView, self).get(request, *args, **kwargs)
 
 

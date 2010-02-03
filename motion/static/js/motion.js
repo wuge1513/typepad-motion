@@ -98,7 +98,6 @@ $(document).ready(function () {
     });
 
     $('.inline-comments-form').submit(function() {
-        try {
         var frm = this;
         var asset_id = this.elements['asset_id'].value;
         var err = $('.form-error', $(this).parents('.comments-form'));
@@ -150,7 +149,6 @@ $(document).ready(function () {
                 alert(txtStatus + " " + errorThrown);
             }
         });
-        } catch (e) { alert(e); return false; }
         return false;
     });
     $('.inline-comments-untouched').click(function() {
