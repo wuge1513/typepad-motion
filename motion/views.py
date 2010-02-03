@@ -143,6 +143,23 @@ class AssetEventView(TypePadView):
                     event.object.moderation_flagged = event.object.url_id in flag_ids
                     event.object.moderation_approved = event.object.url_id in approved_ids
 
+    def get(self, request, *args, **kwargs):
+        num = settings.INLINE_COMMENT_COUNT
+        if num > 0:
+            self.context['display_inline_comments'] = True
+            if num > 50: num = 50
+            events = self.object_list
+            typepad.client.batch_request()
+            for event in events:
+                if not event.object: continue
+                if event.object.type_id in ('favorite', 'comment'): continue
+                if event.object.comment_count() > 0:
+                    start = (event.object.comment_count() - num) + 1
+                    if start < 1: start = 1
+                    event.object.recent_comments = event.object.comments.filter(max_results=num, start_index=start)
+            typepad.client.complete_batch()
+        return super(AssetEventView, self).get(request, *args, **kwargs)
+
 
 class AssetPostView(TypePadView):
 
@@ -271,23 +288,8 @@ class GroupEventsView(AssetEventView, AssetPostView):
         self.context.update(locals())
         super(GroupEventsView, self).select_from_typepad(request, *args, **kwargs)
 
-    def get(self, request, *args, **kwargs):
-        num = settings.INLINE_COMMENT_COUNT
-        if num > 0:
-            if num > 50: num = 50
-            events = self.object_list
-            typepad.client.batch_request()
-            for event in events:
-                if not event.object: continue
-                if event.object.comment_count() > 0:
-                    start = (event.object.comment_count() - num) + 1
-                    if start < 1: start = 1
-                    event.object.recent_comments = event.object.comments.filter(max_results=num, start_index=start)
-            typepad.client.complete_batch()
-        return super(GroupEventsView, self).get(request, *args, **kwargs)
 
-
-class FollowingEventsView(TypePadView):
+class FollowingEventsView(AssetEventView):
 
     """The recent events by everyone in a group whom the signed-in user is
     following.

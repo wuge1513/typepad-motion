@@ -8,6 +8,7 @@
     <div class="asset-container">
 {% if event and event.is_added_favorite %}
     {% include "motion/assets/body/favorite.html" %}
+    </div>
 {% else %}
     {# Asset body is determined by the type of asset #}
     {% withblock %}motion/assets/body/{{ entry.type_id }}.html{% as template_name %}
@@ -15,7 +16,8 @@
     {% endwithblock %}
     </div>
 
-    {% ifnotequal view "permalink" %}
+    {% if display_inline_comments %}
+    {% if entry.commentable %}
     {% if settings.inline_comment_count %}
     <div class="inline-comments">
         <div class="inline-comments-container">
@@ -58,6 +60,7 @@
     {% endif %}
     </div>
     {% endif %}
-    {% endifnotequal %}
+    {% endif %}
+    {% endif %}
 {% endif %}
 </li>
