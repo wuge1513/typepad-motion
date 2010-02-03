@@ -1,9 +1,11 @@
 {% load generic_filters %}
+{% load i18n %}
+{% load typepad_filters %}
 {% load withblock %}
 
 <!-- Entry -->
-<li id="asset-{{ entry.url_id }}" class="asset {% if event %}action-asset{% endif %} hentry {{ entry.type_id }} {% if event.actor.is_superuser %}admin{% endif %} {% if event.actor.is_featured_member %}featured{% endif %} {% if entry.source %}elsewhere elsewhere-{{ entry.source.provider.name|lower }}{% endif %} {% if not entry.is_local %}external{% endif %}">
-
+<li id="asset-{{ entry.url_id }}" class="asset {% if event %}action-asset{% endif %} hentry {{ entry.type_id }} {% if event.actor.is_superuser %}admin{% endif %} {% if entry.source %}elsewhere elsewhere-{{ entry.source.provider.name|lower }}{% endif %}">
+    <div class="asset-container">
 {% if event and event.is_added_favorite %}
     {% include "motion/assets/body/favorite.html" %}
 {% else %}
@@ -11,6 +13,49 @@
     {% withblock %}motion/assets/body/{{ entry.type_id }}.html{% as template_name %}
         {% include template_name %}
     {% endwithblock %}
-{% endif %}
+    </div>
 
+    {% if settings.inline_comment_count %}
+    <div class="inline-comments">
+        <div class="inline-comments-container">
+    {% for comment in entry.recent_comments %}
+        {% include "motion/assets/comment.html" %}
+    {% endfor %}
+        </div>
+    {% if entry.comment_count|greaterthan:settings.inline_comment_count %}
+        <div class="more-comments">
+            <a href="{{ entry.get_absolute_url }}#comments">View all {{ entry.comment_count }} comments</a>
+        </div>
+    {% endif %}
+
+    {% if typepad_user.is_superuser or settings.allow_commenting %}
+        {% if not typepad_user.is_authenticated %}
+        <div class="inline-comments-sign-in">
+            <a href="{% url login %}?next={{ request.path }}">{% trans "Sign in or join to comment." %}</a>
+        </div>
+        {% else %}
+        {% if not moderation.user_is_blocked %}
+        <div class="comments-form inline-comments-untouched">
+            <div class="form-error"></div>
+            <div class="inner">
+                {% include "motion/assets/bits/userpic.html" %}
+            </div>
+            <div class="comments-form-content">
+                <form method="post" name="comments_form" class="inline-comments-form">
+                    <input type="hidden" name="asset_id" value="{{ entry.xid }}" />
+                    <div class="field">
+                        <textarea rows="5" name="body" title="" class="ta" cols="50">Add a comment</textarea>
+                    </div>
+                    <div class="inline-submit-wrapper">
+                        <button type="submit" name="comment" value="Submit">{% trans "Comment" %}</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+        {% endif %}
+        {% endif %}
+    {% endif %}
+    </div>
+    {% endif %}
+{% endif %}
 </li>

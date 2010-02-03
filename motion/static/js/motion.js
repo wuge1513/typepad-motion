@@ -36,6 +36,7 @@ settings = {
     asset_meta_url: '',
     comments_url: '',
     asset_ping_url: '',
+    asset_post_url: '',
     crosspost_options_url: '',
     ajax_ping_frequency: 0,
     phrase: {
@@ -94,6 +95,69 @@ $(document).ready(function () {
     // Click flash to close
     $('.flash').click(function() {
         $(this).fadeOut();
+    });
+
+    $('.inline-comments-form').submit(function() {
+        try {
+        var frm = this;
+        var asset_id = this.elements['asset_id'].value;
+        var err = $('.form-error', $(this).parents('.comments-form'));
+        var txt = this.elements['body'].value;
+        var asset_el = $(this).parents('.asset');
+        var comments = $('.inline-comments-container', asset_el);
+        var count_el = $('.comment-count', asset_el);
+        var count_str = count_el.html();
+        count_str = count_str.replace(/\D/g, '');
+        var count = parseInt(count_str) || 0;
+        if (txt == '') {
+            err.html(settings.phrase.textRequired);
+            return false;
+        }
+        $(frm.elements['comment']).html("Posting...");
+        frm.elements['comment'].disabled = true;
+        $.ajax({
+            type: "POST",
+            url: settings.asset_post_url,
+            data: {
+                'parent': asset_id,
+                'post_type': 'comment',
+                'body': txt
+            },
+            dataType: "json",
+            success: function(data) {
+                if (data.status == 'error') {
+                    err.html(data.data);
+                } else {
+                    err.html('');
+                    if (data.status == 'moderated')
+                        err.html("Your comment has been held for moderation.");
+                    comments.append(data.data);
+                    count++;
+                    if (count == 1)
+                        count_el.html("1 <span>Comment</span>");
+                    else
+                        count_el.html(count + " <span>Comments</span>");
+                    frm.elements['body'].value = '';
+                    frm.elements['body'].focus();
+                }
+                $(frm.elements['comment']).html("Comment");
+                frm.elements['comment'].disabled = false;
+            },
+            error: function(xhr, txtStatus, errorThrown) {
+                $(frm.elements['comment']).html("Comment");
+                frm.elements['comment'].disabled = false;
+                err.html('');
+                alert(txtStatus + " " + errorThrown);
+            }
+        });
+        } catch (e) { alert(e); return false; }
+        return false;
+    });
+    $('.inline-comments-untouched').click(function() {
+        if ($(this).hasClass('inline-comments-untouched')) {
+            $(this).removeClass('inline-comments-untouched');
+            $('textarea', this).val('');
+        }
     });
 
     // Load more comments -- permalink page

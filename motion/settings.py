@@ -376,6 +376,14 @@ By default, `VIDEO_MAX_WIDTH` is 400.
 
 """
 
+INLINE_COMMENT_COUNT = 0
+"""Controls the number of comments displayed for assets within a list
+view.
+
+By default, `INLINE_COMMENT_COUNT` is 0. Assign a non-zero (up to 50) number
+to enable this feature. Between 3 and 5 is recommended.
+"""
+
 THEME = 'motion'
 """The name of the theme to use for this Motion site.
 

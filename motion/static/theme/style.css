@@ -295,13 +295,15 @@ p {
 #nav-inner ul {
     padding: 0 20px;
 }
-#nav li {
+#nav li,
+.nav li {
     float: left;
     line-height: 15px;
     margin: 0;
     padding: 0;
 }
-#nav li a {
+#nav li a,
+.nav li a {
     display: block;
     margin: 0;
     margin-right: 8px;
@@ -990,6 +992,9 @@ button.button-flag.flagged {
     color: #333;
     font-weight: normal;
 }
+.asset .asset-container {
+    position: relative;
+}
 .asset .asset-inner {
     margin-left: 96px;
 }
@@ -1493,6 +1498,103 @@ body.user-profile .comment, body.user-following .comment {
     width: auto;
     text-align: left;
     display: inline;
+}
+
+/* Inline comments ------------------------------------------------------------- */
+
+.inline-comments {
+	padding-left: 5px;
+	padding-right: 5px;
+	width: 450px;
+	margin-left: 100px;
+    background-color: #eee;
+    background-image: url(images/inline-comments-top.png);
+    background-repeat: no-repeat;
+	clear: both;
+	padding-top: 8px;
+}
+
+.inline-comments .comment {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    border-bottom: 1px dotted #999;
+}
+.inline-comments .userpic {
+    margin: 0;
+    position: absolute;
+}
+.inline-comments .comment-content {
+    margin-left: 47px;
+}
+.inline-comments .comment-footer {
+    clear: both;
+    display: block;
+	margin-left: 47px;
+	padding: 0;
+}
+.inline-comments .byline {
+    display: block;
+}
+.inline-comments .asset-meta {
+    float: none;
+    font-style: italic;
+}
+.inline-comments .vcard,
+.inline-comments .separator {
+    display: none;
+}
+.inline-comments .comment-content-inner {
+    margin: 0;
+    border-bottom: none;
+    clear: both;
+    padding: 0;
+    width: 360px;
+}
+.inline-comments .userpic img {
+    height: 32px;
+    width: 32px;
+}
+
+.inline-comments .comments-form {
+    width: auto;
+    margin-top: 10px;
+}
+.inline-comments .comments-form .form-error {
+    font-weight: bold;
+}
+.inline-comments .comments-form textarea {
+    height: 32px;
+    width: 398px;
+    color: #000;
+    font-size: 12px;
+    margin-left: 47px;
+}
+.inline-comments .comments-form .form-error,
+.inline-comments .more-comments {
+	margin: 10px 0;
+    text-align: center;
+    font-style: italic;
+}
+.inline-comments .inline-comments-untouched .userpic {
+    display: none;
+}
+.inline-comments .inline-comments-untouched textarea {
+    width: 440px;
+    font-style: italic;
+    overflow: hidden;
+    color: #aaa;
+    height: 1.2em;
+    max-height: 1.2em;
+    margin-bottom: 10px;
+    margin-left: 0;
+}
+.inline-comments .inline-submit-wrapper {
+    text-align: right;
+    margin-bottom: 10px;
+}
+.inline-comments .inline-comments-untouched .inline-submit-wrapper {
+    display: none;
 }
 
 /* Members Area ---------------------------------------------------------------- */

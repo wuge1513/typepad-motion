@@ -38,6 +38,7 @@ from django.template import RequestContext
 import simplejson as json
 
 import motion.models
+from motion.forms import CommentForm
 import typepad
 from typepadapp import models, signals
 import typepadapp.forms
@@ -290,3 +291,72 @@ def upload_url(request):
     url = request.oauth_client.get_file_upload_url(remote_url)
     url = 'for(;;);%s' % url # no third party sites allowed.
     return http.HttpResponse(url)
+
+
+@ajax_required
+def asset_post(request):
+    """Ajax interface for creating a post or comment."""
+
+    post_type = request.POST.get('post_type', None)
+    if post_type is None:
+        raise Exception("post_type is a required parameter")
+
+    if post_type == 'comment':
+        frm = CommentForm(request.POST)
+        if frm.is_valid():
+            postid = request.POST.get('parent', None)
+            if postid is None:
+                raise Exception("parent is a required parameter")
+
+            typepad.client.batch_request()
+            user = get_user(request)
+            asset = models.Asset.get_by_url_id(postid)
+            typepad.client.complete_batch()
+
+            if not user.is_authenticated():
+                raise Exception("not authorized")
+
+            request.typepad_user = user
+            comment = frm.save()
+            comment.in_reply_to = asset.asset_ref
+
+            ### Moderation
+            if moderation:
+                from moderation import views as mod_view
+                if mod_view.moderate_post(request, comment):
+                    html = render_to_string('motion/assets/comment.html', {
+                        'comment': comment,
+                        'view': 'permalink',
+                    }, context_instance=RequestContext(request))
+                    return http.HttpResponse(json.dumps({
+                        'status': 'moderated',
+                        'data': 'Your comment is held for moderation.'}),
+                        mimetype='application/json')
+
+            try:
+                asset.comments.post(comment)
+            except Exception as e:
+                return http.HttpResponse(json.dumps({
+                    'status': 'error',
+                    'data': str(e),
+                }), mimetype='application/json')
+
+            signals.asset_created.send(sender=asset_post, instance=comment,
+                parent=asset, group=request.group)
+
+            # render response
+            html = render_to_string('motion/assets/comment.html', {
+                'comment': comment,
+                'view': 'permalink',
+            }, context_instance=RequestContext(request))
+
+            return http.HttpResponse(json.dumps({
+                'status': 'posted', 'data': html}),
+                mimetype='application/json')
+        else:
+            errorfields = [k for k, v in frm.errors.items()]
+            return http.HttpResponse(json.dumps({'status': 'error',
+                'data': ','.join(errorfields)}), mimetype='application/json')
+    else:
+        # TBD: support for other post types
+        pass

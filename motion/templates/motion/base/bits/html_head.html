@@ -51,6 +51,7 @@ settings.upload_xhr_endpoint = '{{ upload_xhr_endpoint|escapejs }}';
 settings.comments_url = '{% url comments_url %}';
 settings.favorite_url = '{% url favorite_url %}';
 settings.asset_meta_url = '{% url asset_meta_url %}';
+settings.asset_post_url = '{% url asset_post_url %}';
 settings.crosspost_options_url = '{% url crosspost_options_url %}';{% if settings.ajax_ping_frequency %}
 if ((view == 'home') || (view == 'events')) {
     settings.asset_ping_url = '{% url asset_ping_url %}';
