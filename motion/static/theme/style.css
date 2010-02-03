@@ -1361,11 +1361,6 @@ img.image-full {
 
 /* Comments --------------------------------------------------------------- */
 
-body.user-following .comment .asset-body {
-    position: absolute;
-    top: 20px;
-}
-
 #comment-posting { display: none }
 
 .comments, 
@@ -1383,7 +1378,9 @@ body.user-following .comment .asset-body {
     width: 510px;
 }
 
-body.user-profile .comment, body.user-following .comment {
+/* outdent comments shown in these contexts */
+body.user-profile .comment,
+body.user-following .comment {
     margin-left: 8px;
     width: 100%;
     position: relative;
@@ -1429,15 +1426,6 @@ body.user-profile .comment, body.user-following .comment {
 .comments-banner {
     margin-bottom: 15px;
     font-size:22px;
-}
-.comment .userpic {
-    float: left;
-    position: relative;
-}
-.comment .userpic .auth-icon {
-    position: absolute;
-    top: 32px;
-    left: 32px;
 }
 .comment .asset-meta {
     color: #777;
