@@ -1373,7 +1373,7 @@ img.image-full {
 .comment {
     clear: both;
     position: relative;
-    margin-top: 25px;
+    margin-top: 15px;
     margin-left: 40px;
     width: 510px;
 }
@@ -1382,7 +1382,7 @@ img.image-full {
 body.user-profile .comment,
 body.user-following .comment {
     margin-left: 8px;
-    position: relative;
+    width: auto;
 }
 .comment-last {
     border-bottom: none;
