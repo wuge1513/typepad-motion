@@ -470,10 +470,12 @@ $(document).ready(function () {
                             // JSON object to upload
                             var asset = {
                                 'content': f.body.value,
-                                'objectTypes':  ['tag:api.typepad.com,2009:' + 
+                                'objectTypes': ['tag:api.typepad.com,2009:' + 
                                     post_type.substring(0,1).toUpperCase() + post_type.substring(1)]
                             };
-                            if (f['crosspost']) {
+                            if ('title' in f)
+                                asset['title'] = f.title.value;
+                            if ('crosspost' in f) {
                                 crosspost = [];
                                 for (var i = 0, ii = f.elements.length; i < ii; i++) {
                                     var fld = f.elements[i];

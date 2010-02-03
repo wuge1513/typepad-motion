@@ -72,3 +72,6 @@ if ((view == 'home') || (view == 'events')) {
 soundManager.url = '{{ settings.media_url }}typepadapp/soundmanager/';
 /* ]]> */
 </script>
+{% if settings.use_facebook %}
+<script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script>
+{% endif %}

@@ -886,7 +886,6 @@ button.button-flag.flagged {
 }
 .asset .asset-banner .byline {
     display: block;
-    
 }
 .noscript .favorite-action {
     display: none !important;
@@ -905,16 +904,11 @@ button.button-flag.flagged {
     text-align: right;
 }
 
-.asset .asset-meta .comment-count {
-    margin-right: 10px;
-}
-
 .asset .asset-meta .byline {
     float: left;
 }
 .asset .asset-meta .comment-count {
     background: url(images/comments.png) no-repeat 0 0;
-    float: left;
 }
 
 .asset-meta .comment-count span {
@@ -926,8 +920,6 @@ button.button-flag.flagged {
 }
 .asset .asset-meta .favorite-count {
     background: url(images/fav-off.gif) no-repeat left 0;
-    float: left;
-    margin-right: 10px;
     color: #999;
     /* height of favorite image is 16px */
 }
@@ -1004,6 +996,12 @@ button.button-flag.flagged {
     color: #222;
     margin-bottom: .5em;
     padding: 0 10px;
+}
+
+.asset .asset-footer iframe, .asset .asset-footer a {
+    float: left;
+    line-height: 16px;
+    margin-right: 10px;
 }
 
 /* textpost */

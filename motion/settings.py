@@ -396,3 +396,13 @@ By default, the ``motion`` theme is used.
 
 """
 
+USE_FACEBOOK = True
+"""Controls whether a Facebook sharing button is included in the footer of
+posts.
+
+"""
+
+USE_TWEETMEME = True
+"""Controls whether a "Retweet" button is included in the footer of posts.
+
+"""
