@@ -150,6 +150,7 @@ class AssetEventView(TypePadView):
             if num > 50: num = 50
             events = self.object_list
             typepad.client.batch_request()
+            subrequests = 0
             for event in events:
                 obj = event.object
                 if not (obj and obj.commentable): continue
@@ -158,6 +159,8 @@ class AssetEventView(TypePadView):
                     if start < 1: start = 1
                     obj.recent_comments = obj.comments.filter(max_results=num,
                         start_index=start)
+                subrequests += 1
+                if subrequests == typepad.client.subrequest_limit: break
             typepad.client.complete_batch()
         return super(AssetEventView, self).get(request, *args, **kwargs)
 
