@@ -922,6 +922,7 @@ button.button-flag.flagged {
     background: url(images/fav-off.gif) no-repeat left 0;
     color: #999;
     float: left;
+    margin-right: 10px;
     /* height of favorite image is 16px */
 }
 .asset .asset-meta .favorite-action:hover {
