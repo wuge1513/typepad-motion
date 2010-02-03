@@ -1558,6 +1558,7 @@ body.user-following .comment {
 .inline-comments .comments-form textarea {
     height: 32px;
     width: 398px;
+    max-width: 398px;
     color: #000;
     font-size: 12px;
     margin-left: 47px;
@@ -1573,6 +1574,7 @@ body.user-following .comment {
 }
 .inline-comments .inline-comments-untouched textarea {
     width: 440px;
+    max-width: 440px;
     font-style: italic;
     overflow: hidden;
     color: #aaa;
