@@ -45,17 +45,17 @@ def update_event_stream(sender, instance=None, group=None, **kwargs):
         return
 
     if isinstance(instance, Comment):
-        # ignore comments
-        return
+        prefix = 'asset'
+        scope = instance.in_reply_to.url_id
+    else:
+        prefix = 'group'
+        scope = group.xid
 
-    group_id = group.xid
-    lock_key = 'event_stream_lock:%s' % group_id
-    stream_key = 'event_stream:%s' % group_id
+    stream_key = '%s_stream:%s' % (prefix, scope)
+    lock_key = stream_key + ':lock'
 
     event = {
         "asset_id": instance.xid,
-        # "event": event_name,
-        # "ts": instance.published
     }
 
     tries = 0

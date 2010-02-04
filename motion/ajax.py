@@ -210,7 +210,11 @@ def asset_meta(request):
 
 @ajax_required
 def asset_ping(request):
-    stream_key = 'event_stream:%s' % request.group.xid
+    kind = request.POST['type']
+    if kind == 'comment':
+        return comment_ping(request)
+
+    stream_key = 'group_stream:%s' % request.group.xid
     last = request.POST['xid']
     events = cache.get(stream_key)
     resp = {"count": 0, "last": last}
@@ -223,6 +227,44 @@ def asset_ping(request):
         if match:
             resp = {"count": match[0],
                 "last": events[0]["asset_id"]}
+    return http.HttpResponse(json.dumps(resp), mimetype='application/json')
+
+
+def comment_ping(request):
+    parent = request.POST['parent']
+    stream_key = 'asset_stream:%s' % parent
+    last = request.POST['xid']
+    events = cache.get(stream_key)
+    resp = {"data": '', "last": last, "count": 0}
+
+    if events:
+        comments = []
+        for event in events:
+            if last and (event['asset_id'] == last):
+                break
+            comments.append(event['asset_id'])
+            if len(comments) == typepad.client.subrequest_limit - 1: break
+
+        resp['last'] = events[0]['asset_id']
+
+        if comments:
+            assets = []
+
+            typepad.client.batch_request()
+            count = models.Asset.get_by_url_id(parent).comments.filter(max_results=0)
+            for id in comments:
+                assets.append(models.Comment.get_by_url_id(id))
+            typepad.client.complete_batch()
+
+            results = ''
+            assets.reverse()
+            for asset in assets:
+                results += render_to_string('motion/assets/comment.html', {
+                    'comment': asset,
+                }, context_instance=RequestContext(request))
+            resp['data'] = results
+            resp['count'] = count.total_results
+
     return http.HttpResponse(json.dumps(resp), mimetype='application/json')
 
 
@@ -351,7 +393,7 @@ def asset_post(request):
             }, context_instance=RequestContext(request))
 
             return http.HttpResponse(json.dumps({
-                'status': 'posted', 'data': html}),
+                'status': 'posted', 'data': html, 'xid':comment.xid}),
                 mimetype='application/json')
         else:
             errorfields = [k for k, v in frm.errors.items()]

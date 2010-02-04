@@ -97,66 +97,124 @@ $(document).ready(function () {
         $(this).fadeOut();
     });
 
-    $('.inline-comments-form').submit(function() {
-        var frm = this;
-        var asset_id = this.elements['asset_id'].value;
-        var err = $('.form-error', $(this).parents('.comments-form'));
-        var txt = this.elements['body'].value;
-        var asset_el = $(this).parents('.asset');
-        var comments = $('.inline-comments-container', asset_el);
-        var count_el = $('.comment-count', asset_el);
-        var count_str = count_el.html();
-        count_str = count_str.replace(/\D/g, '');
-        var count = parseInt(count_str) || 0;
-        if (txt == '') {
-            err.html(settings.phrase.textRequired);
-            return false;
-        }
-        $(frm.elements['comment']).html("Posting...");
-        frm.elements['comment'].disabled = true;
-        $.ajax({
-            type: "POST",
-            url: settings.asset_post_url,
-            data: {
-                'parent': asset_id,
-                'post_type': 'comment',
-                'body': txt
-            },
-            dataType: "json",
-            success: function(data) {
-                if (data.status == 'error') {
-                    err.html(data.data);
-                } else {
+    if (user && user.is_authenticated && $('.inline-comments-form').size()) {
+        // live commenting support
+        var last_comment_xid;
+        var active_thread_xid;
+        $('.inline-comments-form').submit(function() {
+            var frm = this;
+            var asset_id = this.elements['asset_id'].value;
+            var err = $('.form-error', $(this).parents('.comments-form'));
+            var txt = this.elements['body'].value;
+            var asset_el = $(this).parents('.asset');
+            var comments = $('.inline-comments-container', asset_el);
+            var count_el = $('.comment-count', asset_el);
+            var count_str = count_el.html();
+            count_str = count_str.replace(/\D/g, '');
+            var count = parseInt(count_str) || 0;
+            if (txt == '') {
+                err.html(settings.phrase.textRequired);
+                return false;
+            }
+            $(frm.elements['comment']).html("Posting...");
+            frm.elements['comment'].disabled = true;
+            $.ajax({
+                type: "POST",
+                url: settings.asset_post_url,
+                data: {
+                    'parent': asset_id,
+                    'post_type': 'comment',
+                    'body': txt
+                },
+                dataType: "json",
+                success: function(data) {
+                    if (data.status == 'error') {
+                        err.html(data.data);
+                    } else {
+                        err.html('');
+                        if (data.status == 'moderated')
+                            err.html("Your comment has been held for moderation.");
+                        comments.append(data.data);
+                        count++;
+                        if (count == 1)
+                            count_el.html("1 <span>Comment</span>");
+                        else
+                            count_el.html(count + " <span>Comments</span>");
+                        if (data.status == 'posted')
+                            last_comment_xid = data.xid;
+                        frm.elements['body'].value = '';
+                        frm.elements['body'].focus();
+                    }
+                    $(frm.elements['comment']).html("Comment");
+                    frm.elements['comment'].disabled = false;
+                },
+                error: function(xhr, txtStatus, errorThrown) {
+                    $(frm.elements['comment']).html("Comment");
+                    frm.elements['comment'].disabled = false;
                     err.html('');
-                    if (data.status == 'moderated')
-                        err.html("Your comment has been held for moderation.");
-                    comments.append(data.data);
-                    count++;
-                    if (count == 1)
-                        count_el.html("1 <span>Comment</span>");
-                    else
-                        count_el.html(count + " <span>Comments</span>");
-                    frm.elements['body'].value = '';
-                    frm.elements['body'].focus();
+                    alert(txtStatus + " " + errorThrown);
                 }
-                $(frm.elements['comment']).html("Comment");
-                frm.elements['comment'].disabled = false;
-            },
-            error: function(xhr, txtStatus, errorThrown) {
-                $(frm.elements['comment']).html("Comment");
-                frm.elements['comment'].disabled = false;
-                err.html('');
-                alert(txtStatus + " " + errorThrown);
+            });
+            return false;
+        });
+        $('.inline-comments-untouched').click(function() {
+            if ($(this).hasClass('inline-comments-untouched')) {
+                $(this).removeClass('inline-comments-untouched');
+                $('textarea', this).val('');
             }
         });
-        return false;
-    });
-    $('.inline-comments-untouched').click(function() {
-        if ($(this).hasClass('inline-comments-untouched')) {
-            $(this).removeClass('inline-comments-untouched');
-            $('textarea', this).val('');
+
+        if (settings.ajax_ping_frequency) {
+            var thread_timer;
+            $('.inline-comments-untouched textarea').focus(function() {
+                var asset_id = this.form.elements['asset_id'].value;
+                var asset_el = $(this).parents('.asset');
+                var comments = $('.comment', asset_el);
+                if (comments.length)
+                    last_comment_xid = comments.get(comments.size() - 1).id.replace(/^comment-/, '');
+                else
+                    last_comment_xid = undefined;
+                active_thread_xid = asset_id;
+
+                if (thread_timer)
+                    window.clearTimeout(thread_timer);
+                thread_timer = window.setTimeout(updateThread, 200);
+            });
+
+            function updateThread() {
+                if (!active_thread_xid)
+                    return;
+                var asset_el = $('#asset-' + active_thread_xid);
+                var comments = $('.inline-comments-container', asset_el);
+                var count_el = $('.comment-count', asset_el);
+                var frm = $('.inline-comments-form', asset_el).get(0);
+                var count_str = count_el.html();
+                count_str = count_str.replace(/\D/g, '');
+                var count = parseInt(count_str) || 0;
+
+                $.ajax({
+                    url: settings.asset_ping_url,
+                    type: "POST",
+                    data: {"type": "comment", "parent": active_thread_xid,
+                        "xid": last_comment_xid},
+                    dataType: "json",
+                    success: function(data) {
+                        last_comment_xid = data['last'];
+                        var new_count = data['count'];
+                        comments.append(data['data']);
+                        if (new_count && (new_count > count)) {
+                            if (new_count == 1)
+                                count_el.html("1 <span>Comment</span>");
+                            else
+                                count_el.html(new_count + " <span>Comments</span>");
+                        }
+                        thread_timer = window.setTimeout(updateThread,
+                            settings.ajax_ping_frequency * 1000);
+                    }
+                });
+            }
         }
-    });
+    }
 
     // Load more comments -- permalink page
     if ($('#more-comments').size()) {
@@ -574,7 +632,7 @@ $(document).ready(function () {
             $.ajax({
                 url: settings.asset_ping_url,
                 type: "POST",
-                data: {"xid": last_asset},
+                data: {"type":"group", "xid": last_asset},
                 dataType: "json",
                 success: function(data) {
                     last_asset = data['last'];
