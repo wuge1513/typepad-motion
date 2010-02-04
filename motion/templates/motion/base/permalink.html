@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load generic_filters %}
 
+{% block page_id %}permalink{% endblock %}
 {% block head_title %}{{ block.super }}{% if entry.title %}: {{ entry.title }}{% else %}{% if entry.content %}: {{ entry.content|striptags|truncatechars:40 }}{% endif %}{% endif %}{% endblock %}
 {% block page_layout %}layout-two-column-right{% endblock %}
 

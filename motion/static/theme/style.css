@@ -1374,16 +1374,15 @@ img.image-full {
     clear: both;
     position: relative;
     margin-top: 15px;
-    margin-left: 40px;
-    width: 510px;
+    margin-left: 8px;
 }
 
-/* outdent comments shown in these contexts */
-body.user-profile .comment,
-body.user-following .comment {
-    margin-left: 8px;
-    width: auto;
+/* Indent comments on permalink view */
+body.permalink .comment {
+    width: 510px;
+    margin-left: 40px;
 }
+
 .comment-last {
     border-bottom: none;
     margin-bottom: 0;
