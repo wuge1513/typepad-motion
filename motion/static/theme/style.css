@@ -1574,10 +1574,9 @@ body.permalink .comment {
     width: 440px;
     max-width: 440px;
     font-style: italic;
-    overflow: hidden;
     color: #777;
     height: 16px;
-    max-height: 16px;
+    resize: none;
     margin-left: 0;
 }
 .inline-comments .comment .controls {
