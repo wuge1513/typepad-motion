@@ -1489,7 +1489,7 @@ body.permalink .comment {
 /* Inline comments ------------------------------------------------------------- */
 
 .inline-comments {
-    padding: 5px 8px;
+    padding: 8px 5px;
     width: 450px;
     margin-left: 100px;
     background-color: #ebebeb;
@@ -1519,8 +1519,8 @@ body.permalink .comment {
 .inline-comments .comment-footer {
     clear: both;
     display: block;
-	margin-left: 47px;
-	padding: 0;
+    margin-left: 47px;
+    padding: 0;
 }
 .inline-comments .byline {
     display: block;
@@ -1529,9 +1529,9 @@ body.permalink .comment {
     float: none;
     font-style: italic;
 }
-.inline-comments .vcard,
-.inline-comments .separator {
-    display: none;
+.inline-comments .comment .separator {
+    margin: 0 5px;
+    display: inline;
 }
 .inline-comments .comment-content-inner {
     margin: 0;
@@ -1575,9 +1575,9 @@ body.permalink .comment {
     max-width: 440px;
     font-style: italic;
     overflow: hidden;
-    color: #aaa;
-    height: 1.2em;
-    max-height: 1.2em;
+    color: #777;
+    height: 16px;
+    max-height: 16px;
     margin-left: 0;
 }
 .inline-comments .comment .controls {
