@@ -101,6 +101,8 @@ $(document).ready(function () {
         // live commenting support
         var last_comment_xid;
         var active_thread_xid;
+        var thread_timer;
+
         $('.inline-comments-form').submit(function() {
             var frm = this;
             var asset_id = this.elements['asset_id'].value;
@@ -111,6 +113,7 @@ $(document).ready(function () {
             var count_el = $('.comment-count', asset_el);
             var count_str = count_el.html();
             count_str = count_str.replace(/\D/g, '');
+            active_thread_xid = asset_id;
             var count = parseInt(count_str) || 0;
             if (txt == '') {
                 err.html(settings.phrase.textRequired);
@@ -147,6 +150,14 @@ $(document).ready(function () {
                     }
                     $(frm.elements['comment']).html("Comment");
                     frm.elements['comment'].disabled = false;
+
+                    if (settings.ajax_ping_frequency) {
+                        if ('xid' in data)
+                            last_comment_xid = data.xid;
+                        if (thread_timer)
+                            window.clearTimeout(thread_timer);
+                        thread_timer = window.setTimeout(updateThread, 200);
+                    }
                 },
                 error: function(xhr, txtStatus, errorThrown) {
                     $(frm.elements['comment']).html("Comment");
@@ -165,7 +176,6 @@ $(document).ready(function () {
         });
 
         if (settings.ajax_ping_frequency) {
-            var thread_timer;
             $('.inline-comments-untouched textarea').focus(function() {
                 var asset_id = this.form.elements['asset_id'].value;
                 var asset_el = $(this).parents('.asset');
@@ -199,14 +209,17 @@ $(document).ready(function () {
                         "xid": last_comment_xid},
                     dataType: "json",
                     success: function(data) {
-                        last_comment_xid = data['last'];
-                        var new_count = data['count'];
-                        comments.append(data['data']);
-                        if (new_count && (new_count > count)) {
-                            if (new_count == 1)
-                                count_el.html("1 <span>Comment</span>");
-                            else
-                                count_el.html(new_count + " <span>Comments</span>");
+                        /* prevent possible mismatch */
+                        if (data['parent'] == active_thread_xid) {
+                            last_comment_xid = data['last'];
+                            var new_count = data['count'];
+                            comments.append(data['data']);
+                            if (new_count && (new_count > count)) {
+                                if (new_count == 1)
+                                    count_el.html("1 <span>Comment</span>");
+                                else
+                                    count_el.html(new_count + " <span>Comments</span>");
+                            }
                         }
                         thread_timer = window.setTimeout(updateThread,
                             settings.ajax_ping_frequency * 1000);

@@ -262,6 +262,7 @@ def comment_ping(request):
                     'comment': asset,
                 }, context_instance=RequestContext(request))
             resp['data'] = results
+            resp['parent'] = parent
             resp['count'] = count.total_results
 
     return http.HttpResponse(json.dumps(resp), mimetype='application/json')
