@@ -295,13 +295,15 @@ p {
 #nav-inner ul {
     padding: 0 20px;
 }
-#nav li {
+#nav li,
+.nav li {
     float: left;
     line-height: 15px;
     margin: 0;
     padding: 0;
 }
-#nav li a {
+#nav li a,
+.nav li a {
     display: block;
     margin: 0;
     margin-right: 8px;
@@ -884,7 +886,6 @@ button.button-flag.flagged {
 }
 .asset .asset-banner .byline {
     display: block;
-    
 }
 .noscript .favorite-action {
     display: none !important;
@@ -903,16 +904,11 @@ button.button-flag.flagged {
     text-align: right;
 }
 
-.asset .asset-meta .comment-count {
-    margin-right: 10px;
-}
-
 .asset .asset-meta .byline {
     float: left;
 }
 .asset .asset-meta .comment-count {
     background: url(images/comments.png) no-repeat 0 0;
-    float: left;
 }
 
 .asset-meta .comment-count span {
@@ -924,9 +920,9 @@ button.button-flag.flagged {
 }
 .asset .asset-meta .favorite-count {
     background: url(images/fav-off.gif) no-repeat left 0;
+    color: #999;
     float: left;
     margin-right: 10px;
-    color: #999;
     /* height of favorite image is 16px */
 }
 .asset .asset-meta .favorite-action:hover {
@@ -990,6 +986,9 @@ button.button-flag.flagged {
     color: #333;
     font-weight: normal;
 }
+.asset .asset-container {
+    position: relative;
+}
 .asset .asset-inner {
     margin-left: 96px;
 }
@@ -999,6 +998,12 @@ button.button-flag.flagged {
     color: #222;
     margin-bottom: .5em;
     padding: 0 10px;
+}
+
+.asset .asset-footer iframe, .asset .asset-footer a {
+    float: left;
+    line-height: 16px;
+    margin-right: 10px;
 }
 
 /* textpost */
@@ -1356,11 +1361,6 @@ img.image-full {
 
 /* Comments --------------------------------------------------------------- */
 
-body.user-following .comment .asset-body {
-    position: absolute;
-    top: 20px;
-}
-
 #comment-posting { display: none }
 
 .comments, 
@@ -1373,16 +1373,16 @@ body.user-following .comment .asset-body {
 .comment {
     clear: both;
     position: relative;
-    margin-top: 25px;
-    margin-left: 40px;
-    width: 510px;
+    margin-top: 15px;
+    margin-left: 8px;
 }
 
-body.user-profile .comment, body.user-following .comment {
-    margin-left: 8px;
-    width: 100%;
-    position: relative;
+/* Indent comments on permalink view */
+body.permalink .comment {
+    width: 510px;
+    margin-left: 40px;
 }
+
 .comment-last {
     border-bottom: none;
     margin-bottom: 0;
@@ -1424,15 +1424,6 @@ body.user-profile .comment, body.user-following .comment {
 .comments-banner {
     margin-bottom: 15px;
     font-size:22px;
-}
-.comment .userpic {
-    float: left;
-    position: relative;
-}
-.comment .userpic .auth-icon {
-    position: absolute;
-    top: 32px;
-    left: 32px;
 }
 .comment .asset-meta {
     color: #777;
@@ -1493,6 +1484,113 @@ body.user-profile .comment, body.user-following .comment {
     width: auto;
     text-align: left;
     display: inline;
+}
+
+/* Inline comments ------------------------------------------------------------- */
+
+.inline-comments {
+    padding: 5px 8px;
+    width: 450px;
+    margin-left: 100px;
+    background-color: #ebebeb;
+    background-image: url(images/inline-comments-top.png);
+    background-repeat: no-repeat;
+    clear: both;
+}
+
+.user-profile .inline-comments {
+    margin-left: 40px;
+}
+
+.inline-comments .comment {
+    margin: 0;
+    padding: 0;
+    width: auto;
+    border-bottom: 1px dotted #999;
+}
+.inline-comments .userpic {
+    margin: 0;
+    position: absolute;
+    display: block !important;
+}
+.inline-comments .comment-content {
+    margin-left: 47px;
+}
+.inline-comments .comment-footer {
+    clear: both;
+    display: block;
+	margin-left: 47px;
+	padding: 0;
+}
+.inline-comments .byline {
+    display: block;
+}
+.inline-comments .asset-meta {
+    float: none;
+    font-style: italic;
+}
+.inline-comments .vcard,
+.inline-comments .separator {
+    display: none;
+}
+.inline-comments .comment-content-inner {
+    margin: 0;
+    border-bottom: none;
+    clear: both;
+    padding: 0;
+    width: 360px;
+}
+.inline-comments .userpic img {
+    height: 32px;
+    width: 32px;
+}
+
+.inline-comments .comments-form {
+    width: auto;
+    margin-top: 10px;
+}
+.inline-comments .comments-form .form-error {
+    font-weight: bold;
+}
+.inline-comments .comments-form textarea {
+    height: 32px;
+    width: 398px;
+    max-width: 398px;
+    color: #000;
+    font-size: 12px;
+    margin-left: 47px;
+}
+.inline-comments .comments-form .form-error,
+.inline-comments .more-comments,
+.inline-comments .inline-comments-sign-in {
+    margin: 10px 0;
+    text-align: center;
+    font-style: italic;
+}
+.inline-comments .inline-comments-untouched .userpic {
+    display: none !important;
+}
+.inline-comments .inline-comments-untouched textarea {
+    width: 440px;
+    max-width: 440px;
+    font-style: italic;
+    overflow: hidden;
+    color: #aaa;
+    height: 1.2em;
+    max-height: 1.2em;
+    margin-left: 0;
+}
+.inline-comments .comment .controls {
+    display: none;
+}
+.inline-comments .comment.hover .controls {
+    display: block;
+}
+.inline-comments .inline-submit-wrapper {
+    text-align: right;
+}
+.inline-comments .inline-comments-untouched .inline-submit-wrapper {
+    display: none;
 }
 
 /* Members Area ---------------------------------------------------------------- */

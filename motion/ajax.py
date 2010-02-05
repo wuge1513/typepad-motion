@@ -37,6 +37,7 @@ from django.template import RequestContext
 import simplejson as json
 
 import motion.models
+from motion.forms import CommentForm
 import typepad
 from typepadapp import models, signals
 from typepadapp.auth import get_user
@@ -209,19 +210,61 @@ def asset_meta(request):
 
 @ajax_required
 def asset_ping(request):
-    stream_key = 'event_stream:%s' % request.group.xid
+    kind = request.POST['type']
+    if kind == 'comment':
+        return comment_ping(request)
+
+    stream_key = 'group_stream:%s' % request.group.xid
     last = request.POST['xid']
     events = cache.get(stream_key)
     resp = {"count": 0, "last": last}
     if events:
         match = None
         if last:
-            match = [i for i, a in enumerate(events) if a['asset_id'] == last]
+            match = [i for i, a in enumerate(events) if a == last]
         if not match:
             match = [len(events)]
-        if match:
-            resp = {"count": match[0],
-                "last": events[0]["asset_id"]}
+        resp = {"count": match[0], "last": events[0]}
+    return http.HttpResponse(json.dumps(resp), mimetype='application/json')
+
+
+@ajax_required
+def comment_ping(request):
+    parent = request.POST['parent']
+    stream_key = 'asset_stream:%s' % parent
+    last = request.POST['xid']
+    events = cache.get(stream_key)
+    resp = {"data": '', "last": last, "count": 0}
+
+    if events:
+        comments = []
+        for asset_id in events:
+            if last and (asset_id == last):
+                break
+            comments.append(asset_id)
+            if len(comments) == typepad.client.subrequest_limit - 1: break
+
+        resp['last'] = events[0]
+
+        if comments:
+            assets = []
+
+            typepad.client.batch_request()
+            count = models.Asset.get_by_url_id(parent).comments.filter(max_results=0)
+            for id in comments:
+                assets.append(models.Comment.get_by_url_id(id))
+            typepad.client.complete_batch()
+
+            results = ''
+            assets.reverse()
+            for asset in assets:
+                results += render_to_string('motion/assets/comment.html', {
+                    'comment': asset,
+                }, context_instance=RequestContext(request))
+            resp['data'] = results
+            resp['parent'] = parent
+            resp['count'] = count.total_results
+
     return http.HttpResponse(json.dumps(resp), mimetype='application/json')
 
 
@@ -290,3 +333,72 @@ def upload_url(request):
     url = request.oauth_client.get_file_upload_url(remote_url)
     url = 'for(;;);%s' % url # no third party sites allowed.
     return http.HttpResponse(url)
+
+
+@ajax_required
+def asset_post(request):
+    """Ajax interface for creating a post or comment."""
+
+    post_type = request.POST.get('post_type', None)
+    if post_type is None:
+        raise Exception("post_type is a required parameter")
+
+    if post_type == 'comment':
+        frm = CommentForm(request.POST)
+        if frm.is_valid():
+            postid = request.POST.get('parent', None)
+            if postid is None:
+                raise Exception("parent is a required parameter")
+
+            typepad.client.batch_request()
+            user = get_user(request)
+            asset = models.Asset.get_by_url_id(postid)
+            typepad.client.complete_batch()
+
+            if not user.is_authenticated():
+                raise Exception("not authorized")
+
+            request.typepad_user = user
+            comment = frm.save()
+            comment.in_reply_to = asset.asset_ref
+
+            ### Moderation
+            if moderation:
+                from moderation import views as mod_view
+                if mod_view.moderate_post(request, comment):
+                    html = render_to_string('motion/assets/comment.html', {
+                        'comment': comment,
+                        'view': 'permalink',
+                    }, context_instance=RequestContext(request))
+                    return http.HttpResponse(json.dumps({
+                        'status': 'moderated',
+                        'data': 'Your comment is held for moderation.'}),
+                        mimetype='application/json')
+
+            try:
+                asset.comments.post(comment)
+            except Exception, e:
+                return http.HttpResponse(json.dumps({
+                    'status': 'error',
+                    'data': str(e),
+                }), mimetype='application/json')
+
+            signals.asset_created.send(sender=asset_post, instance=comment,
+                parent=asset, group=request.group)
+
+            # render response
+            html = render_to_string('motion/assets/comment.html', {
+                'comment': comment,
+                'view': 'permalink',
+            }, context_instance=RequestContext(request))
+
+            return http.HttpResponse(json.dumps({
+                'status': 'posted', 'data': html, 'xid':comment.xid}),
+                mimetype='application/json')
+        else:
+            errorfields = [k for k, v in frm.errors.items()]
+            return http.HttpResponse(json.dumps({'status': 'error',
+                'data': ','.join(errorfields)}), mimetype='application/json')
+    else:
+        # TBD: support for other post types
+        pass

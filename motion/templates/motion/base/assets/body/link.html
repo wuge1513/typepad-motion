@@ -1,6 +1,14 @@
 {% extends base|default:"motion/assets/body/base.html" %}
 {% load generic_filters %}
 
+{% block title %}
+    {% if settings.use_titles %}
+    {% if entry.title %}{% spaceless %}
+        <h2 class="entry-title"><a href="{{ entry.link }}">{{ entry.title }}</a></h2>
+    {% endspaceless %}{% endif %}
+    {% endif %}
+{% endblock %}
+
 {% block content %}
     {% if not settings.use_titles %}
     <h2 class="entry-title"><a href="{{ entry.link }}">{{ entry.link|truncatechars:settings.link_title_length }}</a></h2>

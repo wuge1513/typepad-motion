@@ -1,10 +1,16 @@
 typepad-motion Changelog
 ========================
 
-1.2
----
+Unreleased
+-----------
 
+* Adding settings and support for sharing posts to Facebook and Twitter.
+* Added setting and support for listing recent comments underneath posts.
+* Added administrator view of all users who have a banned status.
+* Added support for running on Google AppEngine.
 * Changed views to provide the signed-in TypePad member to templates as ``typepad_user`` instead of ``user``.
+* Fix for jQuery 1.6 compatibility.
+* Fixed comment validation bug.
 
 
 1.1.1 (2009-12-16)

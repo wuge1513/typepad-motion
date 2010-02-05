@@ -143,6 +143,27 @@ class AssetEventView(TypePadView):
                     event.object.moderation_flagged = event.object.url_id in flag_ids
                     event.object.moderation_approved = event.object.url_id in approved_ids
 
+    def get(self, request, *args, **kwargs):
+        num = settings.INLINE_COMMENT_COUNT
+        if num > 0:
+            self.context['display_inline_comments'] = True
+            if num > 50: num = 50
+            events = self.object_list
+            typepad.client.batch_request()
+            subrequests = 0
+            for event in events:
+                obj = event.object
+                if not (obj and obj.commentable): continue
+                if obj.comment_count() > 0:
+                    start = (obj.comment_count() - num) + 1
+                    if start < 1: start = 1
+                    obj.recent_comments = obj.comments.filter(max_results=num,
+                        start_index=start)
+                subrequests += 1
+                if subrequests == typepad.client.subrequest_limit: break
+            typepad.client.complete_batch()
+        return super(AssetEventView, self).get(request, *args, **kwargs)
+
 
 class AssetPostView(TypePadView):
 
@@ -272,7 +293,7 @@ class GroupEventsView(AssetEventView, AssetPostView):
         super(GroupEventsView, self).select_from_typepad(request, *args, **kwargs)
 
 
-class FollowingEventsView(TypePadView):
+class FollowingEventsView(AssetEventView):
 
     """The recent events by everyone in a group whom the signed-in user is
     following.
@@ -486,9 +507,18 @@ class MembersView(TypePadView):
     template_name = "motion/members.html"
 
     def select_from_typepad(self, request, *args, **kwargs):
-        self.paginate_template = reverse('members') + '/page/%d'
-        self.object_list = request.group.memberships.filter(start_index=self.offset,
-            max_results=self.limit)
+        url = 'members'
+        more = {}
+        if 'rel' in kwargs:
+            if kwargs['rel'] == 'banned':
+                # requires admin access
+                url = 'banned_members'
+                more['blocked'] = True
+                more['cache'] = False
+                self.context['rel'] = 'banned'
+        self.paginate_template = reverse(url) + '/page/%d'
+        self.object_list = request.group.memberships.filter(
+            start_index=self.offset, max_results=self.limit, **more)
         self.context.update(locals())
 
 

@@ -59,6 +59,10 @@ urlpatterns = patterns('motion.views',
     # member pages (userids are [a-zA-Z0-9_]+)
     url(r'^members/?$', 'MembersView', name='members'),
     url(r'^members/page/(?P<page>\d+)/?$', 'MembersView'),
+
+    url(r'^admin/members/banned/?$', 'MembersView', {'rel':'banned'}, name='banned_members',),
+    url(r'^admin/members/banned/page/(?P<page>\d+)/?$', 'MembersView', {'rel':'banned'}),
+
     url(r'^members/(?P<userid>\w+)/?$', 'MemberView', name='member'),
     url(r'^members/(?P<userid>\w+)/page/(?P<page>\d+)/?$', 'MemberView'),
     url(r'^members/(?P<userid>\w+)/following/?$', 'RelationshipsView', {'rel': 'following'}, name='following'),
@@ -71,6 +75,7 @@ urlpatterns += patterns('motion.ajax',
     url(r'^ajax/favorite/?$', 'favorite', name='favorite_url'),
     url(r'^ajax/asset_meta/?$', 'asset_meta', name='asset_meta_url'),
     url(r'^ajax/asset_ping/?$', 'asset_ping', name='asset_ping_url'),
+    url(r'^ajax/asset_post/?$', 'asset_post', name='asset_post_url'),
     url(r'^ajax/crosspost_options/?$', 'crosspost_options', name='crosspost_options_url'),
     url(r'^ajax/edit_profile/?$', 'edit_profile', name='edit_profile_url'),
     url(r'^ajax/upload_url/?$', 'upload_url', name='upload_url'),

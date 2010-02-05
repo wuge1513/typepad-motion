@@ -2,6 +2,7 @@
 {% load i18n %}
 {% load generic_filters %}
 
+{% block page_id %}permalink{% endblock %}
 {% block head_title %}{{ block.super }}{% if entry.title %}: {{ entry.title }}{% else %}{% if entry.content %}: {{ entry.content|striptags|truncatechars:40 }}{% endif %}{% endif %}{% endblock %}
 {% block page_layout %}layout-two-column-right{% endblock %}
 
@@ -61,7 +62,7 @@
         </div>
     {% endif %}
 
-    {% if settings.allow_commenting %}
+    {% if typepad_user.is_superuser or settings.allow_commenting %}
     {% if not moderation.user_is_blocked %}
         <div class="comments-open" id="comments-open">
         {% if typepad_user.is_authenticated %}
