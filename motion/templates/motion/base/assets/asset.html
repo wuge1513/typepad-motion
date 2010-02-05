@@ -27,7 +27,7 @@
         </div>
     {% if entry.comment_count|greaterthan:settings.inline_comment_count %}
         <div class="more-comments">
-            <a href="{{ entry.get_absolute_url }}#comments">View all {{ entry.comment_count }} comments</a>
+            <a href="{{ entry.get_absolute_url }}#comments">View all comments</a>
         </div>
     {% endif %}
 

@@ -667,6 +667,12 @@ function initEntryHover(){
             $(this).removeClass('hover');
         }
     );
+    $(".inline-comments .comment").hover(function(){
+            $(this).addClass('hover');
+        },function(){
+            $(this).removeClass('hover');
+        }
+    );
 }
 
 // Compose Form Errors

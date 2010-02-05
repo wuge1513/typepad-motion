@@ -221,15 +221,14 @@ def asset_ping(request):
     if events:
         match = None
         if last:
-            match = [i for i, a in enumerate(events) if a['asset_id'] == last]
+            match = [i for i, a in enumerate(events) if a == last]
         if not match:
             match = [len(events)]
-        if match:
-            resp = {"count": match[0],
-                "last": events[0]["asset_id"]}
+        resp = {"count": match[0], "last": events[0]}
     return http.HttpResponse(json.dumps(resp), mimetype='application/json')
 
 
+@ajax_required
 def comment_ping(request):
     parent = request.POST['parent']
     stream_key = 'asset_stream:%s' % parent
@@ -239,13 +238,13 @@ def comment_ping(request):
 
     if events:
         comments = []
-        for event in events:
-            if last and (event['asset_id'] == last):
+        for asset_id in events:
+            if last and (asset_id == last):
                 break
-            comments.append(event['asset_id'])
+            comments.append(asset_id)
             if len(comments) == typepad.client.subrequest_limit - 1: break
 
-        resp['last'] = events[0]['asset_id']
+        resp['last'] = events[0]
 
         if comments:
             assets = []

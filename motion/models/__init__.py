@@ -53,20 +53,22 @@ def update_event_stream(sender, instance=None, group=None, **kwargs):
 
     stream_key = '%s_stream:%s' % (prefix, scope)
     lock_key = stream_key + ':lock'
-
-    event = {
-        "asset_id": instance.xid,
-    }
+    remove = 'remove' in kwargs
+    asset_id = instance.xid
 
     tries = 0
     while tries < 10:
         if cache.add(lock_key, 1, 2):
             # we have a lock
             events = cache.get(stream_key, [])
-            # add new event
-            events.insert(0, event)
-            if len(events) > 100:
-                events = events[0:100]
+
+            if remove:
+                events.remove(asset_id)
+            else:
+                events.insert(0, asset_id)
+                if len(events) > 100:
+                    events = events[0:100]
+
             # update event stream
             cache.set(stream_key, events, settings.LONG_TERM_CACHE_PERIOD)
             # release our lock
@@ -76,4 +78,11 @@ def update_event_stream(sender, instance=None, group=None, **kwargs):
             # lets retry
             tries += 1
 
+
+def event_stream_remove(sender, instance=None, group=None, **kwargs):
+    kwargs['remove'] = True
+    update_event_stream(sender, instance, group, **kwargs)
+
+
 signals.asset_created.connect(update_event_stream)
+signals.asset_deleted.connect(event_stream_remove)
