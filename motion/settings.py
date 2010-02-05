@@ -72,9 +72,7 @@ USE_I18N = False
 MEDIA_URL = '/static/'
 ADMIN_MEDIA_PREFIX = '/media/'
 
-AUTHENTICATION_BACKENDS = (
-    'typepadapp.backends.TypePadBackend',
-)
+AUTHENTICATION_BACKENDS = ()
 
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',

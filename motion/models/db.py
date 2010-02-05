@@ -25,5 +25,5 @@ class CrosspostOptions(models.Model):
             return None
 
     class Meta:
-        app_label = 'crosspostoptions'
+        app_label = 'motion'
         db_table = 'motion_crosspostoptions'
