@@ -215,13 +215,21 @@ def asset_ping(request):
         return comment_ping(request)
 
     stream_key = 'group_stream:%s' % request.group.xid
-    last = request.POST['xid']
+    xid = request.POST['xid']
     events = cache.get(stream_key)
-    resp = {"count": 0, "last": last}
-    if events and last:
-        match = [i for i, a in enumerate(events) if a == last]
-        if match:
-            resp = {"count": match[0], "last": events[0]}
+    resp = {"count": 0, "last": xid}
+    if events and xid:
+        count = 0
+        last = None
+        for i in range(len(events)):
+            if events[i] in (xid, '-' + xid):
+                match = i
+                break
+            if not events[i].startswith('-'):
+                count += 1
+                last = last or events[i]
+        if count and last:
+            resp = {"count": count, "last": last}
     return http.HttpResponse(json.dumps(resp), mimetype='application/json')
 
 
@@ -236,14 +244,14 @@ def comment_ping(request):
     if events:
         comments = []
         for asset_id in events:
-            if last and (asset_id == last):
+            if last and (asset_id in (last, '-' + last)):
                 break
-            comments.append(asset_id)
+            if not asset_id.startswith('-'):
+                comments.append(asset_id)
             if len(comments) == typepad.client.subrequest_limit - 1: break
 
-        resp['last'] = events[0]
-
         if comments:
+            resp['last'] = comments[0]
             assets = []
 
             typepad.client.batch_request()

@@ -63,7 +63,10 @@ def update_event_stream(sender, instance=None, group=None, **kwargs):
             events = cache.get(stream_key, [])
 
             if remove:
-                events.remove(asset_id)
+                for i in range(len(events)):
+                    if events[i] == asset_id:
+                        events[i] = '-' + asset_id
+                        break
             else:
                 events.insert(0, asset_id)
                 if len(events) > 100:

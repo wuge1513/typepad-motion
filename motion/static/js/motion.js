@@ -648,8 +648,7 @@ $(document).ready(function () {
                 data: {"type":"group", "xid": last_asset},
                 dataType: "json",
                 success: function(data) {
-                    last_asset = data['last'];
-                    new_asset_count += data['count'];
+                    new_asset_count = data['count'];
                     if (new_asset_count > 0) {
                         if (!$("#flash-asset-ping").size()) {
                             $("#pagebody").before('<div class="flash notice" id="flash-asset-ping"></div>');
@@ -660,6 +659,9 @@ $(document).ready(function () {
                     }
                     else if (new_asset_count > 1) {
                         $("#flash-asset-ping").html('<a href="#" onclick="window.location.reload()">' + new_asset_count.toString() + " new posts</a>");
+                    }
+                    else {
+                        $("#flash-asset-ping").remove();
                     }
                     window.setTimeout(updateStatus, settings.ajax_ping_frequency * 1000);
                 }
