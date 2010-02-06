@@ -218,13 +218,10 @@ def asset_ping(request):
     last = request.POST['xid']
     events = cache.get(stream_key)
     resp = {"count": 0, "last": last}
-    if events:
-        match = None
-        if last:
-            match = [i for i, a in enumerate(events) if a == last]
-        if not match:
-            match = [len(events)]
-        resp = {"count": match[0], "last": events[0]}
+    if events and last:
+        match = [i for i, a in enumerate(events) if a == last]
+        if match:
+            resp = {"count": match[0], "last": events[0]}
     return http.HttpResponse(json.dumps(resp), mimetype='application/json')
 
 
