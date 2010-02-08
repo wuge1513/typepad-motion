@@ -2,15 +2,15 @@
 
 <div class="widget-sign-in widget">
     <div id="signin-widget-content" class="widget-content">
-        {% if not typepad_user.is_authenticated %}
+        {% if not request.typepad_user.is_authenticated %}
             {% url login as login_url %}
             {% blocktrans with request.path|urlencode as request_path and request.group.display_name as group_name %}
                 <a href="{{ login_url }}?next={{ request_path }}">Sign in or join {{ group_name }}</a>
             {% endblocktrans %}
         {% else %}
-            {% blocktrans with typepad_user.get_absolute_url as url and typepad_user.display_name as name %}Hi <a href="{{ url }}">{{ name }}</a>{% endblocktrans %}
+            {% blocktrans with request.typepad_user.get_absolute_url as url and request.typepad_user.display_name as name %}Hi <a href="{{ url }}">{{ name }}</a>{% endblocktrans %}
             <span class="separator">|</span>
-            <a href="{{ typepad_user.get_absolute_url }}">{% trans "Profile" %}</a>
+            <a href="{{ request.typepad_user.get_absolute_url }}">{% trans "Profile" %}</a>
 
             {% if moderation %}
             {% if request.typepad_user.is_superuser %}
