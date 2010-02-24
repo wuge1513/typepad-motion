@@ -27,7 +27,7 @@
         </div>
     {% if entry.comment_count|greaterthan:settings.inline_comment_count %}
         <div class="more-comments">
-            <a href="{{ entry.get_absolute_url }}#comments">View all comments</a>
+            <a href="{{ entry.get_absolute_url }}#comments">{% trans "View all comments" %}</a>
         </div>
     {% endif %}
 
@@ -46,7 +46,7 @@
             <div class="comments-form-content">
                 <form method="post" name="comments_form" class="inline-comments-form">
                     <input type="hidden" name="asset_id" value="{{ entry.xid }}" />
-                    <textarea rows="5" name="body" title="" class="ta" cols="50">Click here to reply</textarea>
+                    <textarea rows="5" name="body" title="" class="ta" cols="50">{% trans "Click here to reply" %}</textarea>
                     <div class="inline-submit-wrapper">
                         <button type="submit" name="comment" value="Submit">{% trans "Comment" %}</button>
                     </div>
