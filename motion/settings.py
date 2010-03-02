@@ -115,15 +115,6 @@ INSTALLED_APPS = (
 SITE_ID = 1
 SECRET_KEY = ''
 
-BACKEND_URL = 'https://api.typepad.com'
-"""The URL of the TypePad API service to use.
-
-This setting should normally always be the default value of
-``https://api.typepad.com``, but it may be useful to send API requests
-somewhere else for development or debugging.
-
-"""
-
 FEATURED_MEMBER = None
 """The TypePad XID of an account to use as a featured member of the group.
 
