@@ -28,7 +28,7 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from django.db import models
-from typepadapp.models.users import User
+from typepadapp.models.users import User, UserProfile
 
 
 class CrosspostOptions(models.Model):

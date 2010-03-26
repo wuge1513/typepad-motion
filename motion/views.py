@@ -541,17 +541,19 @@ class MemberView(AssetEventView):
     def select_from_typepad(self, request, userid, *args, **kwargs):
         self.paginate_template = reverse('member', args=[userid]) + '/page/%d'
 
-        # do not use cached responses for superuser requests; this ensures
-        # that the response contains elements that are only provided to
-        # administrators (email address, for instance)
-        member = models.User.get_by_url_id(userid, cache=not request.user.is_superuser)
-        user_memberships = member.group_memberships(request.group)
+        member = models.UserProfile.get_by_url_id(userid)
+        u = member.user
+        user_memberships = u.group_memberships(request.group)
 
         if request.method == 'GET':
             # no need to do these for POST requests
-            elsewhere = member.elsewhere_accounts
-            self.object_list = member.group_events(request.group,
+            elsewhere = u.elsewhere_accounts
+            self.object_list = u.group_events(request.group,
                 start_index=self.offset, max_results=self.limit)
+
+        # clear this reference, so we don't do an additional subrequest
+        # for the User object too
+        u = None
 
         self.context.update(locals())
         super(MemberView, self).select_from_typepad(request, userid, *args, **kwargs)
@@ -590,7 +592,7 @@ class MemberView(AssetEventView):
                     break
 
         try:
-            profile = member.get_profile()
+            profile = member.user.get_profile()
         except SiteProfileNotAvailable:
             pass
         else:
