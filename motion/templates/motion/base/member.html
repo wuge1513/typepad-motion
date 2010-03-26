@@ -26,7 +26,7 @@
 
         <div class="userpic">
             {% with member|userpicbywidth:100 as userpic %}
-            <img src="{{ userpic.href }}" width="100" height="100" alt="{{ member.display_name }}" />
+            <img src="{{ userpic.url }}" width="100" height="100" alt="{{ member.display_name }}" />
             {% endwith %}
         </div>
 

@@ -8,7 +8,7 @@
         {% if entry.source %}
         <span class="source">
             {% block source_phrase %}{% trans "posted from" %}{% endblock %}
-            {% with entry.source.original_link.href as original_href %}
+            {% with entry.source.original_link.url as original_href %}
                 {% if entry.source.provider %}
                     {% if entry.source.provider.icon %}
                     <a href="{{ original_href }}"><img src="{{ entry.source.provider.icon }}" height="16" width="16" alt="" /></a>

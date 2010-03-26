@@ -8,6 +8,6 @@
 
 {% block media %}
 <div class="embed">
-    {% autoescape off %}{% with entry|enclosurebymaxwidth:settings.video_max_width as video %}{{ video.html }}{% endwith %}{% endautoescape %}
+    {% autoescape off %}{% with entry|enclosurebymaxwidth:settings.video_max_width as video %}{{ video.embed_code }}{% endwith %}{% endautoescape %}
 </div>
 {% endblock %}

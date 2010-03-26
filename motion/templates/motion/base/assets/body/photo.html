@@ -10,7 +10,7 @@
 
     {% ifequal view "permalink" %}
         {% if entry.source %}
-            <a href="{{ entry.source.original_link.href }}">
+            <a href="{{ entry.source.original_link.url }}">
         {% endif %}
     {% else %}
         <a href="{{ entry.get_absolute_url }}">
@@ -18,9 +18,9 @@
 
     {# This bit is necessary for IE6, who doesn't respect max-width CSS rules. #}
     {% if thumbnail.width|greaterthan:settings.photo_max_width %}
-        <img class="constrained" style="width:{{ settings.photo_max_width }}px" width="{{ settings.photo_max_width }}" src="{{ thumbnail.href }}" alt="{{ entry.title }}" />
+        <img class="constrained" style="width:{{ settings.photo_max_width }}px" width="{{ settings.photo_max_width }}" src="{{ thumbnail.url }}" alt="{{ entry.title }}" />
     {% else %}
-        <img width="{{ thumbnail.width }}" height="{{ thumbnail.height }}" src="{{ thumbnail.href }}" alt="{{ entry.title }}" />
+        <img width="{{ thumbnail.width }}" height="{{ thumbnail.height }}" src="{{ thumbnail.url }}" alt="{{ entry.title }}" />
     {% endif %}
 
     {% ifequal view "permalink" %}
@@ -33,7 +33,7 @@
 
     {% endspaceless %}
 
-    {% ifnotequal entry.link thumbnail.href %}
+    {% ifnotequal entry.link thumbnail.url %}
     {# provide a link to the original resolution #}
     <br /><small><a href="{{ entry.link }}">{% trans "original" %}</a></small>
     {% endifnotequal %}
