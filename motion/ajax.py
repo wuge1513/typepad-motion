@@ -98,6 +98,7 @@ def more_comments(request):
     for comment in comments:
         comment_string += render_to_string('motion/assets/comment.html', {
             'comment': comment,
+            'view': 'permalink',
         }, context_instance=RequestContext(request))
 
     # Return HTML
