@@ -170,7 +170,7 @@ def asset_meta(request):
 
     ids = request.POST.getlist('asset_id')
     if not ids or not request.typepad_user.is_authenticated():
-        return http.HttpResponse('')
+        return http.HttpResponse('{}', mimetype='application/json')
 
     user_id = request.typepad_user.url_id
     admin_user = request.typepad_user.is_superuser
@@ -192,6 +192,8 @@ def asset_meta(request):
         # request if the user can delete this asset.
         if not admin_user and settings.ALLOW_USERS_TO_DELETE_POSTS:
             opts.append((id, typepad.Asset.get_by_url_id(xid).options()))
+        if admin_user:
+            meta[id] = {'can_delete': True}
     typepad.client.complete_batch()
 
     for f in favs:
