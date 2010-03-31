@@ -9,8 +9,8 @@
     {% spaceless %}
 
     {% ifequal view "permalink" %}
-        {% if entry.source %}
-            <a href="{{ entry.source.original_link.url }}">
+        {% if entry.source.permalink_url %}
+            <a href="{{ entry.source.permalink_url }}">
         {% endif %}
     {% else %}
         <a href="{{ entry.get_absolute_url }}">
