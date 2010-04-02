@@ -1676,6 +1676,9 @@ body.permalink .comment {
     border: 1px solid #ddd;
     padding: 2px;
 }
+.user-profile .profile-header .userpic img {
+    max-width: 100px;
+}
 .user-profile .profile-header,
 .user-profile .recent-entry,
 .user-profile .actions,

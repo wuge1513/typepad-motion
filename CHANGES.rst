@@ -13,6 +13,12 @@ Unreleased
 * Fixed comment validation bug.
 
 
+1.1.2 (2010-3-30)
+-----------------
+
+* Updated templates to be compatible with latest TypePad API changes.
+
+
 1.1.1 (2009-12-16)
 ------------------
 

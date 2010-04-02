@@ -25,7 +25,7 @@
                 {% spaceless %}
                 <a class="commenter-profile" href="{{ comment.author.get_absolute_url }}">
                     {% with comment.author|userpicbywidth:16 as userpic %}
-                    <img alt="Author Profile Page" src="{{ userpic.href }}" width="16" height="16" />
+                    <img alt="Author Profile Page" src="{{ userpic.url }}" width="16" height="16" />
                     {% endwith %}
                 </a>
                 {% endspaceless %}

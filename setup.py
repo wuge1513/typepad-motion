@@ -39,7 +39,7 @@ except Exception:
 
 setup(
     name='typepad-motion',
-    version='1.1.1',
+    version='1.1.2',
     description='Community microblogging in the TypePad cloud',
     author='Six Apart',
     author_email='python@sixapart.com',
@@ -63,6 +63,6 @@ setup(
     provides=['motion'],
     include_package_data=True,
     zip_safe=False,
-    requires=['Django(>=1.1.1)', 'typepadapp(==1.1.1)', 'django_flash(>=1.5.1)'],
-    install_requires=['Django>=1.1.1', 'typepadapp==1.1.1', 'django_flash>=1.5.1'],
+    requires=['Django(>=1.1.1)', 'typepadapp(==1.1.2)', 'django_flash(>=1.5.1)'],
+    install_requires=['Django>=1.1.1', 'typepadapp==1.1.2', 'django_flash>=1.5.1'],
 )

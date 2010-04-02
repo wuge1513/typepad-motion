@@ -28,6 +28,8 @@
 # POSSIBILITY OF SUCH DAMAGE.
 
 from django_kvstore import models
+from typepadapp.models.users import User, UserProfile
+
 
 class CrosspostOptions(models.Model):
     """
