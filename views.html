@@ -5,13 +5,13 @@
   <head>
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
     
-    <title>Views &mdash; motion v1.1 documentation</title>
+    <title>Views &mdash; motion v1.1.2 documentation</title>
     <link rel="stylesheet" href="static/default.css" type="text/css" />
     <link rel="stylesheet" href="static/pygments.css" type="text/css" />
     <script type="text/javascript">
       var DOCUMENTATION_OPTIONS = {
         URL_ROOT:    '',
-        VERSION:     '1.1',
+        VERSION:     '1.1.2',
         COLLAPSE_MODINDEX: false,
         FILE_SUFFIX: '.html',
         HAS_SOURCE:  true
@@ -19,7 +19,7 @@
     </script>
     <script type="text/javascript" src="static/jquery.js"></script>
     <script type="text/javascript" src="static/doctools.js"></script>
-    <link rel="top" title="motion v1.1 documentation" href="index.html" />
+    <link rel="top" title="motion v1.1.2 documentation" href="index.html" />
     <link rel="next" title="Featured accounts" href="featured.html" />
     <link rel="prev" title="Settings" href="settings.html" /> 
   </head>
@@ -39,7 +39,7 @@
         <li class="right" >
           <a href="settings.html" title="Settings"
              accesskey="P">previous</a> |</li>
-        <li><a href="index.html">motion v1.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">motion v1.1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>  
 
@@ -48,8 +48,235 @@
         <div class="bodywrapper">
           <div class="body">
             
-  <div class="section" id="views">
-<h1>Views<a class="headerlink" href="#views" title="Permalink to this headline">¶</a></h1>
+  <div class="section" id="module-motion.views">
+<h1>Views<a class="headerlink" href="#module-motion.views" title="Permalink to this headline">¶</a></h1>
+<p>Views for Motion sites.</p>
+<p>Motion&#8217;s views provide the Motion community microblogging experience. Motion
+uses the <cite>typepadapp</cite> class-based view system; see <cite>typepadapp.views</cite> for more
+about how these class-based views work.</p>
+<dl class="class">
+<dt id="motion.views.AssetEventView">
+<em class="property">
+class </em><tt class="descclassname">motion.views.</tt><tt class="descname">AssetEventView</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.AssetEventView" title="Permalink to this definition">¶</a></dt>
+<dd><p>An abstract view for displaying a list of asset events.</p>
+<p>This is an abstract view for showing a list of events, such as on the
+<a title="motion.views.GroupEventsView" class="reference internal" href="#motion.views.GroupEventsView"><tt class="xref docutils literal"><span class="pre">GroupEventsView</span></tt></a> or <a title="motion.views.MemberView" class="reference internal" href="#motion.views.MemberView"><tt class="xref docutils literal"><span class="pre">MemberView</span></tt></a>. It automatically filters the
+<cite>object_list</cite> attributes of subclassing views to only include events that
+refer to assets posted to the group.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="motion.views.AssetPostView">
+<em class="property">
+class </em><tt class="descclassname">motion.views.</tt><tt class="descname">AssetPostView</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.AssetPostView" title="Permalink to this definition">¶</a></dt>
+<dd><p>An abstract view that can make new posts to the group.</p>
+<p>Views that subclass AssetPostView can post new content to the group.</p>
+<p class="rubric">Template variables:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">form</span></tt>: A <tt class="xref docutils literal"><span class="pre">PostForm</span></tt> instance to use for the compose form.</li>
+<li><tt class="docutils literal"><span class="pre">elsewhere</span></tt>: A list of <cite>ElsewhereAccount</cite> instances belonging to the
+signed-in viewer. Some of these accounts may be used for cross-posting.</li>
+<li><tt class="docutils literal"><span class="pre">upload_xhr_endpoint</span></tt>: A URL for posting media assets to.</li>
+<li><tt class="docutils literal"><span class="pre">upload_complete_endpoint</span></tt>: The URL of the <a title="motion.views.upload_complete" class="reference internal" href="#motion.views.upload_complete"><tt class="xref docutils literal"><span class="pre">upload_complete</span></tt></a> view.
+Send it to the <tt class="docutils literal"><span class="pre">upload_xhr_endpoint</span></tt> for it to return to your site
+after the viewer posts a media asset.</li>
+</ul>
+<dl class="attribute">
+<dt id="motion.views.AssetPostView.form">
+<tt class="descname">form</tt><a class="headerlink" href="#motion.views.AssetPostView.form" title="Permalink to this definition">¶</a></dt>
+<dd>alias of <tt class="xref docutils literal"><span class="pre">PostForm</span></tt></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="motion.views.AssetView">
+<em class="property">
+class </em><tt class="descclassname">motion.views.</tt><tt class="descname">AssetView</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.AssetView" title="Permalink to this definition">¶</a></dt>
+<dd><p>The permalink page for an asset.</p>
+<p>This view displays one asset by itself, often with comments. More comments
+can be loaded with Motion&#8217;s ajax views. Through this view&#8217;s page, a
+signed-in viewer may delete the asset (if permitted), post a comment, or
+mark the entry as a favorite.</p>
+<p class="rubric">Template:</p>
+<p><tt class="docutils literal"><span class="pre">motion/permalink.html</span></tt></p>
+<p class="rubric">Template variables:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">entry</span></tt>: The <cite>Asset</cite> instance being viewed.</li>
+<li><tt class="docutils literal"><span class="pre">comments</span></tt>: A list of <cite>Asset</cite> instances for the last
+<cite>settings.COMMENTS_PER_PAGE</cite> comments on this page&#8217;s asset.</li>
+<li><tt class="docutils literal"><span class="pre">favorites</span></tt>: A list of <cite>Favorite</cite> instances for the most recent times
+group members have marked this page&#8217;s asset as a favorite.</li>
+</ul>
+<dl class="attribute">
+<dt id="motion.views.AssetView.form">
+<tt class="descname">form</tt><a class="headerlink" href="#motion.views.AssetView.form" title="Permalink to this definition">¶</a></dt>
+<dd>alias of <tt class="xref docutils literal"><span class="pre">CommentForm</span></tt></dd></dl>
+
+</dd></dl>
+
+<dl class="class">
+<dt id="motion.views.FeaturedMemberView">
+<em class="property">
+class </em><tt class="descclassname">motion.views.</tt><tt class="descname">FeaturedMemberView</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.FeaturedMemberView" title="Permalink to this definition">¶</a></dt>
+<dd><p>The profile page for a featured member of the group.</p>
+<p>This view is like the <a title="motion.views.MemberView" class="reference internal" href="#motion.views.MemberView"><tt class="xref docutils literal"><span class="pre">MemberView</span></tt></a>, but can include a form for posting new
+content into the group, so that this view can be used as the home page.
+This view is used as the home page when a featured member is configured in
+the site settings; see the <a title="motion.views.home" class="reference internal" href="#motion.views.home"><tt class="xref docutils literal"><span class="pre">home</span></tt></a> view for more information.</p>
+<p class="rubric">Template:</p>
+<p><tt class="docutils literal"><span class="pre">motion/featured_member.html</span></tt></p>
+<p class="rubric">Template variables:</p>
+<p>See the variables provided by <a title="motion.views.MemberView" class="reference internal" href="#motion.views.MemberView"><tt class="xref docutils literal"><span class="pre">MemberView</span></tt></a> and <a title="motion.views.AssetPostView" class="reference internal" href="#motion.views.AssetPostView"><tt class="xref docutils literal"><span class="pre">AssetPostView</span></tt></a>.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="motion.views.FollowingEventsView">
+<em class="property">
+class </em><tt class="descclassname">motion.views.</tt><tt class="descname">FollowingEventsView</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.FollowingEventsView" title="Permalink to this definition">¶</a></dt>
+<dd><p>The recent events by everyone in a group whom the signed-in user is
+following.</p>
+<p>This view displays events in the group by all group members. That is, this
+view is like the TypePad dashboard, but localized to the group. This view
+is also called a member&#8217;s inbox. The viewer must be signed in. Each page
+of the view displays up to <cite>settings.EVENTS_PER_PAGE</cite> events.</p>
+<p class="rubric">Template:</p>
+<p><tt class="docutils literal"><span class="pre">motion/following.html</span></tt></p>
+<p class="rubric">Template variables:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">object_list</span></tt>: The list of <cite>Event</cite> instances to display.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="motion.views.GroupEventsView">
+<em class="property">
+class </em><tt class="descclassname">motion.views.</tt><tt class="descname">GroupEventsView</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.GroupEventsView" title="Permalink to this definition">¶</a></dt>
+<dd><p>The list of everyone&#8217;s events in the group.</p>
+<p>This view displays the group&#8217;s recent events from all members of the
+group. Only events related to assets are shown; non-asset events such as
+joining the group are ignored. The list is split into pages of at most
+<cite>settings.EVENTS_PER_PAGE</cite> events each.</p>
+<p class="rubric">Template:</p>
+<p><tt class="docutils literal"><span class="pre">motion/events.html</span></tt></p>
+<p class="rubric">Template variables:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">object_list</span></tt>: The list of <cite>Event</cite> instances for this view.</li>
+<li><tt class="docutils literal"><span class="pre">memberships</span></tt>: A list of <cite>Relationship</cite> instances for the last
+<cite>settings.MEMBERS_PER_WIDGET</cite> members to join the group.</li>
+<li><tt class="docutils literal"><span class="pre">following</span></tt>: A list of <cite>Relationship</cite> instances for the last
+<a title="motion.settings.FOLLOWERS_PER_WIDGET" class="reference external" href="settings.html#motion.settings.FOLLOWERS_PER_WIDGET"><tt class="xref docutils literal"><span class="pre">settings.FOLLOWERS_PER_WIDGET</span></tt></a> group members the signed-in viewer
+followed.</li>
+<li><tt class="docutils literal"><span class="pre">followers</span></tt>: A list of <cite>Relationship</cite> instances for the last
+<a title="motion.settings.FOLLOWERS_PER_WIDGET" class="reference external" href="settings.html#motion.settings.FOLLOWERS_PER_WIDGET"><tt class="xref docutils literal"><span class="pre">settings.FOLLOWERS_PER_WIDGET</span></tt></a> group members who followed the signed-in
+viewer.</li>
+</ul>
+<p>See the variables available from <a title="motion.views.AssetPostView" class="reference internal" href="#motion.views.AssetPostView"><tt class="xref docutils literal"><span class="pre">AssetPostView</span></tt></a> too.</p>
+</dd></dl>
+
+<dl class="class">
+<dt id="motion.views.MemberView">
+<em class="property">
+class </em><tt class="descclassname">motion.views.</tt><tt class="descname">MemberView</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.MemberView" title="Permalink to this definition">¶</a></dt>
+<dd><p>A group member&#8217;s profile page.</p>
+<p>This view shows a group member&#8217;s per-group profile page. This page shows
+the member&#8217;s profile information as well as the member&#8217;s most recent
+events in the group.</p>
+<p>Profiles for TypePad members are only visible in the group if the member
+is either a current member of the group or has posted content in the group
+that has not been deleted. If a TypePad member leaves the group without
+posting content, the profile page will not exist, as though that TypePad
+member had never joined the group. Use the <tt class="docutils literal"><span class="pre">is_member</span></tt> template variable
+to test if the member is currently in the group.</p>
+<p>Profiles for blocked members are similarly not visible, except if the
+signed-in viewer is a group administrator. Use the <tt class="docutils literal"><span class="pre">is_blocked</span></tt> template
+variable to test if the member is blocked from the group.</p>
+<p class="rubric">Template:</p>
+<p><tt class="docutils literal"><span class="pre">motion/member.html</span></tt></p>
+<p class="rubric">Template variables:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">member</span></tt>: The <cite>User</cite> instance for the group member whose profile page
+this is.</li>
+<li><tt class="docutils literal"><span class="pre">elsewhere</span></tt>: A list of <cite>ElsewhereAccount</cite> instances for the member
+whose profile page is being displayed.</li>
+<li><tt class="docutils literal"><span class="pre">object_list</span></tt>: The profile member&#8217;s <cite>settings.EVENTS_PER_PAGE</cite> most
+recent events in the group.</li>
+<li><tt class="docutils literal"><span class="pre">is_self</span></tt>: Whether the member whose page is being viewed is also the
+signed-in viewer. That is, whether the signed-in viewer is viewing their
+own profile page.</li>
+<li><tt class="docutils literal"><span class="pre">is_member</span></tt>: Whether the member being viewed is still a member of the
+group.</li>
+<li><tt class="docutils literal"><span class="pre">is_blocked</span></tt>: Whether the member being viewed is blocked from
+membership in the group.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="motion.views.MembersView">
+<em class="property">
+class </em><tt class="descclassname">motion.views.</tt><tt class="descname">MembersView</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.MembersView" title="Permalink to this definition">¶</a></dt>
+<dd><p>The group&#8217;s members list.</p>
+<p>This view displays a paginated list of all members in the group. From this
+page, a signed-in viewer may follow and unfollow these members. Up to
+<a title="motion.settings.MEMBERS_PER_PAGE" class="reference external" href="settings.html#motion.settings.MEMBERS_PER_PAGE"><tt class="xref docutils literal"><span class="pre">settings.MEMBERS_PER_PAGE</span></tt></a> members are shown on each page.</p>
+<p class="rubric">Template:</p>
+<p><tt class="docutils literal"><span class="pre">motion/members.html</span></tt></p>
+<p class="rubric">Template variables:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">object_list</span></tt>: The list of <cite>User</cite> instances for members of the group
+to display on this page.</li>
+</ul>
+</dd></dl>
+
+<dl class="class">
+<dt id="motion.views.RelationshipsView">
+<em class="property">
+class </em><tt class="descclassname">motion.views.</tt><tt class="descname">RelationshipsView</tt><big>(</big><em>request</em>, <em>*args</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.RelationshipsView" title="Permalink to this definition">¶</a></dt>
+<dd><p>A list of group members either following or being followed by a
+particular member of the group.</p>
+<p>This view displays members of the group who are following a given group
+member, or members of the group whom the given group member is following.
+The list is displayed the same way as the full group member directory
+(even using the same template).</p>
+<p class="rubric">Template:</p>
+<p><tt class="docutils literal"><span class="pre">motion/members.html</span></tt></p>
+<p class="rubric">Template variables:</p>
+<ul class="simple">
+<li><tt class="docutils literal"><span class="pre">member</span></tt>: The <cite>User</cite> instance for the member whose relationships are
+being viewed.</li>
+<li><tt class="docutils literal"><span class="pre">object_list</span></tt>: A list of <cite>Relationship</cite> instances for up to
+<cite>settings.MEMBER_PER_PAGE</cite> &#8220;followings.&#8221; If viewing a member&#8217;s
+&#8220;followers&#8221; page, that member is the <a title="(in Python v2.6)" class="reference external" href="http://docs.python.org/library/xml.dom.html#xml.dom.ProcessingInstruction.target"><tt class="xref docutils literal"><span class="pre">target</span></tt></a> of the <cite>Relationship</cite> and
+the followers are the <cite>source</cite> attributes; on a member&#8217;s &#8220;following&#8221;
+page, these are reversed.</li>
+</ul>
+</dd></dl>
+
+<dl class="function">
+<dt id="motion.views.home">
+<tt class="descclassname">motion.views.</tt><tt class="descname">home</tt><big>(</big><em>request</em>, <em>page=1</em>, <em>**kwargs</em><big>)</big><a class="headerlink" href="#motion.views.home" title="Permalink to this definition">¶</a></dt>
+<dd><p>Display the home page view, based on local configuration.</p>
+<p>The home page may be the list of recent member activity, a featured user&#8217;s
+profile page, or the recent activity in the group of people you are
+following. Which home page is shown depends on the related settings:</p>
+<ul class="simple">
+<li>If the <a title="motion.settings.FEATURED_MEMBER" class="reference external" href="settings.html#motion.settings.FEATURED_MEMBER"><tt class="xref docutils literal"><span class="pre">FEATURED_MEMBER</span></tt></a> setting is set, the home page is the
+<a title="motion.views.FeaturedMemberView" class="reference internal" href="#motion.views.FeaturedMemberView"><tt class="xref docutils literal"><span class="pre">FeaturedMemberView</span></tt></a>.</li>
+<li>Otherwise, if <a title="motion.settings.HOME_MEMBER_EVENTS" class="reference external" href="settings.html#motion.settings.HOME_MEMBER_EVENTS"><tt class="xref docutils literal"><span class="pre">HOME_MEMBER_EVENTS</span></tt></a> is <tt class="xref docutils literal"><span class="pre">True</span></tt> and the viewer is logged
+in, the home page is the viewer&#8217;s <a title="motion.views.FollowingEventsView" class="reference internal" href="#motion.views.FollowingEventsView"><tt class="xref docutils literal"><span class="pre">FollowingEventsView</span></tt></a>.</li>
+<li>Otherwise, the home page is the <a title="motion.views.GroupEventsView" class="reference internal" href="#motion.views.GroupEventsView"><tt class="xref docutils literal"><span class="pre">GroupEventsView</span></tt></a>.</li>
+</ul>
+<p>By default there&#8217;s no <a title="motion.settings.FEATURED_MEMBER" class="reference external" href="settings.html#motion.settings.FEATURED_MEMBER"><tt class="xref docutils literal"><span class="pre">FEATURED_MEMBER</span></tt></a> and <a title="motion.settings.HOME_MEMBER_EVENTS" class="reference external" href="settings.html#motion.settings.HOME_MEMBER_EVENTS"><tt class="xref docutils literal"><span class="pre">HOME_MEMBER_EVENTS</span></tt></a> is
+<tt class="xref docutils literal"><span class="pre">False</span></tt>, so the home page view is the group events view. To always use a
+certain view instead of these rules, change your urlconf to use a
+different view for the home page.</p>
+</dd></dl>
+
+<dl class="function">
+<dt id="motion.views.upload_complete">
+<tt class="descclassname">motion.views.</tt><tt class="descname">upload_complete</tt><big>(</big><em>request</em><big>)</big><a class="headerlink" href="#motion.views.upload_complete" title="Permalink to this definition">¶</a></dt>
+<dd>Callback after uploading directly to TypePad which verifies the response
+as &#8216;okay&#8217; or displays an error message page to the user.</dd></dl>
+
 </div>
 
 
@@ -101,12 +328,12 @@
         <li class="right" >
           <a href="settings.html" title="Settings"
              >previous</a> |</li>
-        <li><a href="index.html">motion v1.1 documentation</a> &raquo;</li> 
+        <li><a href="index.html">motion v1.1.2 documentation</a> &raquo;</li> 
       </ul>
     </div>
     <div class="footer">
       &copy; Copyright 2009, Six Apart.
-      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.3.
+      Created using <a href="http://sphinx.pocoo.org/">Sphinx</a> 0.6.2.
     </div>
   </body>
 </html>
