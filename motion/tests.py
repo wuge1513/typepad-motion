@@ -40,21 +40,21 @@ class ProfileTestCase(unittest.TestCase):
 
     def setUp(self):
         import typepadapp.models.profiles
-        class UserProfile(typepadapp.models.profiles.UserProfile):
+        class LocalProfile(typepadapp.models.profiles.LocalProfile):
             hiphop_name = models.CharField(max_length=80)
 
         import motion.models
-        motion.models.UserProfile = UserProfile
+        motion.models.LocalProfile = LocalProfile
 
         from django.conf import settings
-        settings.AUTH_PROFILE_MODULE = 'motion.UserProfile'
+        settings.AUTH_PROFILE_MODULE = 'motion.LocalProfile'
 
         from django.core import management
         management.call_command('syncdb', verbosity=1, interactive=False)
 
     def test_profile(self):
-        from motion.models import UserProfile
-        p = UserProfile(user_id='6paf37603c44724b3a',
+        from motion.models import LocalProfile
+        p = LocalProfile(user_id='6paf37603c44724b3a',
             hiphop_name='dj fred')
         p.save()
 
