@@ -625,7 +625,7 @@ class MemberView(AssetEventView):
         except SiteProfileNotAvailable:
             pass
         else:
-            profileform = typepadapp.forms.UserProfileForm(instance=profile)
+            profileform = typepadapp.forms.LocalProfileForm(instance=profile)
             if self.context['is_self']:
                 self.context['profileform'] = profileform
             else:

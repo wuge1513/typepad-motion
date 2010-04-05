@@ -321,7 +321,7 @@ def edit_profile(request):
     typepad.client.complete_batch()
 
     profile = user.get_profile()
-    profileform = typepadapp.forms.UserProfileForm(request.POST, instance=profile)
+    profileform = typepadapp.forms.LocalProfileForm(request.POST, instance=profile)
 
     if profileform.is_valid():
         profileform.save()
