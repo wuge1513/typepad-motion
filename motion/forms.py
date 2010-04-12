@@ -63,11 +63,9 @@ class PostForm(forms.Form):
         self.fields['file'].required = post_type in ('photo', 'audio')
         #log.debug('PostForm is_valid() fields: %s' % self.fields)
         return super(PostForm, self).is_valid(*args, **kwargs)
-    
+
     def clean_file(self):
-        # File uploads should always go directly to TypePad, NEVER through Motion form processing.
-        if self.fields['file'].required:
-            raise forms.ValidationError(_('An error occurred while uploading your file. Please try again.'))
+        return self.cleaned_data['file']
 
     def clean_title(self):
         # Check that the title is valid.
