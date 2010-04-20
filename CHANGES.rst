@@ -1,8 +1,14 @@
 typepad-motion Changelog
 ========================
 
-1.1.2 (2010-3-30)
------------------
+1.1.3 (2010-04-20)
+------------------
+
+* Let the `PostForm` include a file, to be uploaded directly instead of through the viewer's browser.
+
+
+1.1.2 (2010-03-30)
+------------------
 
 * Updated templates to be compatible with latest TypePad API changes.
 
