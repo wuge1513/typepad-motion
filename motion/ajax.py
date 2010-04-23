@@ -188,7 +188,9 @@ def asset_meta(request):
 
         # for non-admins and only if this install permits asset deletion,
         # request if the user can delete this asset.
-        if not admin_user and settings.ALLOW_USERS_TO_DELETE_POSTS:
+        if admin_user:
+            meta[id] = {'can_delete': True}
+        elif settings.ALLOW_USERS_TO_DELETE_POSTS:
             opts.append((id, typepad.Asset.get_by_url_id(xid).options()))
     typepad.client.complete_batch()
 
