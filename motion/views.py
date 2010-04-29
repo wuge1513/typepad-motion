@@ -154,8 +154,8 @@ class AssetEventView(TypePadView):
             for event in events:
                 obj = event.object
                 if not (obj and obj.commentable): continue
-                if obj.comment_count() > 0:
-                    start = (obj.comment_count() - num) + 1
+                if obj.comment_count > 0:
+                    start = (obj.comment_count - num) + 1
                     if start < 1: start = 1
                     obj.recent_comments = obj.comments.filter(max_results=num,
                         start_index=start)
