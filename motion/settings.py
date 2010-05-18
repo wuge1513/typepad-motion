@@ -100,6 +100,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'djangoflash.context_processors.flash',
     'typepadapp.context_processors.settings',
+    'typepadapp.context_processors.mobile',
 )
 
 INSTALLED_APPS = (
