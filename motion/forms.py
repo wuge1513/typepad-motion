@@ -33,6 +33,7 @@ from django import forms
 from django.conf import settings
 from django.utils.translation import ugettext_lazy as _
 
+import typepad
 import typepadapp.models
 import motion.models
 
@@ -94,11 +95,11 @@ class PostForm(forms.Form):
             but don't actually post it to the TypePad API.
         """
         if self.cleaned_data['post_type'] == 'link':
-            post = typepadapp.models.LinkAsset()
-            post.link = self.cleaned_data['url']
+            post = typepadapp.models.Link()
+            post.target_url = self.cleaned_data['url']
         elif self.cleaned_data['post_type'] == 'video':
             post = typepadapp.models.Video()
-            post.link = self.cleaned_data['url']
+            post.video_link = typepad.VideoLink(permalink_url=self.cleaned_data['url'])
         elif self.cleaned_data['post_type'] == 'audio':
             post = typepadapp.models.Audio()
             post.file = self.cleaned_data['file']
