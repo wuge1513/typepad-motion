@@ -570,8 +570,11 @@ class MemberView(AssetEventView):
     def select_from_typepad(self, request, userid, *args, **kwargs):
         self.paginate_template = reverse('member', args=[userid]) + '/page/%d'
 
-        member = models.UserProfile.get_by_url_id(userid)
-        u = member.user
+        if request.method == 'GET':
+            member = models.UserProfile.get_by_url_id(userid)
+            u = member.user
+        else:
+            member = u = models.User.get_by_url_id(userid)
         user_memberships = u.group_memberships(request.group)
 
         if request.method == 'GET':
