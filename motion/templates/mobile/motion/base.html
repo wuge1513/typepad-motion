@@ -45,7 +45,8 @@
                 <div id="pagebody-inner">
 
                     {% block content_head %}
-                    {% if form.url and settings.allow_posting and typepad_user.is_authenticated %}
+                    {% if settings.allow_posting and typepad_user.is_authenticated %}
+                    {% if form.url %}
                     {% if moderation.user_is_blocked %}
                     <div id="user-compose" class="design-compose-background suspended">
                     {% trans "Your posting privileges on this site have been suspended." %}
@@ -63,6 +64,7 @@
                         <button>{% trans "POST" %}</button>
                     </form>
                     </div>
+                    {% endif %}
                     {% endif %}
                     {% endblock %}
 
