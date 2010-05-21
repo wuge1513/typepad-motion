@@ -29,6 +29,7 @@
  * POSSIBILITY OF SUCH DAMAGE.
  */
 
+var mobile = false;
 var settings;
 settings = {
     upload_url: '',
@@ -671,7 +672,9 @@ $(document).ready(function () {
     }
 
     // Initiate Entry Hover behavior
-    initEntryHover();
+    if (!mobile) {
+        initEntryHover();
+    }
 }); // End Ready Function
 
 // Hover on Entry or actions

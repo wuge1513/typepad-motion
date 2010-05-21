@@ -196,7 +196,7 @@ class AssetPostView(TypePadView):
                     choices.append((acct.id,
                         mark_safe("""<img src="%(media_url)sthemes/motion/images/icons/throbber.gif" alt="loading..." style="display:none;" />"""
                         """<img src="%(icon)s" height="16" width="16" alt="" /> """
-                        """%(username)s """ % {
+                        """<span>%(username)s</span>""" % {
                             'media_url': settings.MEDIA_URL,
                             'icon': escape(acct.provider_icon_url),
                             'username': escape(acct.username or acct.provider_name)
