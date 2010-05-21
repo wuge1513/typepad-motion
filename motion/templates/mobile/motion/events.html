@@ -1,0 +1,17 @@
+{% extends "mobile/motion/base.html" %}
+{% load i18n %}
+
+{% block page_id %}group-events{% endblock %}
+{% block head_title %}{% blocktrans with block.super as super %}{{ super }}: Recent Activity{% endblocktrans %}{% endblock %}
+
+{% block feed %}
+    <link rel="alternate" type="application/atom+xml" title="Recent Entries" href="{% url feeds url="events" %}" />
+{% endblock %}
+
+{% block content_body %}
+    <div class="actions">
+        {% with page_obj.object_list as events %}
+        {% include "mobile/motion/bits/event_list.html" %}
+        {% endwith %}
+    </div><!-- end .actions -->
+{% endblock %}

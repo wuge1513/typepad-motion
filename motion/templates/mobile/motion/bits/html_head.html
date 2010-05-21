@@ -1,0 +1,61 @@
+<script type="text/javascript" language="javascript" src="{{ request.get_session_synchronization_url }}"></script>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="TypePad Motion" />
+<link rel="stylesheet" href="{{ settings.media_url }}themes/motion/mobile.css" type="text/css" />
+<meta name="viewport" content="maximum-scale=1.0,minimum-scale=1.0,width=device-width,initial-scale=1.0">
+<link rel="start" href="{% url home %}" title="Home" />
+<link rel="shortcut icon" type="image/x-icon" href="{{ settings.media_url }}themes/{{ settings.theme }}/favicon.ico" />
+<script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery.js"></script>
+<script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery.simplemodal-1.3.5.min.js"></script>
+
+<!-- JSON Functions -->
+<script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery.json-1.3.min.js"></script>
+
+<!-- Form Submission -->
+<script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery.form.js"></script>
+
+
+{% if debug %}
+<script type="text/javascript" src="{{ settings.media_url }}typepadapp/js/jquery.dump.js"></script>
+{% endif %}
+
+<!--[if IE]>
+<link rel="stylesheet" href="{{ settings.media_url }}themes/motion/ie.css" type="text/css" />
+<![endif]--> 
+<script type="text/javascript" src="{{ settings.media_url }}motion/js/motion.js"></script>
+<script type="text/javascript">
+/* <![CDATA[ */
+// user data
+var profileUrlTemplate = 'http{% if request.is_secure %}s{% endif %}://{{ request.get_host }}{% url member userid="__profilealias__" %}'.replace('__profilealias__', '<profile-alias>');
+mobile = true;
+{% if typepad_user.is_authenticated %}
+user = {
+    is_authenticated: true,{% if typepad_user.is_admin %}
+    is_admin: true,{% endif %}{% if typepad_user.is_staff %}
+    is_staff: true,{% endif %}{% if settings.allow_posting and typepad_user.can_post %}
+    can_post: true,{% endif %}
+    name: '{{ typepad_user.display_name|escapejs }}',
+    email: '{{ typepad_user.email|escapejs }}',
+    url: '{{ typepad_user.aboutMe|escapejs }}',
+    userpic: '{{ typepad_user.userpic|escapejs }}'
+};
+{% endif %}
+var view = '{{ view|escapejs }}';
+settings.upload_xhr_endpoint = '{{ upload_xhr_endpoint|escapejs }}';
+settings.comments_url = '{% url comments_url %}';
+settings.favorite_url = '{% url favorite_url %}';
+settings.asset_meta_url = '{% url asset_meta_url %}';
+settings.asset_post_url = '{% url asset_post_url %}';
+settings.crosspost_options_url = '{% url crosspost_options_url %}';{% if settings.ajax_ping_frequency %}
+if ((view == 'home') || (view == 'events')) {
+    settings.asset_ping_url = '{% url asset_ping_url %}';
+    settings.ajax_ping_frequency = {{ settings.ajax_ping_frequency }};
+}{% endif %}
+/* ]]> */
+</script>
+
+<!-- Audio Player for audio files -->
+<link rel="stylesheet" type="text/css" href="{{ settings.media_url }}typepadapp/soundmanager/bacon-player.css" />
+{% if settings.use_facebook %}
+<script src="http://static.ak.fbcdn.net/connect.php/js/FB.Share" type="text/javascript"></script>
+{% endif %}

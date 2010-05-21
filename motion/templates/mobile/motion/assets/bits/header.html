@@ -1,0 +1,28 @@
+{% load i18n %}
+
+<div class="asset-header">
+    <span class="byline">
+    {% block byline %}
+        <span class="vcard author"><a href="{{ event.actor.get_absolute_url }}">{{ event.actor.display_name }}</a></span>
+
+        {% if entry.source %}
+        <span class="source">
+            {% block source_phrase %}{% trans "posted from" %}{% endblock %}
+            {% with entry.source.permalink_url as original_href %}
+                {% if entry.source.provider %}
+                    {% if entry.source.provider.icon %}
+                    <a href="{{ entry.source.provider.uri }}"><img src="{{ entry.source.provider.icon }}" height="16" width="16" alt="" /></a>
+                    {% endif %}
+                    <a href="{{ original_href }}">{{ entry.source.provider.name }}</a>
+                {% else %}
+                    {{ original_href|urlizetrunc:35 }}
+                {% endif %}
+            {% endwith %}
+        </span>
+        {% else %}
+            {% block local_phrase %}{% trans "posted" %}{% endblock %}
+        {% endif %}
+
+    {% endblock %}
+    </span>
+</div>

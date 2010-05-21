@@ -1,0 +1,17 @@
+{% extends base|default:"mobile/motion/assets/body/base.html" %}
+{% load typepad_filters %}
+{% load i18n %}
+
+{% block header %}
+{% include "mobile/motion/assets/bits/header/video.html" %}
+{% endblock %}
+
+{% block media %}
+<div class="embed">
+    {% if entry.preview_image_link and entry.source.permalink_url %}
+    <a href="{{ entry.source.permalink_url }}"><img src="{{ entry.preview_image_link.url }}" height="{{ entry.preview_image_link.height }}" width="{{ entry.preview_image_link.width }}" alt="" /></a>
+    {% else %}
+    {% autoescape off %}{% with entry|enclosurebymaxwidth:settings.video_max_width as video %}{{ video.embed_code }}{% endwith %}{% endautoescape %}
+    {% endif %}
+</div>
+{% endblock %}

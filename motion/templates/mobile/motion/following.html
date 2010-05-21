@@ -1,0 +1,28 @@
+{% extends "mobile/motion/base.html" %}
+{% load i18n %}
+
+{% block page_id %}user-following{% endblock %}
+
+{% block content_body %}
+
+{% if not page_obj.object_list %}
+
+{% block empty_events %}
+{% url members as members_url %}
+{% blocktrans with request.group.display_name as group_name %}
+<p><a href="{{ members_url }}">Follow members</a> of {{ group_name }} and see their updates as they get posted.</p>
+<p>Once the people you follow add new content, their updates will show here.</p>
+{% endblocktrans %}
+{% endblock %}
+
+{% else %}
+
+<div class="actions">
+    {% with page_obj.object_list as events %}
+    {% include "mobile/motion/bits/event_list.html" %}
+    {% endwith %}
+</div><!-- end .actions -->
+
+{% endif %}
+
+{% endblock %}

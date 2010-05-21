@@ -1,0 +1,22 @@
+{% extends base|default:"mobile/motion/assets/body/base.html" %}
+
+{% block title %}{% endblock %}
+
+{% block media %}
+{% with entry.title as title %}
+{% with entry.link as link %}
+{% with entry.url_id as id %}
+<div id="{{ id }}" class="baconplayer preview audio">
+    <a href="{{ link }}" class="play" title="{% trans "play" %}"></a>
+    <div class="progress">
+      <div class="title">{{ title }}</div>
+      <span class="timing"></span>
+      <div class="loading-progress">
+        <div class="inner-progress">&nbsp;</div>
+      </div>
+    </div>
+</div>
+{% endwith %}
+{% endwith %}
+{% endwith %}
+{% endblock %}

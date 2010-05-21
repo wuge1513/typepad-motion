@@ -1,0 +1,29 @@
+{% load i18n %}
+
+{% if typepad_user.is_authenticated %}
+<div class="controls">
+    {% block controls %}
+    {% if typepad_user.is_superuser or settings.allow_users_to_delete_posts %}
+    <form id="delete-{{ entry.url_id }}" method="post" action="{{ entry.get_absolute_url }}"{% if not typepad_user.is_superuser %} style="display:none"{% endif %}>
+        <input type="hidden" name="asset-id" value="{{ entry.url_id }}" />
+        <button class="button-delete" type="submit"
+            onclick="return confirm({% spaceless %}
+            {% blocktrans with entry.type_label as type %}
+                'Are you sure you want to delete this {{ type }}? This action cannot be undone.'
+            {% endblocktrans %}
+            {% endspaceless %});" name="delete" title={% spaceless %}
+            {% blocktrans with entry.type_label as type %}
+                "Delete {{ type }}"
+            {% endblocktrans %}
+            {% endspaceless %}>{% trans "Delete" %}
+        </button>
+    </form>
+    {% endif %}
+
+    {% if moderation %}
+    {% include moderation.moderate_template %}
+    {% endif %}
+
+    {% endblock %}
+</div>
+{% endif %}
