@@ -1,10 +1,11 @@
 typepad-motion Changelog
 ========================
 
-Unreleased
+1.2 (?)
 -----------
 
-* Adding settings and support for sharing posts to Facebook and Twitter.
+* Added mobile template set for modern mobile browsers.
+* Added settings and support for sharing posts to Facebook and Twitter.
 * Added setting and support for listing recent comments underneath posts.
 * Added administrator view of all users who have a banned status.
 * Added support for running on Google AppEngine.

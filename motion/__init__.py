@@ -34,8 +34,8 @@ API.
 
 """
 
-__version__ = '1.1.3'
-__date__ = '20 April 2010'
+__version__ = '1.1'
+__date__ = '21 May 2010'
 __author__ = 'Six Apart Ltd.'
 __credits__ = """Brad Choate
 Leah Culver
