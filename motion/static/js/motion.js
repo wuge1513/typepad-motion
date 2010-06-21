@@ -479,7 +479,7 @@ $(document).ready(function () {
             $("#post-submit-posting").show();
 
             var f = $("#form-compose").get(0);
-            var post_type = f.post_type.value;
+            var post_type = f.elements['post_type'].value;
 
             // clear any default labels
             $("#form-compose .default-value").each(function() {
@@ -510,14 +510,14 @@ $(document).ready(function () {
                     return compose_error(settings.phrase.invalidURL);
                 }
             } else if (post_type == 'photo') {
-                file_name = f.file.value;
+                file_name = f.elements['file'].value;
                 if (!file_name) {
                     return compose_error(settings.phrase.fileRequired);
                 } else if (!fileExtensionCheck(file_name, ['gif', 'png', 'jpg', 'jpeg'])) {
                     return compose_error(settings.phrase.invalidFileType);
                 }
             } else if (post_type == 'audio') {
-                file_name = f.file.value;
+                file_name = f.elements['file'].value;
                 if (!file_name) {
                     return compose_error(settings.phrase.fileRequired);
                 } else if (!fileExtensionCheck(file_name, ['mp3'])) {
@@ -541,13 +541,13 @@ $(document).ready(function () {
                             }
                             // JSON object to upload
                             var asset = {
-                                'content': f.body.value,
+                                'content': f.elements['body'].value,
                                 'objectTypes': ['tag:api.typepad.com,2009:' + 
                                     post_type.substring(0,1).toUpperCase() + post_type.substring(1)]
                             };
-                            if ('title' in f)
-                                asset['title'] = f.title.value;
-                            if ('crosspost' in f) {
+                            if (f.elements['title'] != undefined)
+                                asset['title'] = f.elements['title'].value;
+                            if (f.elements['crosspost'] != undefined) {
                                 crosspost = [];
                                 for (var i = 0, ii = f.elements.length; i < ii; i++) {
                                     var fld = f.elements[i];
@@ -557,7 +557,7 @@ $(document).ready(function () {
                                 if (crosspost.length)
                                     asset['crosspostAccounts'] = crosspost;
                             }
-                            f.asset.value = $.toJSON(asset);
+                            f.elements['asset'].value = $.toJSON(asset);
                             // All set, submit!
                             f.submit();
                         },
