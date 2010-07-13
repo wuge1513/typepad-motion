@@ -47,6 +47,7 @@ imported ``local_settings.py``) as you would Django's default settings.
 # You can override these in your custom app settings.py.
 import os
 import logging
+import django
 from django.utils.translation import ugettext_lazy as _
 from typepadapp.settings import *
 
@@ -78,6 +79,9 @@ TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.load_template_source',
     'django.template.loaders.app_directories.load_template_source',
 )
+
+if django.VERSION >= (1,2):
+    TEMPLATE_LOADERS = (('django.template.loaders.cached.Loader', TEMPLATE_LOADERS),)
 
 MIDDLEWARE_CLASSES = (
     'django.middleware.common.CommonMiddleware',
